@@ -1,0 +1,42 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Closed Groups{% endblock title %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+
+    {% include 'accounts/administrator/partials/_header_item.html' with head_title="Closed Groups" %}
+
+    <div class="row mb-4">
+        <!-- Total Closed Groups -->
+        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-ban" aria_label="Closed Groups" count="2" title="Closed Groups" additional_value="2" additional_text="Groups Closed" %}
+
+        <!-- Winnings Distributed -->
+        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-trophy" aria_label="Winnings Distributed" count="₦50,000,000" title="Winnings Distributed" additional_value="₦50,000,000" additional_text="Winnings Distributed" %}
+
+        <!-- Refunds Processed -->
+        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="warning" label_color="warning" icon_class="fa-solid fa-money-bill-wave" aria_label="Refunds Processed" count="₦5,000,000" title="Refunds Processed" additional_value="₦5,000,000" additional_text="Refunds Processed" %}
+
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {% include 'accounts/administrator/partials/_card_header.html' with card_header="Closed Groups List" %}
+                <div class="table-responsive">
+                    <table class="table table-lg">
+                        <thead>
+                            {% include 'accounts/administrator/groups/partials/_table_head.html' %}
+                        </thead>
+                        <tbody>
+                            {% include "accounts/administrator/groups/partials/_group_item.html" with name="Anxious Ankara" price="13,000" status_label="danger" status="Closed" min_returns="80,000" max_returns="120,000" min_bundles="4" max_bundles="10" %}
+                            {% include "accounts/administrator/groups/partials/_group_item.html" with name="Zealous Zebra" price="23,000" status_label="danger" status="Closed" min_returns="100,000" max_returns="150,000" min_bundles="2" max_bundles="5" %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include "accounts/administrator/partials/_pagination.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

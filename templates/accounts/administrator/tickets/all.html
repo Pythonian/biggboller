@@ -1,0 +1,44 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}All Tickets{% endblock title %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+
+    {% include 'accounts/administrator/partials/_header_item.html' with head_title="All Tickets" %}
+
+    <div class="row mb-4">
+        <!-- Total Tickets -->
+        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="primary" label_color="primary" icon_class="fa-solid fa-ticket" aria_label="Total Tickets" count="500" title="Total Tickets" additional_value="20" additional_text="New tickets" %}
+
+        <!-- Pending Tickets -->
+        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="info" label_color="info" icon_class="fa-solid fa-play-circle" aria_label="Pending Tickets" count="4" title="Pending Tickets" additional_value="0" additional_text="Tickets today" %}
+
+        <!-- Answered Tickets -->
+        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" aria_label="Answered Tickets" count="10" title="Answered Tickets" additional_value="2" additional_text="Recently answered" %}
+
+        <!-- Closed Tickets -->
+        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-ban" aria_label="Closed Tickets" count="100" title="Closed Tickets" additional_value="10" additional_text="Manually closed" %}
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {% include 'accounts/administrator/partials/_card_header.html' with card_header="All Tickets List" %}
+                <div class="table-responsive">
+                    <table class="table table-lg">
+                        <thead>
+                            {% include 'accounts/administrator/tickets/partials/_table_head.html' %}
+                        </thead>
+                        <tbody>
+                            {% include "accounts/administrator/tickets/partials/_ticket_item.html" with id="#48BC13" user="Valar Moghulis" status_label="success" status="Answered" subject="I am unable to withdraw my winnings" created="15th Sep, 2024" %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include "accounts/administrator/partials/_pagination.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+{% include "accounts/administrator/tickets/modals/close_ticket.html" %}
+{% endblock content %}

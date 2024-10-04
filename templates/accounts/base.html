@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="light-style layout-navbar-fixed layout-menu-fixed layout-compact">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <title>{% block title %}{% endblock title %}</title>
+
+    <link rel="icon" type="image/x-icon" href="" />
+    <link rel="stylesheet" href="{% static 'css/fontawesome.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/core.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/theme-semi-dark.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/demo.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/perfect-scrollbar.css' %}" />
+    <script src="{% static 'js/helpers.js' %}"></script>
+    <script src="{% static 'js/config.js' %}"></script>
+
+</head>
+
+<body>
+
+    <div class="layout-wrapper layout-content-navbar  ">
+        <div class="layout-container">
+            {% include "accounts/partials/_sidebar_menu.html" %}
+            <div class="layout-page">
+                {% include "accounts/partials/_nav.html" %}
+                <div class="content-wrapper">
+                    {% block content %}
+                    {% endblock content %}
+                    {% include "accounts/partials/_footer.html" %}
+                    <div class="content-backdrop fade"></div>
+                </div>
+            </div>
+
+        </div>
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
+        <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+        <div class="drag-target"></div>
+    </div>
+
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'js/popper.js' %}"></script>
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+    <script src="{% static 'js/perfect-scrollbar.js' %}"></script>
+    <script src="{% static 'js/menu.js' %}"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}Home{% endblock title %}
+
+{% block content %}
+
+<!-- Sections:Start -->
+<div data-bs-spy="scroll" class="scrollspy-example">
+    <!-- Hero: Start -->
+    <section>
+        <div id="landingHero" class="section-py landing-hero position-relative">
+            <div class="container">
+                <div class="hero-text-box text-center">
+                    <h1 class="text-primary display-4 fw-bold">One dashboard to manage all your
+                        businesses</h1>
+                    <h2 class="hero-sub-title h6 mb-4 pb-1">
+                        Production-ready & easy to use Admin Template<br class="d-none d-lg-block" />
+                        for Reliability and Customizability.
+                    </h2>
+                    <div class="landing-hero-btn d-inline-block position-relative mb-5">
+                        <a href="#landingPricing" class="btn btn-primary">Get Started Today</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-center">
+                        <img src="https://placehold.co/900x600" alt="hero dashboard" class="img-fluid" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hero: End -->
+
+    <!-- Features: Start -->
+    <section id="landingFeatures" class="section-py landing-features">
+        <div class="container">
+            <div class="text-center mb-3 pb-1">
+                <span class="badge bg-label-primary">Core Features</span>
+            </div>
+            <h3 class="text-center mb-1">
+                Everything you need to start winning from your bet bundles.
+            </h3>
+            <p class="text-center mb-3 mb-md-5 pb-3">
+                Not just a set of tools, the package includes ready-to-deploy conceptual application.
+            </p>
+            <div class="features-icon-wrapper row gx-0 gy-4 g-sm-5">
+                {% include "core/partials/_feature_item.html" %}
+                {% include "core/partials/_feature_item.html" %}
+                {% include "core/partials/_feature_item.html" %}
+                {% include "core/partials/_feature_item.html" %}
+                {% include "core/partials/_feature_item.html" %}
+                {% include "core/partials/_feature_item.html" %}
+            </div>
+        </div>
+    </section>
+    <!-- Features: End -->
+
+    <!-- How It Works: Start -->
+    <section class="section-py bg-body" id="landingWorks">
+        <div class="container">
+            <h3 class="text-center mb-5">How Betbay Works</h3>
+            <div class="row">
+                <div class="col-lg-12 mb-4">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-md-0 mb-4">
+                            {% include "core/partials/_work_item.html" %}
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-md-0 mb-4">
+                            {% include "core/partials/_work_item.html" %}
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-md-0 mb-4">
+                            {% include "core/partials/_work_item.html" %}
+                        </div>
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-md-0 mb-4">
+                            {% include "core/partials/_work_item.html" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- How It Works: End -->
+
+    <!-- Fun facts: Start -->
+    <section id="landingFacts" class="section-py">
+        <div class="container">
+            <div class="row gy-3">
+                <div class="col-sm-6 col-lg-3">
+                    {% include "core/partials/_stat_card.html" %}
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    {% include "core/partials/_stat_card.html" %}
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    {% include "core/partials/_stat_card.html" %}
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    {% include "core/partials/_stat_card.html" %}
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Fun facts: End -->
+
+    <!-- FAQ: Start -->
+    <section id="landingFAQ" class="section-py bg-body landing-faq">
+        <div class="container">
+            <div class="text-center mb-3 pb-1">
+                <span class="badge bg-label-primary">FAQ</span>
+            </div>
+            <h3 class="text-center mb-1">Frequently asked <span class="section-title">questions</span></h3>
+            <p class="text-center mb-5 pb-3">Browse through these FAQs to find answers to commonly asked questions.
+            </p>
+            <div class="row gy-5">
+                <div class="col-lg-8 mx-auto">
+                    <div class="accordion" id="accordionExample">
+                        {% include "core/partials/_faq_item.html" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- FAQ: End -->
+
+    <!-- CTA: Start -->
+    <section id="landingCTA" class="section-py">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 text-center">
+                    <h6 class="h2 text-primary fw-bold mb-1">Ready to Get Started?</h6>
+                    <p class="fw-medium">Join us today and stake and start winning immediately.</p>
+
+                </div>
+                <div class="col-lg-6 text-center">
+                    <a href="" class="btn btn-primary">Sign up Today</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- CTA: End -->
+</div>
+
+<!-- / Sections:End -->
+
+{% endblock content %}

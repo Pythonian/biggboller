@@ -1,0 +1,34 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Rejected Withdrawals{% endblock title %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+
+    {% include 'accounts/administrator/partials/_header_item.html' with head_title="Rejected Withdrawals" %}
+
+    <div class="row mb-4">
+        <!-- Rejected Withdrawals -->
+        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-thumbs-down" aria_label="Rejected Withdrawals" count="4" title="Rejected Withdrawals" additional_value="0" additional_text="Rejected today" %}
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                {% include 'accounts/administrator/partials/_card_header.html' with card_header="Rejected Withdrawals List" %}
+                <div class="table-responsive">
+                    <table class="table table-lg">
+                        <thead>
+                            {% include 'accounts/administrator/withdrawals/partials/_table_head.html' %}
+                        </thead>
+                        <tbody>
+                            {% include "accounts/administrator/withdrawals/partials/_withdrawal_item.html" with transaction="48BC13KRCW" name="Bjorn Ironside" status_label="danger" status="Rejected" amount="2,000" date="15th Sep, 2024" %}
+                        </tbody>
+                    </table>
+                </div>
+                {% include "accounts/administrator/partials/_pagination.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

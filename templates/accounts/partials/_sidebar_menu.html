@@ -1,0 +1,343 @@
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+    <div class="app-brand demo ">
+        <a href="{% if 'administrator' in request.path %}{% url 'administrator:dashboard' %}{% else %}{% url 'bettor:dashboard' %}{% endif %}"
+            class="app-brand-link">
+            <span class="app-brand-text demo menu-text fw-bold">
+                <i class="fa-solid fa-coins me-2 text-primary"></i> BetBay
+            </span>
+        </a>
+    </div>
+
+    {% if "administrator" in request.path %}
+    <ul class="menu-inner py-1">
+        <li
+            class="menu-item {% url 'administrator:dashboard' as dashboard_url %}{% if request.get_full_path == dashboard_url %}active{% endif %}">
+            <a href="{% url 'administrator:dashboard' %}" class="menu-link">
+                <i class="menu-icon fa-solid fa-home"></i>
+                <div class="text-truncate">Dashboard</div>
+            </a>
+        </li>
+
+        <!-- Core -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Core</span>
+        </li>
+        <li class="menu-item {% if 'groups' in request.path %}active open{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class='menu-icon fa-solid fa-object-group'></i>
+                <div class="text-truncate">Manage Groups</div>
+            </a>
+            <ul class="menu-sub">
+                <li
+                    class="menu-item {% url 'administrator:groups_running' as groups_running_url %}{% if request.get_full_path == groups_running_url %}active{% endif %}">
+                    <a href="{% url 'administrator:groups_running' %}" class="menu-link">
+                        <div class="text-truncate">Running Groups</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:groups_closed' as groups_closed_url %}{% if request.get_full_path == groups_closed_url %}active{% endif %}">
+                    <a href="{% url 'administrator:groups_closed' %}" class="menu-link">
+                        <div class="text-truncate">Closed Groups</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:groups_all' as groups_all_url %}{% if request.get_full_path == groups_all_url %}active{% endif %}">
+                    <a href="{% url 'administrator:groups_all' %}" class="menu-link">
+                        <div class="text-truncate">All Groups</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-item {% if 'bundles' in request.path %}active open{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class='menu-icon fa-solid fa-layer-group'></i>
+                <div class="text-truncate">Manage Bundles</div>
+            </a>
+            <ul class="menu-sub">
+                <li
+                    class="menu-item {% url 'administrator:bundles_pending' as bundles_pending_url %}{% if request.get_full_path == bundles_pending_url %}active{% endif %}">
+                    <a href="{% url 'administrator:bundles_pending' %}" class="menu-link">
+                        <div class="text-truncate">Pending Bundles</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:bundles_won' as bundles_won_url %}{% if request.get_full_path == bundles_won_url %}active{% endif %}">
+                    <a href="{% url 'administrator:bundles_won' %}" class="menu-link">
+                        <div class="text-truncate">Won Bundles</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:bundles_lost' as bundles_lost_url %}{% if request.get_full_path == bundles_lost_url %}active{% endif %}">
+                    <a href="{% url 'administrator:bundles_lost' %}" class="menu-link">
+                        <div class="text-truncate">Lost Bundles</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:bundles_refunded' as bundles_refunded_url %}{% if request.get_full_path == bundles_refunded_url %}active{% endif %}">
+                    <a href="{% url 'administrator:bundles_refunded' %}" class="menu-link">
+                        <div class="text-truncate">Refunded Bundles</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:bundles_all' as bundles_all_url %}{% if request.get_full_path == bundles_all_url %}active{% endif %}">
+                    <a href="{% url 'administrator:bundles_all' %}" class="menu-link">
+                        <div class="text-truncate">All Bundles</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-item {% if 'users' in request.path %}active open{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class='menu-icon fa-solid fa-users'></i>
+                <div class="text-truncate">Manage Users</div>
+            </a>
+            <ul class="menu-sub">
+                <li
+                    class="menu-item {% url 'administrator:users_all' as users_all_url %}{% if request.get_full_path == users_all_url %}active{% endif %}">
+                    <a href="{% url 'administrator:users_all' %}" class="menu-link">
+                        <div class="text-truncate">All Users</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:users_active' as users_active_url %}{% if request.get_full_path == users_active_url %}active{% endif %}">
+                    <a href="{% url 'administrator:users_active' %}" class="menu-link">
+                        <div class="text-truncate">Active Users</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:users_verified' as users_verified_url %}{% if request.get_full_path == users_verified_url %}active{% endif %}">
+                    <a href="{% url 'administrator:users_verified' %}" class="menu-link">
+                        <div class="text-truncate">Verified Users</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:users_unverified' as users_unverified_url %}{% if request.get_full_path == users_unverified_url %}active{% endif %}">
+                    <a href="{% url 'administrator:users_unverified' %}" class="menu-link">
+                        <div class="text-truncate">Unverified Users</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:users_banned' as users_banned_url %}{% if request.get_full_path == users_banned_url %}active{% endif %}">
+                    <a href="{% url 'administrator:users_banned' %}" class="menu-link">
+                        <div class="text-truncate">Banned Users</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:users_deactivated' as users_deactivated_url %}{% if request.get_full_path == users_deactivated_url %}active{% endif %}">
+                    <a href="{% url 'administrator:users_deactivated' %}" class="menu-link">
+                        <div class="text-truncate">Deactivated Users</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:users_notifications' as users_notifications_url %}{% if request.get_full_path == users_notifications_url %}active{% endif %}">
+                    <a href="{% url 'administrator:users_notifications' %}" class="menu-link">
+                        <div class="text-truncate">Send Notifications</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-item {% if 'tickets' in request.path %}active open{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class='menu-icon fa-solid fa-circle-question'></i>
+                <div class="text-truncate">Support Tickets</div>
+            </a>
+            <ul class="menu-sub">
+                <li
+                    class="menu-item {% url 'administrator:tickets_pending' as tickets_pending_url %}{% if request.get_full_path == tickets_pending_url %}active{% endif %}">
+                    <a href="{% url 'administrator:tickets_pending' %}" class="menu-link">
+                        <div class="text-truncate">Pending Tickets</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:tickets_answered' as tickets_answered_url %}{% if request.get_full_path == tickets_answered_url %}active{% endif %}">
+                    <a href="{% url 'administrator:tickets_answered' %}" class="menu-link">
+                        <div class="text-truncate">Answered Tickets</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:tickets_closed' as tickets_closed_url %}{% if request.get_full_path == tickets_closed_url %}active{% endif %}">
+                    <a href="{% url 'administrator:tickets_closed' %}" class="menu-link">
+                        <div class="text-truncate">Closed Tickets</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:tickets_all' as tickets_all_url %}{% if request.get_full_path == tickets_all_url %}active{% endif %}">
+                    <a href="{% url 'administrator:tickets_all' %}" class="menu-link">
+                        <div class="text-truncate">All Tickets</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Finance -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Finance</span>
+        </li>
+        <li class="menu-item {% if 'deposits' in request.path %}active open{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class='menu-icon fa-solid fa-money-bill-transfer'></i>
+                <div class="text-truncate">Manage Deposits</div>
+            </a>
+            <ul class="menu-sub">
+                <li
+                    class="menu-item {% url 'administrator:deposits_all' as deposits_all_url %}{% if request.get_full_path == deposits_all_url %}active{% endif %}">
+                    <a href="{% url 'administrator:deposits_all' %}" class="menu-link">
+                        <div class="text-truncate">All Deposits</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:deposits_pending' as deposits_pending_url %}{% if request.get_full_path == deposits_pending_url %}active{% endif %}">
+                    <a href="{% url 'administrator:deposits_pending' %}" class="menu-link">
+                        <div class="text-truncate">Pending Deposits</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:deposits_approved' as deposits_approved_url %}{% if request.get_full_path == deposits_approved_url %}active{% endif %}">
+                    <a href="{% url 'administrator:deposits_approved' %}" class="menu-link">
+                        <div class="text-truncate">Approved Deposits</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:deposits_rejected' as deposits_rejected_url %}{% if request.get_full_path == deposits_rejected_url %}active{% endif %}">
+                    <a href="{% url 'administrator:deposits_rejected' %}" class="menu-link">
+                        <div class="text-truncate">Rejected Deposits</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-item {% if 'withdrawals' in request.path %}active open{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class='menu-icon fa-solid fa-wallet'></i>
+                <div class="text-truncate">Manage Withdrawals</div>
+            </a>
+            <ul class="menu-sub">
+                <li
+                    class="menu-item {% url 'administrator:withdrawals_all' as withdrawals_all_url %}{% if request.get_full_path == withdrawals_all_url %}active{% endif %}">
+                    <a href="{% url 'administrator:withdrawals_all' %}" class="menu-link">
+                        <div class="text-truncate">All Withdrawals</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:withdrawals_pending' as withdrawals_pending_url %}{% if request.get_full_path == withdrawals_pending_url %}active{% endif %}">
+                    <a href="{% url 'administrator:withdrawals_pending' %}" class="menu-link">
+                        <div class="text-truncate">Pending Withdrawals</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:withdrawals_approved' as withdrawals_approved_url %}{% if request.get_full_path == withdrawals_approved_url %}active{% endif %}">
+                    <a href="{% url 'administrator:withdrawals_approved' %}" class="menu-link">
+                        <div class="text-truncate">Approved Withdrawals</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:withdrawals_rejected' as withdrawals_rejected_url %}{% if request.get_full_path == withdrawals_rejected_url %}active{% endif %}">
+                    <a href="{% url 'administrator:withdrawals_rejected' %}" class="menu-link">
+                        <div class="text-truncate">Rejected Withdrawals</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <!-- Reports -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Reports</span>
+        </li>
+        <li class="menu-item">
+            <a href="" class="menu-link">
+                <i class="menu-icon fa-solid fa-timeline"></i>
+                <div class="text-truncate">Transaction History</div>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="" class="menu-link">
+                <i class="menu-icon fa-solid fa-clock-rotate-left"></i>
+                <div class="text-truncate">Login History</div>
+            </a>
+        </li>
+        <li class="menu-item">
+            <a href="" class="menu-link">
+                <i class="menu-icon fa-solid fa-bullhorn"></i>
+                <div class="text-truncate">Notification History</div>
+            </a>
+        </li>
+
+        <!-- Platform -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Platform</span>
+        </li>
+        <li class="menu-item">
+            <a href="" class="menu-link">
+                <i class="menu-icon fa-solid fa-bullhorn"></i>
+                <div class="text-truncate">Application Details</div>
+            </a>
+        </li>
+    </ul>
+    {% else %}
+    <ul class="menu-inner py-1">
+        <li
+            class="menu-item {% url 'bettor:dashboard' as dashboard_url %}{% if request.get_full_path == dashboard_url %}active{% endif %}">
+            <a href="{% url 'bettor:dashboard' %}" class="menu-link">
+                <i class="menu-icon fa-solid fa-home"></i>
+                <div class="text-truncate">Dashboard</div>
+            </a>
+        </li>
+
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">Core</span>
+        </li>
+        <li class="menu-item {% if 'bundles' in request.path %}active open{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class='menu-icon fa-solid fa-layer-group'></i>
+                <div class="text-truncate">Manage Bundles</div>
+            </a>
+            <ul class="menu-sub">
+                <li
+                    class="menu-item {% url 'administrator:bundles_all' as bundles_all_url %}{% if request.get_full_path == bundles_all_url %}active{% endif %}">
+                    <a href="{% url 'administrator:bundles_all' %}" class="menu-link">
+                        <div class="text-truncate">All Bundles</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:bundles_pending' as bundles_pending_url %}{% if request.get_full_path == bundles_pending_url %}active{% endif %}">
+                    <a href="{% url 'administrator:bundles_pending' %}" class="menu-link">
+                        <div class="text-truncate">My Bundles</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li class="menu-item {% if 'tickets' in request.path %}active open{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class='menu-icon fa-solid fa-circle-question'></i>
+                <div class="text-truncate">Support Tickets</div>
+            </a>
+            <ul class="menu-sub">
+                <li
+                    class="menu-item {% url 'administrator:tickets_pending' as tickets_pending_url %}{% if request.get_full_path == tickets_pending_url %}active{% endif %}">
+                    <a href="{% url 'administrator:tickets_pending' %}" class="menu-link">
+                        <div class="text-truncate">Pending Tickets</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:tickets_answered' as tickets_answered_url %}{% if request.get_full_path == tickets_answered_url %}active{% endif %}">
+                    <a href="{% url 'administrator:tickets_answered' %}" class="menu-link">
+                        <div class="text-truncate">Answered Tickets</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:tickets_closed' as tickets_closed_url %}{% if request.get_full_path == tickets_closed_url %}active{% endif %}">
+                    <a href="{% url 'administrator:tickets_closed' %}" class="menu-link">
+                        <div class="text-truncate">Closed Tickets</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:tickets_all' as tickets_all_url %}{% if request.get_full_path == tickets_all_url %}active{% endif %}">
+                    <a href="{% url 'administrator:tickets_all' %}" class="menu-link">
+                        <div class="text-truncate">All Tickets</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+    </ul>
+    {% endif %}
+</aside>

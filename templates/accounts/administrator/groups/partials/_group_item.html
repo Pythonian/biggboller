@@ -1,0 +1,33 @@
+<tr>
+    <td>{{ name }}</td>
+    <td>₦{{ price }}</td>
+    <td>₦{{ min_returns }} - ₦{{ max_returns }}</td>
+    <td>{{ min_bundles }} - {{ max_bundles }} Bundles</td>
+    <td><span class="badge rounded bg-label-{{ status_label }}">{{ status }}</span></td>
+    <td>
+        <div class="d-flex">
+            <div class="avatar me-2">
+                <a href="{% url 'administrator:groups_detail' 'python' %}"
+                    class="avatar-initial rounded bg-label-primary" data-bs-toggle="tooltip" data-bs-offset="0,8"
+                    data-bs-placement="top" data-bs-custom-class="tooltip-primary" title="View Group">
+                    <i class="fa-solid fa-eye"></i>
+                </a>
+            </div>
+            {% if "closed" not in request.path %}
+            <div class="avatar me-2">
+                <a href="/edit/" class="avatar-initial rounded bg-label-warning" data-bs-toggle="tooltip"
+                    data-bs-offset="0,8" data-bs-placement="top" data-bs-custom-class="tooltip-warning"
+                    title="Edit Group">
+                    <i class="fa-solid fa-pen"></i>
+                </a>
+            </div>
+            <div class="avatar">
+                <a class="avatar-initial rounded bg-label-danger" data-bs-toggle="modal"
+                    data-bs-target="#closeGroupModal">
+                    <i class="fa-solid fa-ban"></i>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </td>
+</tr>

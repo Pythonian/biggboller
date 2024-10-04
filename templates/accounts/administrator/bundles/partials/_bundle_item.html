@@ -1,0 +1,36 @@
+<tr>
+    <td>{{ name }}</td>
+    <td>{{ group }}</td>
+    <td>₦{{ price }}</td>
+    <td>₦{{ min_returns }} - ₦{{ max_returns }}</td>
+    <td>{{ participants }}</td>
+    <td>
+        <span class="badge rounded bg-label-{{ status_label }}">{{ status }}</span>
+    </td>
+    <td>
+        <div class="d-flex">
+            <div class="avatar me-2">
+                <a href="/view/" class="avatar-initial rounded bg-label-primary" data-bs-toggle="tooltip"
+                    data-bs-offset="0,8" data-bs-placement="top" data-bs-custom-class="tooltip-primary"
+                    title="View Bundle">
+                    <i class="fa-solid fa-eye"></i>
+                </a>
+            </div>
+            {% if "lost" not in request.path %}
+            <div class="avatar me-2">
+                <a href="/edit/" class="avatar-initial rounded bg-label-warning" data-bs-toggle="tooltip"
+                    data-bs-offset="0,8" data-bs-placement="top" data-bs-custom-class="tooltip-warning"
+                    title="Edit Bundle">
+                    <i class="fa-solid fa-pen"></i>
+                </a>
+            </div>
+            {% endif %}
+            <div class="avatar">
+                <a class="avatar-initial rounded bg-label-danger" data-bs-toggle="modal"
+                    data-bs-target="#closeGroupModal">
+                    <i class="fa-solid fa-ban"></i>
+                </a>
+            </div>
+        </div>
+    </td>
+</tr>

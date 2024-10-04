@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="light-style layout-navbar-fixed layout-wide">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <title>{% block title %}{% endblock title %} | BetBay</title>
+    <link rel="icon" type="image/x-icon" href="" />
+    <!-- Core CSS -->
+    <link rel="stylesheet" href="{% static 'css/core.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/theme-default.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/front-page.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/fontawesome.css' %}" />
+    <!-- Page CSS -->
+    <link rel="stylesheet" href="{% static 'css/front-page-landing.css' %}" />
+    <!-- Helpers -->
+    <script src="{% static 'js/helpers.js' %}"></script>
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="{% static 'js/front-config.js' %}"></script>
+</head>
+
+<body>
+    {% include "partials/_navbar.html" %}
+    {% block content %}{% endblock %}
+
+    {% include "partials/_footer.html" %}
+
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="{% static 'js/popper.js' %}"></script>
+    <script src="{% static 'js/bootstrap.js' %}"></script>
+    <!-- Main JS -->
+    <script src="{% static 'js/front-main.js' %}"></script>
+    <!-- Page JS -->
+    <script src="{% static 'js/front-page-landing.js' %}"></script>
+</body>
+
+</html>
