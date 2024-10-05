@@ -3,42 +3,34 @@
 {% block title %}Running Groups{% endblock title %}
 
 {% block content %}
-<div class="container-xxl flex-grow-1 container-p-y">
 
-    {% include 'accounts/administrator/partials/_header_item.html' with head_title="Running Groups" %}
+<h4 class="py-3 mb-1">
+    <span class="text-muted fw-light">Groups /</span> Running Groups
+</h4>
 
-    <div class="row mb-4">
-        <!-- Total Running Groups -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-play-circle" aria_label="Total Running Groups" count="420" title="Running Groups" additional_value="2,000" additional_text="Bundles Sold" %}
+<div class="row mb-4">
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=running_groups label="Running Groups" icon_class="fa-solid fa-check-circle" color_class="success" %}
+</div>
 
-        <!-- Total Stake -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="info" label_color="info" icon_class="fa-solid fa-coins" aria_label="Total Stake" count="₦21,000,000" title="Total Stake" additional_value="₦21,000,000" additional_text="Stake" %}
-
-        <!-- Total Participants -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="primary" label_color="primary" icon_class="fa-solid fa-users" aria_label="Total Participants" count="1,200" title="Total Participants" additional_value="1,200" additional_text="Total Bettors" %}
-
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                {% include 'accounts/administrator/partials/_card_header.html' with card_header="Running Groups List" %}
-                <div class="table-responsive">
-                    <table class="table table-lg">
-                        <thead>
-                            {% include 'accounts/administrator/groups/partials/_table_head.html' %}
-                        </thead>
-                        <tbody>
-                            {% include "accounts/administrator/groups/partials/_group_item.html" with name="Lively Lagos" price="20,000" status_label="success" status="Running" min_returns="100,000" max_returns="150,000" min_bundles="2" max_bundles="5" %}
-                            {% include "accounts/administrator/groups/partials/_group_item.html" with name="Happy Customer" price="25,000" status_label="success" status="Running" min_returns="150,000" max_returns="200,000" min_bundles="3" max_bundles="10" %}
-                            {% include "accounts/administrator/groups/partials/_group_item.html" with name="Crazy Calabash" price="15,000" status_label="success" status="Running" min_returns="50,000" max_returns="70,000" min_bundles="3" max_bundles="5" %}
-                        </tbody>
-                    </table>
-                </div>
-                {% include "accounts/administrator/partials/_pagination.html" %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Running Groups List" %}
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        {% include 'accounts/administrator/groups/partials/_table_head.html' %}
+                    </thead>
+                    <tbody>
+                        {% for group in groups %}
+                        {% include "accounts/administrator/groups/partials/_group_item.html" %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% include "accounts/administrator/partials/_pagination.html" %}
         </div>
     </div>
 </div>
-{% include "accounts/administrator/groups/modals/close_group.html" %}
+
 {% endblock content %}

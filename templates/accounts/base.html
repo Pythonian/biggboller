@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{% static 'css/theme-semi-dark.css' %}" />
     <link rel="stylesheet" href="{% static 'css/demo.css' %}" />
     <link rel="stylesheet" href="{% static 'css/perfect-scrollbar.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/toastr.css' %}" />
     <script src="{% static 'js/helpers.js' %}"></script>
     <script src="{% static 'js/config.js' %}"></script>
 
@@ -24,12 +25,34 @@
 
     <div class="layout-wrapper layout-content-navbar  ">
         <div class="layout-container">
+
             {% include "accounts/partials/_sidebar_menu.html" %}
             <div class="layout-page">
                 {% include "accounts/partials/_nav.html" %}
                 <div class="content-wrapper">
-                    {% block content %}
-                    {% endblock content %}
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                        {% if messages %}
+                        {% for message in messages %}
+                        <div class="position-relative">
+                            <div class="bs-toast toast fade show bg-primary position-absolute top-0 end-0" role="alert"
+                                aria-live="assertive" aria-atomic="true">
+                                <div class="toast-header">
+                                    <i class='fa-solid fa-bullhorn me-2'></i>
+                                    <div class="me-auto fw-medium">BetBay</div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="toast"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="toast-body">
+                                    {{ message }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% block content %}
+                        {% endblock content %}
+                    </div>
+
                     {% include "accounts/partials/_footer.html" %}
                     <div class="content-backdrop fade"></div>
                 </div>
@@ -46,8 +69,15 @@
     <script src="{% static 'js/popper.js' %}"></script>
     <script src="{% static 'js/bootstrap.js' %}"></script>
     <script src="{% static 'js/perfect-scrollbar.js' %}"></script>
+    <script src="{% static 'js/toastr.js' %}"></script>
     <script src="{% static 'js/menu.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+
+    <script>
+        const toastElList = document.querySelectorAll('.toast')
+        const toastList = [...toastElList].map(toastEl => new bootstrap.Toast(toastEl, option))
+    </script>
+
 
 </body>
 

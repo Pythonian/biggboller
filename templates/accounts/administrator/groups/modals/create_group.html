@@ -1,0 +1,44 @@
+<!-- Create Group Modal -->
+<div class="modal fade" id="createGroup" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="." method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa-solid fa-plus me-1"></i> Create New Group
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        {{ form.name.label_tag }}
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                        <div class="text-danger">
+                            {{ form.name.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.description.label_tag }}
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                        <div class="text-danger">
+                            {{ form.description.errors }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-times-circle me-2"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa-solid fa-check-circle me-2"></i> Create
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -29,6 +29,12 @@
             </a>
             <ul class="menu-sub">
                 <li
+                    class="menu-item {% url 'administrator:groups_all' as groups_all_url %}{% if request.get_full_path == groups_all_url %}active{% endif %}">
+                    <a href="{% url 'administrator:groups_all' %}" class="menu-link">
+                        <div class="text-truncate">All Groups</div>
+                    </a>
+                </li>
+                <li
                     class="menu-item {% url 'administrator:groups_running' as groups_running_url %}{% if request.get_full_path == groups_running_url %}active{% endif %}">
                     <a href="{% url 'administrator:groups_running' %}" class="menu-link">
                         <div class="text-truncate">Running Groups</div>
@@ -40,12 +46,6 @@
                         <div class="text-truncate">Closed Groups</div>
                     </a>
                 </li>
-                <li
-                    class="menu-item {% url 'administrator:groups_all' as groups_all_url %}{% if request.get_full_path == groups_all_url %}active{% endif %}">
-                    <a href="{% url 'administrator:groups_all' %}" class="menu-link">
-                        <div class="text-truncate">All Groups</div>
-                    </a>
-                </li>
             </ul>
         </li>
         <li class="menu-item {% if 'bundles' in request.path %}active open{% endif %}">
@@ -54,6 +54,12 @@
                 <div class="text-truncate">Manage Bundles</div>
             </a>
             <ul class="menu-sub">
+                <li
+                    class="menu-item {% url 'administrator:bundles_all' as bundles_all_url %}{% if request.get_full_path == bundles_all_url %}active{% endif %}">
+                    <a href="{% url 'administrator:bundles_all' %}" class="menu-link">
+                        <div class="text-truncate">All Bundles</div>
+                    </a>
+                </li>
                 <li
                     class="menu-item {% url 'administrator:bundles_pending' as bundles_pending_url %}{% if request.get_full_path == bundles_pending_url %}active{% endif %}">
                     <a href="{% url 'administrator:bundles_pending' %}" class="menu-link">
@@ -76,12 +82,6 @@
                     class="menu-item {% url 'administrator:bundles_refunded' as bundles_refunded_url %}{% if request.get_full_path == bundles_refunded_url %}active{% endif %}">
                     <a href="{% url 'administrator:bundles_refunded' %}" class="menu-link">
                         <div class="text-truncate">Refunded Bundles</div>
-                    </a>
-                </li>
-                <li
-                    class="menu-item {% url 'administrator:bundles_all' as bundles_all_url %}{% if request.get_full_path == bundles_all_url %}active{% endif %}">
-                    <a href="{% url 'administrator:bundles_all' %}" class="menu-link">
-                        <div class="text-truncate">All Bundles</div>
                     </a>
                 </li>
             </ul>

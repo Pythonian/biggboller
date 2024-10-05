@@ -1,4 +1,19 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib import messages
+from django.urls import reverse
+from apps.accounts.models import Group
+from apps.accounts.forms import GroupCreateForm, GroupUpdateForm
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+
+
+def is_admin(user):
+    """
+    Check if the user has admin privileges.
+    Adjust this function based on your authentication setup.
+    """
+    return user.is_staff or user.is_superuser
 
 
 def admin_dashboard(request):
@@ -13,29 +28,67 @@ def admin_dashboard(request):
 ##############
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_groups_all(request):
+    """View to list all betting groups."""
+
+    groups = Group.objects.all()
+    running_groups = groups.filter(status=Group.Status.RUNNING).count()
+    closed_groups = groups.filter(status=Group.Status.CLOSED).count()
+
+    if request.method == "POST":
+        form = GroupCreateForm(request.POST)
+        if form.is_valid():
+            group = form.save(commit=False)
+            group.status = Group.Status.RUNNING
+            group.save()
+            messages.success(
+                request, f'Group "{group.name}" has been created successfully.'
+            )
+            return redirect("administrator:groups_all")
+    else:
+        form = GroupCreateForm()
+
     template = "accounts/administrator/groups/all.html"
-    context = {}
+    context = {
+        "groups": groups,
+        "running_groups": running_groups,
+        "closed_groups": closed_groups,
+        "form": form,
+    }
+
+    return render(request, template, context)
+
+
+def admin_groups_running(request):
+    groups = Group.objects.running()
+    running_groups = groups.filter(status=Group.Status.RUNNING).count()
+
+    template = "accounts/administrator/groups/running.html"
+    context = {
+        "groups": groups,
+        "running_groups": running_groups,
+    }
+
+    return render(request, template, context)
+
+
+def admin_groups_closed(request):
+    groups = Group.objects.closed()
+    closed_groups = groups.filter(status=Group.Status.CLOSED).count()
+
+    template = "accounts/administrator/groups/closed.html"
+    context = {
+        "groups": groups,
+        "closed_groups": closed_groups,
+    }
 
     return render(request, template, context)
 
 
 def admin_groups_detail(request, slug):
     template = "accounts/administrator/groups/detail.html"
-    context = {}
-
-    return render(request, template, context)
-
-
-def admin_groups_running(request):
-    template = "accounts/administrator/groups/running.html"
-    context = {}
-
-    return render(request, template, context)
-
-
-def admin_groups_closed(request):
-    template = "accounts/administrator/groups/closed.html"
     context = {}
 
     return render(request, template, context)
