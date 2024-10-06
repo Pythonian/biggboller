@@ -25,11 +25,15 @@
                         {% for group in groups %}
                         {% include "accounts/administrator/groups/partials/_group_item.html" %}
                         {% include "accounts/administrator/groups/modals/update_group.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            {% include "accounts/administrator/partials/_pagination.html" %}
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=groups %}
         </div>
     </div>
 </div>

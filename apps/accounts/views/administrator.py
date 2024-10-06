@@ -1,12 +1,14 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.urls import reverse
 from django.db import transaction
 from apps.accounts.models import Group, Bundle
-from apps.accounts.forms import GroupCreateForm, GroupUpdateForm, BundleCreateForm
-from django.http import JsonResponse
-from django.template.loader import render_to_string
+from apps.accounts.forms import (
+    GroupCreateForm,
+    GroupUpdateForm,
+    BundleCreateForm,
+)
+from apps.core.utils import mk_paginator
 
 
 def is_admin(user):
@@ -18,8 +20,21 @@ def is_admin(user):
 
 
 def admin_dashboard(request):
+    groups = Group.objects.all()
+    total_groups = groups.count()
+    running_groups = groups.filter(status=Group.Status.RUNNING).count()
+
+    bundles = Bundle.objects.all()
+    total_bundles = bundles.count()
+    pending_bundles = bundles.filter(status=Bundle.Status.PENDING).count()
+
     template = "accounts/administrator/dashboard.html"
-    context = {}
+    context = {
+        "total_groups": total_groups,
+        "running_groups": running_groups,
+        "total_bundles": total_bundles,
+        "pending_bundles": pending_bundles,
+    }
 
     return render(request, template, context)
 
@@ -29,12 +44,13 @@ def admin_dashboard(request):
 ##############
 
 
-@login_required
-@user_passes_test(is_admin)
+# @login_required
+# @user_passes_test(is_admin)
 def admin_groups_all(request):
     """View to list all betting groups."""
 
     groups = Group.objects.all()
+    total_groups = groups.count()
     running_groups = groups.filter(status=Group.Status.RUNNING).count()
     closed_groups = groups.filter(status=Group.Status.CLOSED).count()
 
@@ -72,9 +88,12 @@ def admin_groups_all(request):
         group_form = GroupCreateForm(prefix="group")
         bundle_form = BundleCreateForm(prefix="bundle")
 
+    groups = mk_paginator(request, groups, 1)
+
     template = "accounts/administrator/groups/all.html"
     context = {
         "groups": groups,
+        "total_groups": total_groups,
         "running_groups": running_groups,
         "closed_groups": closed_groups,
         "group_form": group_form,
@@ -87,6 +106,7 @@ def admin_groups_all(request):
 def admin_groups_running(request):
     groups = Group.objects.running()
     running_groups = groups.filter(status=Group.Status.RUNNING).count()
+    groups = mk_paginator(request, groups, 1)
 
     form = GroupUpdateForm()
 
@@ -103,6 +123,7 @@ def admin_groups_running(request):
 def admin_groups_closed(request):
     groups = Group.objects.closed()
     closed_groups = groups.filter(status=Group.Status.CLOSED).count()
+    groups = mk_paginator(request, groups, 1)
 
     template = "accounts/administrator/groups/closed.html"
     context = {
@@ -134,13 +155,17 @@ def admin_groups_new(request):
 
 def admin_bundles_all(request):
     bundles = Bundle.objects.all()
+    total_bundles = bundles.count()
     pending_bundles = bundles.filter(status=Bundle.Status.PENDING).count()
     won_bundles = bundles.filter(status=Bundle.Status.WON).count()
     lost_bundles = bundles.filter(status=Bundle.Status.LOST).count()
 
+    bundles = mk_paginator(request, bundles, 1)
+
     template = "accounts/administrator/bundles/all.html"
     context = {
         "bundles": bundles,
+        "total_bundles": total_bundles,
         "pending_bundles": pending_bundles,
         "won_bundles": won_bundles,
         "lost_bundles": lost_bundles,
@@ -152,6 +177,8 @@ def admin_bundles_all(request):
 def admin_bundles_pending(request):
     bundles = Bundle.objects.pending()
     pending_bundles = bundles.filter(status=Bundle.Status.PENDING).count()
+
+    bundles = mk_paginator(request, bundles, 1)
 
     template = "accounts/administrator/bundles/pending.html"
     context = {
@@ -166,6 +193,8 @@ def admin_bundles_won(request):
     bundles = Bundle.objects.won()
     won_bundles = bundles.filter(status=Bundle.Status.WON).count()
 
+    bundles = mk_paginator(request, bundles, 1)
+
     template = "accounts/administrator/bundles/won.html"
     context = {
         "bundles": bundles,
@@ -178,6 +207,8 @@ def admin_bundles_won(request):
 def admin_bundles_lost(request):
     bundles = Bundle.objects.lost()
     lost_bundles = bundles.filter(status=Bundle.Status.LOST).count()
+
+    bundles = mk_paginator(request, bundles, 1)
 
     template = "accounts/administrator/bundles/lost.html"
     context = {

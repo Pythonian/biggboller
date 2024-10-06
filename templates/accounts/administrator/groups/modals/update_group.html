@@ -1,3 +1,4 @@
+{% load widget_tweaks %}
 <div class="modal fade" id="groupModal{{ group.id }}" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -11,23 +12,16 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        {{ form.status.label_tag }}
-                        {{ form.status }}
-                        {% if form.status.errors %}
-                        <div class="text-danger">
-                            {{ form.status.errors }}
+                    <div class="row g-2">
+                        <div class="mb-2 col-12">
+                            {% render_field form.name disabled=disabled %}
                         </div>
-                        {% endif %}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.description.label_tag }}
-                        {{ form.description }}
-                        {% if form.description.errors %}
-                        <div class="text-danger">
-                            {{ form.description.errors }}
+                        <div class="mb-2 col-12">
+                            {% render_field form.description %}
                         </div>
-                        {% endif %}
+                        <div class="mb-2 col-12">
+                            {% render_field form.status %}
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

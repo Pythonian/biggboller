@@ -67,13 +67,13 @@
                             <i class="fa-solid fa-object-group"></i>
                         </span>
                     </div>
-                    <h4 class="ms-1 mb-0">500</h4>
+                    <h4 class="ms-1 mb-0">{{ total_groups }}</h4>
                 </div>
                 <p class="mb-1"><a href="{% url 'administrator:groups_all' %}" class="stretched-link">Total
-                        Groups</a></p>
+                        Group{{ total_groups|pluralize }}</a></p>
                 <p class="mb-0">
-                    <span class="fw-medium me-1">30</span>
-                    <small class="text-muted">Running groups</small>
+                    <span class="fw-medium me-1">{{ running_groups }}</span>
+                    <small class="text-muted">Running group{{ running_groups|pluralize }}</small>
                 </p>
             </div>
         </div>
@@ -87,14 +87,14 @@
                             <i class="fa-solid fa-layer-group"></i>
                         </span>
                     </div>
-                    <h4 class="ms-1 mb-0">420</h4>
+                    <h4 class="ms-1 mb-0">{{ total_bundles }}</h4>
                 </div>
                 <p class="mb-1"><a href="{% url 'administrator:bundles_all' %}"
                         class="stretched-link text-success">Total
-                        Bundles</a></p>
+                        Bundle{{ total_bundles|pluralize }}</a></p>
                 <p class="mb-0">
-                    <span class="fw-medium me-1">10</span>
-                    <small class="text-muted">Pending bundles</small>
+                    <span class="fw-medium me-1">{{ pending_bundles }}</span>
+                    <small class="text-muted">Pending bundle{{ pending_bundles|pluralize }}</small>
                 </p>
             </div>
         </div>

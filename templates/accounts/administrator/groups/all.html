@@ -12,7 +12,7 @@
 </div>
 
 <div class="row mb-4">
-    {% include 'accounts/administrator/partials/_stats_card.html' with count=groups.count label="Total Groups" icon_class="fa-solid fa-users" color_class="primary" %}
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=total_groups label="Total Groups" icon_class="fa-solid fa-users" color_class="primary" %}
 
     {% include 'accounts/administrator/partials/_stats_card.html' with count=running_groups label="Running Groups" icon_class="fa-solid fa-check-circle" color_class="success" %}
 
@@ -31,11 +31,16 @@
                     <tbody>
                         {% for group in groups %}
                         {% include "accounts/administrator/groups/partials/_group_item.html" %}
+                        {% include "accounts/administrator/groups/modals/update_group.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            {% include "accounts/administrator/partials/_pagination.html" %}
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=groups %}
         </div>
     </div>
 </div>

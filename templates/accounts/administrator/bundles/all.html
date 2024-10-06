@@ -9,7 +9,7 @@
 </div>
 
 <div class="row mb-4">
-    {% include 'accounts/administrator/partials/_stats_card.html' with count=bundles.count label="Total Bundles" icon_class="fa-solid fa-layer-group" color_class="primary" %}
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=total_bundles label="Total Bundles" icon_class="fa-solid fa-layer-group" color_class="primary" %}
 
     {% include 'accounts/administrator/partials/_stats_card.html' with count=pending_bundles label="Pending Bundles" icon_class="fa-solid fa-hourglass-half" color_class="info" %}
 
@@ -31,11 +31,15 @@
                     <tbody>
                         {% for bundle in bundles %}
                         {% include "accounts/administrator/bundles/partials/_bundle_item.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            {% include "accounts/administrator/partials/_pagination.html" %}
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=bundles %}
         </div>
     </div>
 </div>

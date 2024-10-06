@@ -25,11 +25,15 @@
                     <tbody>
                         {% for bundle in bundles %}
                         {% include "accounts/administrator/bundles/partials/_bundle_item.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            {% include "accounts/administrator/partials/_pagination.html" %}
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=bundles %}
         </div>
     </div>
 </div>

@@ -1,9 +1,8 @@
 {% load humanize %}
 <tr>
     <td>{{ group.name }}</td>
-    <td>{% if group.bundle %}{{ group.bundle.name }}{% else %}-{% endif %}</td>
-    <td>{% if group.bundle %}₦{{ group.bundle.price|intcomma }}{% else %}-{% endif %}</td>
-    <td>{{ group.created_at|date:"F j, Y" }}</td>
+    <td>{{ group.description|truncatechars:70 }}</td>
+    <td>{{ group.updated_at|date:"F j, Y" }}</td>
     <td><span
             class="badge rounded bg-label-{% if group.status == group.Status.RUNNING %}success{% else %}danger{% endif %}">{{ group.get_status_display }}</span>
     </td>

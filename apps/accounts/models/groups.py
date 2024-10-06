@@ -37,6 +37,7 @@ class Group(models.Model):
     )
     description = models.TextField(
         verbose_name=_("Description"),
+        max_length=140,
         help_text=_("Provide a detailed description of the betting group."),
     )
     status = models.CharField(
