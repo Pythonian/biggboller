@@ -3,45 +3,39 @@
 {% block title %}Won Bundles{% endblock title %}
 
 {% block content %}
-<div class="container-xxl flex-grow-1 container-p-y">
 
-    {% include 'accounts/administrator/partials/_header_item.html' with head_title="Won Bundles" %}
+<h4 class="py-3">
+    <span class="text-muted fw-light">Bundles /</span> Won Bundles
+</h4>
 
-    <div class="row mb-4">
-        <!-- Total Bundles -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="primary" label_color="primary" icon_class="fa-solid fa-layer-group" aria_label="Total Bundles" count="500" title="Total Bundles" additional_value="100" additional_text="Sold Today" %}
+<div class="row mb-4">
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=won_bundles label="Won Bundles" icon_class="fa-solid fa-trophy" color_class="success" %}
+</div>
 
-        <!-- Total Pending Bundles -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="info" label_color="info" icon_class="fa-solid fa-hourglass-half" aria_label="Total Pending Bundles" count="420" title="Total Pending Bundles" additional_value="420" additional_text="Bundles Active" %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Won Bundles List" %}
 
-        <!-- Total Won Bundles -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-trophy" aria_label="Total Won Bundles" count="200" title="Total Won Bundles" additional_value="10" additional_text="Wins Today" %}
-
-        <!-- Total Lost Bundles -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-sack-xmark" aria_label="Total Lost Bundles" count="12" title="Total Lost Bundles" additional_value="0" additional_text="Losses Today" %}
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                {% include 'accounts/administrator/partials/_card_header.html' with card_header="Won Bundles List" %}
-
-                <!-- Table -->
-                <div class="table-responsive">
-                    <table class="table table-lg">
-                        <thead>
-                            {% include 'accounts/administrator/bundles/partials/_table_head.html' %}
-                        </thead>
-                        <tbody>
-                            {% include "accounts/administrator/bundles/partials/_bundle_item.html" with name="Egypt Writing" group="African States" price="12,000" min_returns="25,000" max_returns="35,000" participants="34" status_label="success" status="Won" %}
-                            {% include "accounts/administrator/bundles/partials/_bundle_item.html" with name="Senegal Safari" group="Cultural Heritage" price="100,000" min_returns="150,000" max_returns="200,000" participants="134" status_label="success" status="Won" %}
-                            {% include "accounts/administrator/bundles/partials/_bundle_item.html" with name="Algeria Habibi" group="Wild Dragon" price="60,000" min_returns="120,000" max_returns="135,000" participants="12" status_label="success" status="Won" %}
-                        </tbody>
-                    </table>
-                </div>
-                {% include "accounts/administrator/partials/_pagination.html" %}
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        {% include 'accounts/administrator/bundles/partials/_table_head.html' %}
+                    </thead>
+                    <tbody>
+                        {% for bundle in bundles %}
+                        {% include "accounts/administrator/bundles/partials/_bundle_item.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% include "accounts/administrator/partials/_pagination.html" %}
         </div>
     </div>
 </div>
+
 {% endblock content %}

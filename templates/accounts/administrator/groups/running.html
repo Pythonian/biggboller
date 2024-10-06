@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h4 class="py-3 mb-1">
+<h4 class="py-3">
     <span class="text-muted fw-light">Groups /</span> Running Groups
 </h4>
 
@@ -24,6 +24,7 @@
                     <tbody>
                         {% for group in groups %}
                         {% include "accounts/administrator/groups/partials/_group_item.html" %}
+                        {% include "accounts/administrator/groups/modals/update_group.html" %}
                         {% endfor %}
                     </tbody>
                 </table>

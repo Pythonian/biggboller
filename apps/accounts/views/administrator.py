@@ -2,8 +2,9 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.urls import reverse
-from apps.accounts.models import Group
-from apps.accounts.forms import GroupCreateForm, GroupUpdateForm
+from django.db import transaction
+from apps.accounts.models import Group, Bundle
+from apps.accounts.forms import GroupCreateForm, GroupUpdateForm, BundleCreateForm
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 
@@ -38,24 +39,46 @@ def admin_groups_all(request):
     closed_groups = groups.filter(status=Group.Status.CLOSED).count()
 
     if request.method == "POST":
-        form = GroupCreateForm(request.POST)
-        if form.is_valid():
-            group = form.save(commit=False)
-            group.status = Group.Status.RUNNING
-            group.save()
-            messages.success(
-                request, f'Group "{group.name}" has been created successfully.'
-            )
-            return redirect("administrator:groups_all")
+        group_form = GroupCreateForm(request.POST, prefix="group")
+        bundle_form = BundleCreateForm(request.POST, prefix="bundle")
+
+        if group_form.is_valid() and bundle_form.is_valid():
+            try:
+                with transaction.atomic():
+                    # Save Group
+                    group = group_form.save(commit=False)
+                    group.status = Group.Status.RUNNING
+                    group.save()
+
+                    # Save Bundle
+                    bundle = bundle_form.save(commit=False)
+                    bundle.group = group
+                    bundle.status = Bundle.Status.PENDING
+                    bundle.save()
+
+                messages.success(
+                    request,
+                    f'Group "{group.name}" and its Bundle "{bundle.name}" have been created successfully.',
+                )
+                return redirect("administrator:groups_all")
+            except Exception as e:
+                messages.error(
+                    request,
+                    f"An error occurred while creating the Group and Bundle: {str(e)}",
+                )
+        else:
+            messages.error(request, "Please correct the errors below.")
     else:
-        form = GroupCreateForm()
+        group_form = GroupCreateForm(prefix="group")
+        bundle_form = BundleCreateForm(prefix="bundle")
 
     template = "accounts/administrator/groups/all.html"
     context = {
         "groups": groups,
         "running_groups": running_groups,
         "closed_groups": closed_groups,
-        "form": form,
+        "group_form": group_form,
+        "bundle_form": bundle_form,
     }
 
     return render(request, template, context)
@@ -65,10 +88,13 @@ def admin_groups_running(request):
     groups = Group.objects.running()
     running_groups = groups.filter(status=Group.Status.RUNNING).count()
 
+    form = GroupUpdateForm()
+
     template = "accounts/administrator/groups/running.html"
     context = {
         "groups": groups,
         "running_groups": running_groups,
+        "form": form,
     }
 
     return render(request, template, context)
@@ -106,37 +132,58 @@ def admin_groups_new(request):
 ##############
 
 
+def admin_bundles_all(request):
+    bundles = Bundle.objects.all()
+    pending_bundles = bundles.filter(status=Bundle.Status.PENDING).count()
+    won_bundles = bundles.filter(status=Bundle.Status.WON).count()
+    lost_bundles = bundles.filter(status=Bundle.Status.LOST).count()
+
+    template = "accounts/administrator/bundles/all.html"
+    context = {
+        "bundles": bundles,
+        "pending_bundles": pending_bundles,
+        "won_bundles": won_bundles,
+        "lost_bundles": lost_bundles,
+    }
+
+    return render(request, template, context)
+
+
 def admin_bundles_pending(request):
+    bundles = Bundle.objects.pending()
+    pending_bundles = bundles.filter(status=Bundle.Status.PENDING).count()
+
     template = "accounts/administrator/bundles/pending.html"
-    context = {}
+    context = {
+        "bundles": bundles,
+        "pending_bundles": pending_bundles,
+    }
 
     return render(request, template, context)
 
 
 def admin_bundles_won(request):
+    bundles = Bundle.objects.won()
+    won_bundles = bundles.filter(status=Bundle.Status.WON).count()
+
     template = "accounts/administrator/bundles/won.html"
-    context = {}
+    context = {
+        "bundles": bundles,
+        "won_bundles": won_bundles,
+    }
 
     return render(request, template, context)
 
 
 def admin_bundles_lost(request):
+    bundles = Bundle.objects.lost()
+    lost_bundles = bundles.filter(status=Bundle.Status.LOST).count()
+
     template = "accounts/administrator/bundles/lost.html"
-    context = {}
-
-    return render(request, template, context)
-
-
-def admin_bundles_refunded(request):
-    template = "accounts/administrator/bundles/refunded.html"
-    context = {}
-
-    return render(request, template, context)
-
-
-def admin_bundles_all(request):
-    template = "accounts/administrator/bundles/all.html"
-    context = {}
+    context = {
+        "bundles": bundles,
+        "lost_bundles": lost_bundles,
+    }
 
     return render(request, template, context)
 

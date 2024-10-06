@@ -1,11 +1,13 @@
+{% load humanize %}
 <tr>
-    <td>{{ name }}</td>
-    <td>{{ group }}</td>
-    <td>₦{{ price }}</td>
-    <td>₦{{ min_returns }} - ₦{{ max_returns }}</td>
-    <td>{{ participants }}</td>
+    <td>{{ bundle.name }}</td>
+    <td>{{ bundle.group.name }}</td>
+    <td>₦{{ bundle.price|intcomma }}</td>
+    <td>₦{{ bundle.potential_min_win|intcomma }} - ₦{{ bundle.potential_max_win|intcomma }}</td>
+    <td>{{ bundle.participants|default:0 }}</td>
     <td>
-        <span class="badge rounded bg-label-{{ status_label }}">{{ status }}</span>
+        <span
+            class="badge rounded bg-label-{% if bundle.status == bundle.Status.PENDING %}info{% elif bundle.status == bundle.status.WON %}success{% else %}danger{% endif %}">{{ bundle.get_status_display }}</span>
     </td>
     <td>
         <div class="d-flex">

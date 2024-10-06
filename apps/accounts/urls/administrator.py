@@ -9,7 +9,6 @@ from apps.accounts.views import (
     admin_groups_new,
     admin_bundles_pending,
     admin_bundles_all,
-    admin_bundles_refunded,
     admin_bundles_lost,
     admin_bundles_won,
     admin_users_active,
@@ -200,11 +199,6 @@ urlpatterns = [
                     "pending/",
                     admin_bundles_pending,
                     name="bundles_pending",
-                ),
-                path(
-                    "refunded/",
-                    admin_bundles_refunded,
-                    name="bundles_refunded",
                 ),
                 path(
                     "lost/",

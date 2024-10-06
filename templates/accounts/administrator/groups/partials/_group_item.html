@@ -1,7 +1,8 @@
+{% load humanize %}
 <tr>
     <td>{{ group.name }}</td>
     <td>{% if group.bundle %}{{ group.bundle.name }}{% else %}-{% endif %}</td>
-    <td>{% if group.bundle %}₦{{ group.bundle.price }}{% else %}-{% endif %}</td>
+    <td>{% if group.bundle %}₦{{ group.bundle.price|intcomma }}{% else %}-{% endif %}</td>
     <td>{{ group.created_at|date:"F j, Y" }}</td>
     <td><span
             class="badge rounded bg-label-{% if group.status == group.Status.RUNNING %}success{% else %}danger{% endif %}">{{ group.get_status_display }}</span>
@@ -9,9 +10,8 @@
     <td>
         <div class="d-flex">
             <div class="avatar me-2">
-                <a href="{% url 'administrator:groups_detail' 'python' %}"
-                    class="avatar-initial rounded bg-label-primary" data-bs-toggle="tooltip" data-bs-offset="0,8"
-                    data-bs-placement="top" data-bs-custom-class="tooltip-primary" title="View Group">
+                <a href="#" class="avatar-initial rounded bg-label-primary" data-bs-toggle="modal"
+                    data-bs-target="#groupModal{{ group.id }}">
                     <i class="fa-solid fa-eye"></i>
                 </a>
             </div>

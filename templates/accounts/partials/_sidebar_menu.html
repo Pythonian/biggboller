@@ -78,12 +78,6 @@
                         <div class="text-truncate">Lost Bundles</div>
                     </a>
                 </li>
-                <li
-                    class="menu-item {% url 'administrator:bundles_refunded' as bundles_refunded_url %}{% if request.get_full_path == bundles_refunded_url %}active{% endif %}">
-                    <a href="{% url 'administrator:bundles_refunded' %}" class="menu-link">
-                        <div class="text-truncate">Refunded Bundles</div>
-                    </a>
-                </li>
             </ul>
         </li>
         <li class="menu-item {% if 'users' in request.path %}active open{% endif %}">
