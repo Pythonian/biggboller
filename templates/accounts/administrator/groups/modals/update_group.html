@@ -1,9 +1,8 @@
 {% load widget_tweaks %}
-<div class="modal fade" id="groupModal{{ group.id }}" tabindex="-1">
+<div class="modal fade" id="updateGroup" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form id="groupForm{{ group.id }}" action="{# url 'administrator:group_detail_update' group.id #}"
-                method="post">
+            <form action="" method="post">
                 {% csrf_token %}
                 <div class="modal-header">
                     <h5 class="modal-title">
@@ -14,13 +13,41 @@
                 <div class="modal-body">
                     <div class="row g-2">
                         <div class="mb-2 col-12">
-                            {% render_field form.name disabled=disabled %}
-                        </div>
-                        <div class="mb-2 col-12">
                             {% render_field form.description %}
                         </div>
                         <div class="mb-2 col-12">
-                            {% render_field form.status %}
+                            <div class="row">
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <div class="form-check custom-option custom-option-icon">
+                                            <label class="form-check-label custom-option-content" for="runningStatus">
+                                                <span class="custom-option-body">
+                                                    <i class="fa-solid fa-play mb-2"></i>
+                                                    <span class="custom-option-title">Running</span>
+                                                </span>
+                                                <input name="status" class="form-check-input" type="radio" value="A"
+                                                    id="runningStatus"
+                                                    {% if form.status.value == 'A' %}checked{% endif %} />
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col">
+                                    <div class="mb-3">
+                                        <div class="form-check custom-option custom-option-icon">
+                                            <label class="form-check-label custom-option-content" for="closedStatus">
+                                                <span class="custom-option-body">
+                                                    <i class="fa-solid fa-stop mb-2"></i>
+                                                    <span class="custom-option-title">Closed</span>
+                                                </span>
+                                                <input name="status" class="form-check-input" type="radio" value="C"
+                                                    id="closedStatus"
+                                                    {% if form.status.value == 'C' %}checked{% endif %} />
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -28,7 +55,7 @@
                     <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
                         <i class="fa-solid fa-times-circle me-2"></i> Cancel
                     </button>
-                    <button type="submit" class="btn btn-success" id="updateBtn{{ group.id }}" disabled>
+                    <button type="submit" class="btn btn-success">
                         <i class="fa-solid fa-check-circle me-2"></i> Update
                     </button>
                 </div>

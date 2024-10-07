@@ -122,7 +122,6 @@ class GroupUpdateForm(forms.ModelForm):
                     "rows": 4,
                 }
             ),
-            "status": forms.Select(attrs={"class": "form-select"}),
         }
         labels = {
             "description": _("Description"),

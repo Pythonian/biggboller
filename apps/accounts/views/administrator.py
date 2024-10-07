@@ -10,6 +10,8 @@ from apps.accounts.forms import (
 )
 from apps.core.utils import mk_paginator
 
+PAGINATION_COUNT = 20
+
 
 def is_admin(user):
     """
@@ -88,7 +90,7 @@ def admin_groups_all(request):
         group_form = GroupCreateForm(prefix="group")
         bundle_form = BundleCreateForm(prefix="bundle")
 
-    groups = mk_paginator(request, groups, 1)
+    groups = mk_paginator(request, groups, PAGINATION_COUNT)
 
     template = "accounts/administrator/groups/all.html"
     context = {
@@ -106,15 +108,12 @@ def admin_groups_all(request):
 def admin_groups_running(request):
     groups = Group.objects.running()
     running_groups = groups.filter(status=Group.Status.RUNNING).count()
-    groups = mk_paginator(request, groups, 1)
-
-    form = GroupUpdateForm()
+    groups = mk_paginator(request, groups, PAGINATION_COUNT)
 
     template = "accounts/administrator/groups/running.html"
     context = {
         "groups": groups,
         "running_groups": running_groups,
-        "form": form,
     }
 
     return render(request, template, context)
@@ -123,7 +122,7 @@ def admin_groups_running(request):
 def admin_groups_closed(request):
     groups = Group.objects.closed()
     closed_groups = groups.filter(status=Group.Status.CLOSED).count()
-    groups = mk_paginator(request, groups, 1)
+    groups = mk_paginator(request, groups, PAGINATION_COUNT)
 
     template = "accounts/administrator/groups/closed.html"
     context = {
@@ -134,9 +133,26 @@ def admin_groups_closed(request):
     return render(request, template, context)
 
 
-def admin_groups_detail(request, slug):
+def admin_groups_detail(request, id):
+    group = get_object_or_404(Group, id=id)
+
+    if request.method == "POST":
+        form = GroupUpdateForm(request.POST, instance=group)
+        if form.is_valid():
+            form.save()
+            messages.success(
+                request,
+                "This group has been updated successfully.",
+            )
+            return redirect(group)
+    else:
+        form = GroupUpdateForm(instance=group)
+
     template = "accounts/administrator/groups/detail.html"
-    context = {}
+    context = {
+        "group": group,
+        "form": form,
+    }
 
     return render(request, template, context)
 
@@ -160,7 +176,7 @@ def admin_bundles_all(request):
     won_bundles = bundles.filter(status=Bundle.Status.WON).count()
     lost_bundles = bundles.filter(status=Bundle.Status.LOST).count()
 
-    bundles = mk_paginator(request, bundles, 1)
+    bundles = mk_paginator(request, bundles, PAGINATION_COUNT)
 
     template = "accounts/administrator/bundles/all.html"
     context = {
@@ -178,7 +194,7 @@ def admin_bundles_pending(request):
     bundles = Bundle.objects.pending()
     pending_bundles = bundles.filter(status=Bundle.Status.PENDING).count()
 
-    bundles = mk_paginator(request, bundles, 1)
+    bundles = mk_paginator(request, bundles, PAGINATION_COUNT)
 
     template = "accounts/administrator/bundles/pending.html"
     context = {
@@ -193,7 +209,7 @@ def admin_bundles_won(request):
     bundles = Bundle.objects.won()
     won_bundles = bundles.filter(status=Bundle.Status.WON).count()
 
-    bundles = mk_paginator(request, bundles, 1)
+    bundles = mk_paginator(request, bundles, PAGINATION_COUNT)
 
     template = "accounts/administrator/bundles/won.html"
     context = {
@@ -208,7 +224,7 @@ def admin_bundles_lost(request):
     bundles = Bundle.objects.lost()
     lost_bundles = bundles.filter(status=Bundle.Status.LOST).count()
 
-    bundles = mk_paginator(request, bundles, 1)
+    bundles = mk_paginator(request, bundles, PAGINATION_COUNT)
 
     template = "accounts/administrator/bundles/lost.html"
     context = {

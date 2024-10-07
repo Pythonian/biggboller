@@ -180,7 +180,7 @@ urlpatterns = [
                     name="groups_new",
                 ),
                 path(
-                    "<str:slug>/",
+                    "<uuid:id>/",
                     admin_groups_detail,
                     name="groups_detail",
                 ),

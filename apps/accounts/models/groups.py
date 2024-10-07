@@ -74,6 +74,9 @@ class Group(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("administrator:groups_detail", args=[self.id])
+
 
 class BundleManager(models.Manager):
     def pending(self):

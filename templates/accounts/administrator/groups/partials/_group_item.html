@@ -9,8 +9,9 @@
     <td>
         <div class="d-flex">
             <div class="avatar me-2">
-                <a href="#" class="avatar-initial rounded bg-label-primary" data-bs-toggle="modal"
-                    data-bs-target="#groupModal{{ group.id }}">
+                <a href="{{ group.get_absolute_url }}" class="avatar-initial rounded bg-label-primary"
+                    data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="top"
+                    data-bs-custom-class="tooltip-primary" title="View Group">
                     <i class="fa-solid fa-eye"></i>
                 </a>
             </div>
