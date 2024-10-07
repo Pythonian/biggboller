@@ -2,35 +2,21 @@
 <tr>
     <td>{{ bundle.name }}</td>
     <td>{{ bundle.group.name }}</td>
-    <td>₦{{ bundle.price|intcomma }}</td>
-    <td>₦{{ bundle.potential_min_win|intcomma }} - ₦{{ bundle.potential_max_win|intcomma }}</td>
+    <td>₦{{ bundle.price|floatformat:0|intcomma }}</td>
+    <td>₦{{ bundle.potential_min_win|floatformat:0|intcomma }} - ₦{{ bundle.potential_max_win|floatformat:0|intcomma }}
+    </td>
     <td>{{ bundle.participants|default:0 }}</td>
     <td>
         <span
-            class="badge rounded bg-label-{% if bundle.status == bundle.Status.PENDING %}info{% elif bundle.status == bundle.status.WON %}success{% else %}danger{% endif %}">{{ bundle.get_status_display }}</span>
+            class="badge rounded bg-label-{% if bundle.status == bundle.Status.PENDING %}info{% elif bundle.status == bundle.Status.WON %}success{% else %}danger{% endif %}">{{ bundle.get_status_display }}</span>
     </td>
     <td>
         <div class="d-flex">
             <div class="avatar me-2">
-                <a href="/view/" class="avatar-initial rounded bg-label-primary" data-bs-toggle="tooltip"
-                    data-bs-offset="0,8" data-bs-placement="top" data-bs-custom-class="tooltip-primary"
-                    title="View Bundle">
+                <a href="{{ bundle.get_absolute_url }}" class="avatar-initial rounded bg-label-primary"
+                    data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="top"
+                    data-bs-custom-class="tooltip-primary" title="View Bundle">
                     <i class="fa-solid fa-eye"></i>
-                </a>
-            </div>
-            {% if "lost" not in request.path %}
-            <div class="avatar me-2">
-                <a href="/edit/" class="avatar-initial rounded bg-label-warning" data-bs-toggle="tooltip"
-                    data-bs-offset="0,8" data-bs-placement="top" data-bs-custom-class="tooltip-warning"
-                    title="Edit Bundle">
-                    <i class="fa-solid fa-pen"></i>
-                </a>
-            </div>
-            {% endif %}
-            <div class="avatar">
-                <a class="avatar-initial rounded bg-label-danger" data-bs-toggle="modal"
-                    data-bs-target="#closeGroupModal">
-                    <i class="fa-solid fa-ban"></i>
                 </a>
             </div>
         </div>

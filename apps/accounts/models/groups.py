@@ -1,9 +1,10 @@
 import uuid
 
-from django.db import models
-from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
+from django.db import models
+from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 
 
 class GroupManager(models.Manager):
@@ -98,7 +99,6 @@ class Bundle(models.Model):
         PENDING = "P", _("Pending")
         WON = "W", _("Won")
         LOST = "L", _("Lost")
-        REFUNDED = "R", _("Refunded")
 
     id = models.UUIDField(
         primary_key=True,
@@ -175,6 +175,9 @@ class Bundle(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("administrator:bundles_detail", args=[self.id])
 
     def clean(self):
         if self.maximum_win_multiplier <= self.minimum_win_multiplier:

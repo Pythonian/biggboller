@@ -11,6 +11,7 @@ from apps.accounts.views import (
     admin_bundles_all,
     admin_bundles_lost,
     admin_bundles_won,
+    admin_bundles_detail,
     admin_users_active,
     admin_users_all,
     admin_users_banned,
@@ -209,6 +210,11 @@ urlpatterns = [
                     "won/",
                     admin_bundles_won,
                     name="bundles_won",
+                ),
+                path(
+                    "<uuid:id>/",
+                    admin_bundles_detail,
+                    name="bundles_detail",
                 ),
                 path(
                     "",

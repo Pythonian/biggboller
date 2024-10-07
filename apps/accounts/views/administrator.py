@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db import transaction
@@ -214,6 +214,27 @@ def admin_bundles_lost(request):
     context = {
         "bundles": bundles,
         "lost_bundles": lost_bundles,
+    }
+
+    return render(request, template, context)
+
+
+def admin_bundles_detail(request, id):
+    bundle = get_object_or_404(Bundle, id=id)
+
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+        if new_status in dict(Bundle.Status.choices):
+            bundle.status = new_status
+            bundle.save()
+            messages.success(request, "Bundle status updated successfully.")
+            return redirect(bundle)
+        else:
+            messages.error(request, "Invalid status selected.")
+
+    template = "accounts/administrator/bundles/detail.html"
+    context = {
+        "bundle": bundle,
     }
 
     return render(request, template, context)
