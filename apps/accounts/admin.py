@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.accounts.models import Bundle, Group, Ticket, Reply
+from apps.accounts.models import Bundle, Group, Ticket, Reply, Profile
 
 
 @admin.register(Group)
@@ -33,3 +33,13 @@ class TicketReplyAdmin(admin.StackedInline):
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
     inlines = [TicketReplyAdmin]
+
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = [
+        "user__username",
+        "user__first_name",
+        "user__last_name",
+        "email_confirmed",
+    ]

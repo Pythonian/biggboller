@@ -69,7 +69,8 @@
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                        <span class="avatar-initial rounded-circle bg-label-danger">A</span>
+                        <span
+                            class="avatar-initial rounded-circle bg-label-danger">{% if request.user.is_bettor %}{{ request.user.profile.get_screen_name }}{% else %}A{% endif %}</span>
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -78,12 +79,16 @@
                             <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar avatar-online">
-                                        <span class="avatar-initial rounded-circle bg-label-danger">JD</span>
+                                        <span class="avatar-initial rounded-circle bg-label-danger">
+                                            {% if request.user.profile.email_confirmed %}{{ request.user.profile.get_screen_name|make_list|first|title }}{% else %}A{% endif %}
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <span class="fw-medium d-block">John Doe</span>
-                                    <small class="text-muted">Admin</small>
+                                    <span
+                                        class="fw-medium d-block">{% if request.user.profile.email_confirmed %}{{ request.user.profile.get_screen_name }}{% else %}Administrator{% endif %}</span>
+                                    <small
+                                        class="text-muted">{% if request.user.profile.email_confirmed %}Bettor{% else %}Admin{% endif %}</small>
                                 </div>
                             </div>
                         </a>
@@ -116,10 +121,13 @@
                         <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="">
-                            <i class="fas fa-power-off me-2"></i>
-                            <span class="align-middle">Log Out</span>
-                        </a>
+                        <form method="post" action="{% url 'auth:logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="dropdown-item">
+                                <i class="fas fa-power-off me-2"></i>
+                                <span class="align-middle">Log Out</span>
+                            </button>
+                        </form>
                     </li>
                 </ul>
             </li>

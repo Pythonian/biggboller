@@ -14,7 +14,7 @@
                         <h4 class="mb-2 text-center">Welcome to BetBay! 👋</h4>
                         <p class="mb-4">Please sign-in to your account and start the adventure</p>
                         {% if form.errors %}
-                        <p>
+                        <p class="text-danger">
                             Your username and password didn't match.
                             Please try again.
                         </p>
@@ -50,7 +50,7 @@
 
                         <p class="text-center">
                             <span>New on our platform?</span>
-                            <a href="">
+                            <a href="{% url 'auth:register' %}">
                                 <span>Create an account</span>
                             </a>
                         </p>
