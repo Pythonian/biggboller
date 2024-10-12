@@ -17,6 +17,13 @@ urlpatterns = [
         ),
     ),
     path(
+        "auth/",
+        include(
+            "apps.accounts.urls.auth",
+            namespace="auth",
+        ),
+    ),
+    path(
         "bettor/",
         include(
             "apps.accounts.urls.bettor",

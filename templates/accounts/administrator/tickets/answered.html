@@ -3,33 +3,36 @@
 {% block title %}Answered Tickets{% endblock title %}
 
 {% block content %}
-<div class="container-xxl flex-grow-1 container-p-y">
 
-    {% include 'accounts/administrator/partials/_header_item.html' with head_title="Answered Tickets" %}
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="Answered Tickets" %}
 
-    <div class="row mb-4">
-        <!-- Answered Tickets -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" aria_label="Answered Tickets" count="10" title="Answered Tickets" additional_value="2" additional_text="Recently answered" %}
-    </div>
+<div class="row mb-4">
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=answered_tickets label="Answered Tickets" icon_class="fa-solid fa-check" color_class="success" %}
+</div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                {% include 'accounts/administrator/partials/_card_header.html' with card_header="Answered Tickets List" %}
-                <div class="table-responsive">
-                    <table class="table table-lg">
-                        <thead>
-                            {% include 'accounts/administrator/tickets/partials/_table_head.html' %}
-                        </thead>
-                        <tbody>
-                            {% include "accounts/administrator/tickets/partials/_ticket_item.html" with id="#48BC13" user="Valar Moghulis" status_label="success" status="Answered" subject="I am unable to withdraw my winnings" created="15th Sep, 2024" %}
-                        </tbody>
-                    </table>
-                </div>
-                {% include "accounts/administrator/partials/_pagination.html" %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Answered Tickets List" %}
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        {% include 'accounts/administrator/tickets/partials/_table_head.html' %}
+                    </thead>
+                    <tbody>
+                        {% for ticket in tickets %}
+                        {% include "accounts/administrator/tickets/partials/_ticket_item.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=tickets %}
         </div>
     </div>
 </div>
-{% include "accounts/administrator/tickets/modals/close_ticket.html" %}
+
 {% endblock content %}

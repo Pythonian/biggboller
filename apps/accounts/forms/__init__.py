@@ -3,9 +3,14 @@ from apps.accounts.forms.groups import (
     GroupCreateForm,
     GroupUpdateForm,
 )
+from apps.accounts.forms.tickets import TicketCreateForm, TicketReplyForm
+from apps.accounts.forms.auth import UserRegistrationForm
 
 __all__ = [
     "BundleCreateForm",
     "GroupCreateForm",
     "GroupUpdateForm",
+    "TicketCreateForm",
+    "TicketReplyForm",
+    "UserRegistrationForm",
 ]

@@ -1,24 +1,19 @@
 <tr>
-    <td>{{ id }}</td>
-    <td>{{ user }}</td>
-    <td>{{ subject }}</td>
-    <td>{{ created }}</td>
+    <td>#{{ ticket.ticket_id }}</td>
+    <td>{{ ticket.user }}</td>
+    <td>{{ ticket.subject }}</td>
+    <td>{{ ticket.created|date:"M j, Y" }}</td>
     <td>
-        <span class="badge rounded bg-label-{{ status_label }}">{{ status }}</span>
+        <span
+            class="badge rounded bg-label-{% if ticket.status == ticket.Status.PENDING %}info{% elif ticket.status == ticket.Status.ANSWERED %}success{% else %}danger{% endif %}">{{ ticket.get_status_display }}</span>
     </td>
     <td>
         <div class="d-flex">
             <div class="avatar me-2">
-                <a href="/view/" class="avatar-initial rounded bg-label-primary" data-bs-toggle="tooltip"
-                    data-bs-offset="0,8" data-bs-placement="top" data-bs-custom-class="tooltip-primary"
-                    title="View Ticket">
+                <a href="{{ ticket.get_absolute_url }}" class="avatar-initial rounded bg-label-primary"
+                    data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="top"
+                    data-bs-custom-class="tooltip-primary" title="View Ticket">
                     <i class="fa-solid fa-eye"></i>
-                </a>
-            </div>
-            <div class="avatar">
-                <a class="avatar-initial rounded bg-label-danger" data-bs-toggle="modal"
-                    data-bs-target="#closeTicketModal">
-                    <i class="fa-solid fa-ban"></i>
                 </a>
             </div>
         </div>

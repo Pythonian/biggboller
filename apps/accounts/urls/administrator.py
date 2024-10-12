@@ -21,6 +21,7 @@ from apps.accounts.views import (
     admin_users_unverified,
     admin_tickets_closed,
     admin_tickets_all,
+    admin_tickets_detail,
     admin_tickets_answered,
     admin_tickets_pending,
     admin_deposits_rejected,
@@ -109,6 +110,11 @@ urlpatterns = [
                     "pending/",
                     admin_tickets_pending,
                     name="tickets_pending",
+                ),
+                path(
+                    "<str:ticket_id>/",
+                    admin_tickets_detail,
+                    name="tickets_detail",
                 ),
                 path(
                     "",

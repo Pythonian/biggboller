@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<section class="section-py first-section-pt">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 mx-auto">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="mb-2 text-center">Welcome to BetBay! 👋</h4>
+                        <p class="mb-4">Please sign-in to your account and start the adventure</p>
+                        {% if form.errors %}
+                        <p>
+                            Your username and password didn't match.
+                            Please try again.
+                        </p>
+                        {% endif %}
+                        <form class="mb-3" action="{% url 'auth:login' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{{ next }}" />
+                            <div class="mb-3">
+                                <label for="id_username" class="form-label">Username</label>
+                                {% render_field form.username class="form-control" placeholder="Enter your username" autofocus=autofocus %}
+                            </div>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <label class="form-label" for="id_password">Password</label>
+                                    <a href="{% url 'auth:password_reset' %}">
+                                        <small>Forgot Password?</small>
+                                    </a>
+                                </div>
+                                {% render_field form.password class="form-control" placeholder="Enter your password" %}
+                            </div>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="remember-me">
+                                    <label class="form-check-label" for="remember-me">
+                                        Remember Me
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <button class="btn btn-primary d-grid w-100" type="submit">Login</button>
+                            </div>
+                        </form>
+
+                        <p class="text-center">
+                            <span>New on our platform?</span>
+                            <a href="">
+                                <span>Create an account</span>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

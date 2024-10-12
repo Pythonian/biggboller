@@ -1,0 +1,72 @@
+<div class="modal fade" id="updateTicketStatus" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form method="post" action=".">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa-solid fa-pen me-1"></i> Update Ticket Status
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col">
+                            <div class="mb-3">
+                                <div class="form-check custom-option custom-option-icon">
+                                    <label class="form-check-label custom-option-content" for="pendingStatus">
+                                        <span class="custom-option-body">
+                                            <i class="fa-solid fa-hourglass-half mb-2"></i>
+                                            <span class="custom-option-title">Pending</span>
+                                            <small>Mark this ticket as Pending.</small>
+                                        </span>
+                                        <input name="status" class="form-check-input" type="radio" value="P"
+                                            id="pendingStatus" {% if ticket.status == 'P' %}checked{% endif %} />
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="mb-3">
+                                <div class="form-check custom-option custom-option-icon">
+                                    <label class="form-check-label custom-option-content" for="answeredStatus">
+                                        <span class="custom-option-body">
+                                            <i class="fa-solid fa-check mb-2"></i>
+                                            <span class="custom-option-title">Answered</span>
+                                            <small>Mark this ticket as Answered</small>
+                                        </span>
+                                        <input name="status" class="form-check-input" type="radio" value="A"
+                                            id="answeredStatus" {% if ticket.status == 'A' %}checked{% endif %} />
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="mb-3">
+                                <div class="form-check custom-option custom-option-icon">
+                                    <label class="form-check-label custom-option-content" for="closedStatus">
+                                        <span class="custom-option-body">
+                                            <i class="fa-solid fa-ban mb-2"></i>
+                                            <span class="custom-option-title">Closed</span>
+                                            <small>Mark this ticket as Closed.</small>
+                                        </span>
+                                        <input name="status" class="form-check-input" type="radio" value="C"
+                                            id="closedStatus" {% if ticket.status == 'C' %}checked{% endif %} />
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-times-circle me-2"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-success" name="update_status">
+                        <i class="fa-solid fa-check-circle me-2"></i> Update
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

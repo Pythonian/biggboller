@@ -88,9 +88,6 @@ class BundleManager(models.Manager):
     def lost(self):
         return self.filter(status=Bundle.Status.LOST)
 
-    def refunded(self):
-        return self.filter(status=Bundle.Status.REFUNDED)
-
 
 class Bundle(models.Model):
     """

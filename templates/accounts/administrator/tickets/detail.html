@@ -1,0 +1,122 @@
+{% extends "accounts/base.html" %}
+{% load humanize widget_tweaks %}
+
+{% block title %}Ticket ID: {{ ticket.ticket_id }}{% endblock title %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center py-3">
+    <div class="me-5">
+        <h4><span class="text-muted fw-light">Tickets /</span> #{{ ticket.ticket_id }}</h4>
+        <p>{{ ticket.subject }}</p>
+    </div>
+    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updateTicketStatus">
+        <i class="fa-solid fa-hourglass-half me-2"></i> Update Status
+    </button>
+</div>
+
+<div class="row mb-4">
+    <div class="col-sm-6 col-lg-3 mb-4">
+        <div class="card card-border-shadow-primary h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 pb-1">
+                    <div class="avatar me-2">
+                        <span class="avatar-initial rounded bg-label-primary">
+                            <i class="fa-solid fa-info-circle"></i>
+                        </span>
+                    </div>
+                    <h4 class="ms-1 mb-0">{{ ticket.ticket_id }}</h4>
+                </div>
+                <p class="mb-1">Ticket ID</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3 mb-4">
+        <div class="card card-border-shadow-success h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 pb-1">
+                    <div class="avatar me-2">
+                        <span class="avatar-initial rounded bg-label-success">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                    </div>
+                    <h4 class="ms-1 mb-0">{{ ticket.user }}</h4>
+                </div>
+                <p class="mb-1">Ticket Creator</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3 mb-4">
+        <div class="card card-border-shadow-warning h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-2 pb-1">
+                    <div class="avatar me-2">
+                        <span class="avatar-initial rounded bg-label-warning">
+                            <i class="fa-solid fa-hourglass-half"></i>
+                        </span>
+                    </div>
+                    <h4 class="ms-1 mb-0">{{ ticket.get_status_display }}</h4>
+                </div>
+                <p class="mb-1">Ticket Status</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow-lg mb-5 card-border-shadow-info">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                <div class="d-flex align-items-center mb-sm-0 mb-3">
+                    <div class="flex-grow-1 ms-1">
+                        <h6 class="m-0">{{ ticket.user.get_full_name }}</h6>
+                        <small class="text-muted">{{ ticket.user.email }}</small>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <small class="mb-0 me-3 text-muted">{{ ticket.created }}</small>
+                </div>
+            </div>
+            <div class="card-body">
+                {{ ticket.description|linebreaks }}
+            </div>
+        </div>
+
+        {% for reply in replies %}
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-end align-items-center flex-wrap">
+                <div class="d-flex 1align-items-center mb-sm-0 mb-3">
+                    <div class="flex-grow-1 ms-1">
+                        <h6 class="m-0">{{ reply.user.get_full_name }}</h6>
+                        <small class="mb-0 me-3 text-muted">{{ reply.created }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                {{ reply.message|linebreaks }}
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center text-muted mb-5">No Reply Yet.</p>
+        {% endfor %}
+        <div class="card mt-4 border">
+            <h6 class="card-header border-0">Enter your Reply</h6>
+            <div class="card-body pt-0 px-3">
+                <form method="post" action=".">
+                    {% csrf_token %}
+                    {% render_field reply_form.message class="form-control" placeholder="Enter your reply." %}
+                    <div class="d-flex justify-content-end align-items-center mt-2">
+                        <button class="btn btn-primary" type="submit" name="reply">
+                            <i class="fa-solid fa-paper-plane me-2"></i>
+                            <span class="align-middle">Reply</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "accounts/administrator/tickets/modals/update_ticket_status.html" %}
+
+{% endblock content %}
