@@ -40,6 +40,12 @@ class UserRegistrationForm(forms.ModelForm):
         required=True,
         help_text="Enter a valid email address.",
     )
+    phone_number = forms.CharField(
+        label="Phone number",
+        max_length=11,
+        required=True,
+        help_text="Enter a valid phone number.",
+    )
     password = forms.CharField(
         label="Password",
         widget=forms.PasswordInput,
@@ -51,7 +57,13 @@ class UserRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = get_user_model()
-        fields = ["username", "first_name", "last_name", "email"]
+        fields = [
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+        ]
 
     def clean_password2(self):
         cd = self.cleaned_data

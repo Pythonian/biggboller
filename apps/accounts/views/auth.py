@@ -10,6 +10,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 from apps.accounts.forms import UserRegistrationForm, ResendActivationEmailForm
 from apps.accounts.tokens import account_activation_token
+from apps.accounts.utils import create_action
 
 
 User = get_user_model()
@@ -30,8 +31,8 @@ def register(request):
             user.save()
             # Load profile instance created by the signal
             user.refresh_from_db()
-            # user.profile.data = form.cleaned_data.get("data")
-            # user.save()
+            user.profile.phone_number = form.cleaned_data.get("phone_number")
+            user.save()
             current_site = get_current_site(request)
 
             if request.is_secure():
@@ -56,6 +57,12 @@ def register(request):
                 },
             )
             user.email_user(subject=subject, message=message)
+            create_action(
+                user,
+                "New user registration",
+                "has just registered for an account.",
+                user.profile,
+            )
             return redirect("auth:account_activation_sent")
         else:
             messages.error(

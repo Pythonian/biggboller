@@ -1,0 +1,18 @@
+{% load humanize %}
+<tr>
+    <td>{{ bundle.name }}</td>
+    <td>₦{{ bundle.price|floatformat:0|intcomma }} per Bundle</td>
+    <td>₦{{ bundle.potential_min_win|floatformat:0|intcomma }} - ₦{{ bundle.potential_max_win|floatformat:0|intcomma }}
+    </td>
+    <td>{{ bundle.min_bundles_per_user }} - {{ bundle.max_bundles_per_user }} Bundles</td>
+    <td>
+        <div class="d-flex">
+            <div class="avatar me-2">
+                <a href="#purchaseBundleModal" class="avatar-initial rounded bg-label-primary" data-bs-toggle="modal"
+                    title="Purchase Bundle">
+                    <i class="fa-solid fa-sack-dollar"></i>
+                </a>
+            </div>
+        </div>
+    </td>
+</tr>

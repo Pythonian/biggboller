@@ -15,7 +15,7 @@
             </div>
         </div>
         <ul class="navbar-nav flex-row align-items-center ms-auto">
-            <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
+            <!-- <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown"
                     data-bs-auto-close="outside" aria-expanded="false">
                     <i class="fas fa-bell"></i>
@@ -65,21 +65,21 @@
                             notifications</button>
                     </li>
                 </ul>
-            </li>
+            </li> -->
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
                         <span
-                            class="avatar-initial rounded-circle bg-label-danger">{% if request.user.is_bettor %}{{ request.user.profile.get_screen_name }}{% else %}A{% endif %}</span>
+                            class="avatar-initial rounded-circle bg-label-primary">{% if request.user.is_bettor %}{{ request.user.profile.get_screen_name }}{% else %}A{% endif %}</span>
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <a class="dropdown-item" href="">
+                        <a class="dropdown-item" href="{% url 'bettor:profile' %}">
                             <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar avatar-online">
-                                        <span class="avatar-initial rounded-circle bg-label-danger">
+                                        <span class="avatar-initial rounded-circle bg-label-primary">
                                             {% if request.user.profile.email_confirmed %}{{ request.user.profile.get_screen_name|make_list|first|title }}{% else %}A{% endif %}
                                         </span>
                                     </div>
@@ -97,13 +97,13 @@
                         <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="">
+                        <a class="dropdown-item" href="{% url 'bettor:profile' %}">
                             <i class="fas fa-user me-2"></i>
                             <span class="align-middle">My Profile</span>
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="">
+                        <a class="dropdown-item" href="{% url 'bettor:settings' %}">
                             <i class="fas fa-cog me-2"></i>
                             <span class="align-middle">Settings</span>
                         </a>
@@ -113,8 +113,8 @@
                     </li>
                     <li>
                         <a class="dropdown-item" href="">
-                            <i class="fas fa-question-circle me-2"></i>
-                            <span class="align-middle">FAQ</span>
+                            <i class="fas fa-key me-2"></i>
+                            <span class="align-middle">Change Password</span>
                         </a>
                     </li>
                     <li>

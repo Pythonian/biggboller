@@ -30,9 +30,16 @@ class Profile(models.Model):
         blank=True,
         null=True,
     )
+    phone_number = models.CharField(
+        _("phone number"),
+        max_length=11,
+    )
     is_banned = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     class Meta:
+        ordering = ["-created"]
         verbose_name = _("Profile")
         verbose_name_plural = _("Profiles")
 

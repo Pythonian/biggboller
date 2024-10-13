@@ -254,17 +254,6 @@
                 <div class="text-truncate">Notification History</div>
             </a>
         </li>
-
-        <!-- Platform -->
-        <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Platform</span>
-        </li>
-        <li class="menu-item">
-            <a href="" class="menu-link">
-                <i class="menu-icon fa-solid fa-bullhorn"></i>
-                <div class="text-truncate">Application Details</div>
-            </a>
-        </li>
     </ul>
     {% else %}
     <ul class="menu-inner py-1">
@@ -286,8 +275,8 @@
             </a>
             <ul class="menu-sub">
                 <li
-                    class="menu-item {% url 'administrator:bundles_all' as bundles_all_url %}{% if request.get_full_path == bundles_all_url %}active{% endif %}">
-                    <a href="{% url 'administrator:bundles_all' %}" class="menu-link">
+                    class="menu-item {% url 'bettor:bundles_all' as bundles_all_url %}{% if request.get_full_path == bundles_all_url %}active{% endif %}">
+                    <a href="{% url 'bettor:bundles_all' %}" class="menu-link">
                         <div class="text-truncate">All Bundles</div>
                     </a>
                 </li>

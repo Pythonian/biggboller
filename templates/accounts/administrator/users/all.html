@@ -3,45 +3,41 @@
 {% block title %}All Users{% endblock title %}
 
 {% block content %}
-<div class="container-xxl flex-grow-1 container-p-y">
 
-    {% include 'accounts/administrator/partials/_header_item.html' with head_title="All Users" %}
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="All Users" %}
 
-    <div class="row mb-4">
-        <!-- Active Users -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-user-check" count="500" title="Active Users" additional_value="20" additional_text="New users" %}
+<div class="row mb-4">
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="primary" label_color="primary" icon_class="fa-solid fa-user-plus" count=registered_users title="Registered Users" additional_value=deactivated_users additional_text="Deactivated Users" %}
 
-        <!-- Unverified Users -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="info" label_color="info" icon_class="fa-solid fa-user-plus" count="20" title="Unverified Users" additional_value="20" additional_text="New users" %}
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-user-check" count=active_users title="Active Users" additional_value=banned_users additional_text="Banned Users" %}
 
-        <!-- Deactivated Users -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="warning" label_color="warning" icon_class="fa-solid fa-user-minus" count="10" title="Deactivated Users" additional_value="0" additional_text="Newly Deactivated" %}
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="info" label_color="info" icon_class="fa-solid fa-user-shield" count=verified_users title="Verified Users" additional_value=unverified_users additional_text="Unverified Users" %}
+</div>
 
-        <!-- Banned Users -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-user-times" count="10" title="Banned Users" additional_value="0" additional_text="Newly Banned" %}
-    </div>
-
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                {% include 'accounts/administrator/partials/_card_header.html' with card_header="All Users List" %}
-                <div class="table-responsive">
-                    <table class="table table-lg">
-                        <thead>
-                            {% include 'accounts/administrator/users/partials/_table_head.html' %}
-                        </thead>
-                        <tbody>
-                            {% include "accounts/administrator/users/partials/_user_item.html" with fullname="Jeffrey Onuigbo" email="jeffon@yahooplus.com" status_label="success" status="Active" mobile="07061234567" date="23rd August, 2022" %}
-                            {% include "accounts/administrator/users/partials/_user_item.html" with fullname="Ugochi Onuigbo" email="ugoon@yahooplus.com" status_label="info" status="Pending" mobile="07061234567" date="23rd August, 2022" %}
-                            {% include "accounts/administrator/users/partials/_user_item.html" with fullname="Paul Onuigbo" email="paulon@yahooplus.com" status_label="danger" status="Banned" mobile="07061234567" date="23rd August, 2022" %}
-                            {% include "accounts/administrator/users/partials/_user_item.html" with fullname="Adanne Onuigbo" email="adaon@yahooplus.com" status_label="warning" status="Deactivated" mobile="07061234567" date="23rd August, 2022" %}
-                        </tbody>
-                    </table>
-                </div>
-                {% include "accounts/administrator/partials/_pagination.html" %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="All Users List" %}
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        {% include 'accounts/administrator/users/partials/_table_head.html' %}
+                    </thead>
+                    <tbody>
+                        {% for user in bettors %}
+                        {% include "accounts/administrator/users/partials/_user_item.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% include "accounts/administrator/partials/_pagination.html" %}
         </div>
     </div>
 </div>
+
 {% include "accounts/administrator/users/modals/ban_user.html" %}
 {% endblock content %}

@@ -1,0 +1,77 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}My Profile{% endblock title %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-xl-4 col-lg-5 col-md-5 order-1 order-md-0">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class=" d-flex align-items-center flex-column">
+                    <div class="flex-shrink-0 my-4">
+                        <div class="avatar avatar-xl">
+                            <span class="avatar-initial rounded-circle bg-label-primary">
+                                {{ bettor.profile.get_screen_name|make_list|first|title }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="user-info text-center">
+                        <h4 class="mb-2">{{ bettor.profile.get_screen_name }}</h4>
+                        <span class="badge bg-label-secondary">Bettor</span>
+                    </div>
+                </div>
+
+                <h5 class="pb-2 border-bottom my-4">Details</h5>
+                <div class="info-container">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Username:</span>
+                            <span>{{ bettor.username }}</span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Email:</span>
+                            <span>{{ bettor.email }}</span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Status:</span>
+                            <span
+                                class="badge bg-label-success">{% if bettor.profile.email_confirmed %}Active{% else %}Unverified{% endif %}</span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Contact:</span>
+                            <span>{{ bettor.profile.phone_number }}</span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Joined:</span>
+                            <span>{{ bettor.date_joined }}</span>
+                        </li>
+                    </ul>
+                    <div class="d-flex justify-content-center pt-3">
+                        <a href="javascript:;" class="btn btn-primary me-3">Edit Account</a>
+                        <a href="javascript:;" class="btn btn-label-danger suspend-user">Deactivate Account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title m-0 me-2">My Activity Timeline</h5>
+            </div>
+            <div class="card-body">
+                <ul class="timeline">
+                    {% for action in actions %}
+                    {% include "accounts/partials/_timeline_item.html" %}
+                    {% endfor %}
+                    <li class="timeline-end-indicator">
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

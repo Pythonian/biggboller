@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db import transaction
-from apps.accounts.models import Group, Bundle, Ticket
+from apps.accounts.models import Group, Bundle, Ticket, Profile, Action
 from apps.accounts.forms import (
     GroupCreateForm,
     GroupUpdateForm,
@@ -22,6 +22,8 @@ def is_admin(user):
     return user.is_staff or user.is_superuser
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_dashboard(request):
     groups = Group.objects.all()
     total_groups = groups.count()
@@ -31,12 +33,27 @@ def admin_dashboard(request):
     total_bundles = bundles.count()
     pending_bundles = bundles.filter(status=Bundle.Status.PENDING).count()
 
+    tickets = Ticket.objects.all()
+    total_tickets = tickets.count()
+    pending_tickets = tickets.filter(status=Ticket.Status.PENDING).count()
+
+    bettors = Profile.objects.filter(user__is_staff=False)
+    total_users = bettors.count()
+    active_users = bettors.filter(email_confirmed=True).count()
+
+    activities = Action.objects.exclude(user=request.user)[:5]
+
     template = "accounts/administrator/dashboard.html"
     context = {
         "total_groups": total_groups,
         "running_groups": running_groups,
         "total_bundles": total_bundles,
         "pending_bundles": pending_bundles,
+        "total_tickets": total_tickets,
+        "pending_tickets": pending_tickets,
+        "total_users": total_users,
+        "active_users": active_users,
+        "activities": activities,
     }
 
     return render(request, template, context)
@@ -263,8 +280,26 @@ def admin_bundles_detail(request, id):
 
 
 def admin_users_all(request):
+    bettors = Profile.objects.filter(user__is_staff=False)
+    registered_users = bettors.count()
+    active_users = bettors.filter(email_confirmed=True).count()
+    banned_users = bettors.filter(is_banned=True).count()
+    deactivated_users = bettors.filter(user__is_active=False).count()
+    verified_users = bettors.filter(verified_account=True).count()
+    unverified_users = bettors.filter(verified_account=False).count()
+
+    bettors = mk_paginator(request, bettors, PAGINATION_COUNT)
+
     template = "accounts/administrator/users/all.html"
-    context = {}
+    context = {
+        "bettors": bettors,
+        "registered_users": registered_users,
+        "deactivated_users": deactivated_users,
+        "active_users": active_users,
+        "banned_users": banned_users,
+        "verified_users": verified_users,
+        "unverified_users": unverified_users,
+    }
 
     return render(request, template, context)
 

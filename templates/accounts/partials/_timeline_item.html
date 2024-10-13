@@ -2,39 +2,9 @@
     <span class="timeline-point-wrapper"><span class="timeline-point timeline-point-primary"></span></span>
     <div class="timeline-event">
         <div class="timeline-header mb-1">
-            <h6 class="mb-0">New user registration</h6>
-            <small class="text-muted">12 min ago</small>
+            <h6 class="mb-0">{{ action.title }}</h6>
+            <small class="text-muted">{{ action.created|timesince }} ago</small>
         </div>
-        <p class="mb-2">A user <span class="fw-medium">Vivian</span> has just registered on the platform.</p>
-    </div>
-</li>
-<li class="timeline-item timeline-item-transparent">
-    <span class="timeline-point-wrapper"><span class="timeline-point timeline-point-primary"></span></span>
-    <div class="timeline-event">
-        <div class="timeline-header mb-1">
-            <h6 class="mb-0">Withdrawal Completed</h6>
-            <small class="text-muted">14 min ago</small>
-        </div>
-        <p class="mb-2">A winning amount of $12 was just sent to <span class="fw-medium">Vivian</span>.</p>
-    </div>
-</li>
-<li class="timeline-item timeline-item-transparent">
-    <span class="timeline-point-wrapper"><span class="timeline-point timeline-point-primary"></span></span>
-    <div class="timeline-event">
-        <div class="timeline-header mb-1">
-            <h6 class="mb-0">Ticket Opened</h6>
-            <small class="text-muted">20 min ago</small>
-        </div>
-        <p class="mb-2"><span class="fw-medium">Vivian</span> has just opened a new ticket.</p>
-    </div>
-</li>
-<li class="timeline-item timeline-item-transparent">
-    <span class="timeline-point-wrapper"><span class="timeline-point timeline-point-primary"></span></span>
-    <div class="timeline-event">
-        <div class="timeline-header mb-1">
-            <h6 class="mb-0">Account Deactivated</h6>
-            <small class="text-muted">1 hour ago</small>
-        </div>
-        <p class="mb-2">A user <span class="fw-medium">Vivian</span> has deactivated their account.</p>
+        <p class="mb-2"><span class="fw-medium">{{ action.user.username|title }}</span> {{ action.verb }}</p>
     </div>
 </li>

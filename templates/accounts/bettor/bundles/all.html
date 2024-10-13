@@ -1,0 +1,47 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}All Bundles{% endblock title %}
+
+{% block content %}
+
+<div class="py-3">
+    <h4>All Bundles</h4>
+</div>
+
+<div class="row mb-4">
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=total_bundles label="Total Bundles" icon_class="fa-solid fa-layer-group" color_class="primary" %}
+
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=pending_bundles label="Pending Bundles" icon_class="fa-solid fa-hourglass-half" color_class="info" %}
+
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=won_bundles label="Won Bundles" icon_class="fa-solid fa-trophy" color_class="success" %}
+
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=lost_bundles label="Lost Bundles" icon_class="fa-solid fa-sack-xmark" color_class="danger" %}
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/bettor/partials/_card_header.html' with card_header="All Bundles List" %}
+
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        {% include 'accounts/bettor/bundles/partials/_table_head.html' %}
+                    </thead>
+                    <tbody>
+                        {% for bundle in bundles %}
+                        {% include "accounts/bettor/bundles/partials/_bundle_item.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=bundles %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

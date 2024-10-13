@@ -108,13 +108,13 @@
                             <i class="fa-solid fa-users"></i>
                         </span>
                     </div>
-                    <h4 class="ms-1 mb-0">1000</h4>
+                    <h4 class="ms-1 mb-0">{{ total_users }}</h4>
                 </div>
                 <p class="mb-1"><a href="{% url 'administrator:users_all' %}" class="stretched-link text-info">Total
                         Users</a></p>
                 <p class="mb-0">
-                    <span class="fw-medium me-1">890</span>
-                    <small class="text-muted">Active users</small>
+                    <span class="fw-medium me-1">{{ active_users }}</span>
+                    <small class="text-muted">Active user{{ active_users|pluralize }}</small>
                 </p>
             </div>
         </div>
@@ -128,14 +128,14 @@
                             <i class="fa-solid fa-ticket"></i>
                         </span>
                     </div>
-                    <h4 class="ms-1 mb-0">20</h4>
+                    <h4 class="ms-1 mb-0">{{ total_tickets }}</h4>
                 </div>
                 <p class="mb-1"><a href="{% url 'administrator:tickets_all' %}"
                         class="stretched-link text-warning">Total
                         Tickets</a></p>
                 <p class="mb-0">
-                    <span class="fw-medium me-1">5</span>
-                    <small class="text-muted">Pending tickets</small>
+                    <span class="fw-medium me-1">{{ pending_tickets }}</span>
+                    <small class="text-muted">Pending ticket{{ total_tickets|pluralize }}</small>
                 </p>
             </div>
         </div>

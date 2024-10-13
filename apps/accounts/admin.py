@@ -1,5 +1,12 @@
 from django.contrib import admin
-from apps.accounts.models import Bundle, Group, Ticket, Reply, Profile
+from apps.accounts.models import (
+    Action,
+    Bundle,
+    Group,
+    Ticket,
+    Reply,
+    Profile,
+)
 
 
 @admin.register(Group)
@@ -43,3 +50,10 @@ class ProfileAdmin(admin.ModelAdmin):
         "user__last_name",
         "email_confirmed",
     ]
+
+
+@admin.register(Action)
+class ActionAdmin(admin.ModelAdmin):
+    list_display = ["user", "verb", "target", "created"]
+    list_filter = ["created"]
+    search_fields = ["verb"]

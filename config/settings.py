@@ -100,3 +100,6 @@ LOGOUT_URL = "auth:logout"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 ADMINS = (("Admin", "admin@example.com"),)
+
+PAYSTACK_PUBLIC_KEY = config("PAYSTACK_PUBLIC_KEY")
+PAYSTACK_SECRET_KEY = config("PAYSTACK_SECRET_KEY")

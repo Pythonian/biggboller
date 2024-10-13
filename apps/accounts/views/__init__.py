@@ -31,7 +31,12 @@ from apps.accounts.views.administrator import (
     admin_withdrawals_approved,
     admin_withdrawals_pending,
 )
-from apps.accounts.views.bettor import bettor_dashboard
+from apps.accounts.views.bettor import (
+    bettor_dashboard,
+    bettor_bundles_all,
+    bettor_profile,
+    bettor_settings,
+)
 
 __all__ = [
     "admin_dashboard",
@@ -67,4 +72,7 @@ __all__ = [
     "admin_withdrawals_pending",
     # Bettor
     "bettor_dashboard",
+    "bettor_bundles_all",
+    "bettor_profile",
+    "bettor_settings",
 ]
