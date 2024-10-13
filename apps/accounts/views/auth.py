@@ -10,8 +10,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 from apps.accounts.forms import UserRegistrationForm, ResendActivationEmailForm
 from apps.accounts.tokens import account_activation_token
-from apps.accounts.utils import create_action
-
+from apps.accounts.utils import create_action, send_email_thread
 
 User = get_user_model()
 
@@ -35,17 +34,26 @@ def register(request):
             user.save()
             current_site = get_current_site(request)
 
-            if request.is_secure():
-                protocol = "https"
-            else:
-                protocol = "http"
+            protocol = "https" if request.is_secure() else "http"
 
             subject = render_to_string(
                 "registration/account_activation_subject.txt",
                 {"site_name": current_site.name},
-            )
+            ).strip()
 
-            message = render_to_string(
+            text_message = render_to_string(
+                "registration/account_activation_email.txt",
+                {
+                    "user": user,
+                    "domain": current_site.domain,
+                    "protocol": protocol,
+                    "site_name": current_site.name,
+                    "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                    "token": account_activation_token.make_token(user),
+                },
+            ).strip()
+
+            html_message = render_to_string(
                 "registration/account_activation_email.html",
                 {
                     "user": user,
@@ -56,7 +64,16 @@ def register(request):
                     "token": account_activation_token.make_token(user),
                 },
             )
-            user.email_user(subject=subject, message=message)
+
+            # Send email via Mailjet in a separate thread
+            send_email_thread(
+                subject,
+                text_message,
+                html_message,
+                user.email,
+                user.get_full_name(),
+            )
+
             create_action(
                 user,
                 "New user registration",
@@ -67,7 +84,7 @@ def register(request):
         else:
             messages.error(
                 request,
-                "An error occured while trying to create your account.",
+                "An error occurred while trying to create your account.",
             )
             return render(
                 request,
@@ -91,22 +108,42 @@ def resend_activation(request):
         form = ResendActivationEmailForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data.get("email")
-            user = User.objects.filter(email__iexact=email, is_active=False)
-            if not user.count():
-                form._errors["email"] = [
-                    "Account for email address is not registered or already activated."
-                ]
+            user = User.objects.filter(
+                email__iexact=email,
+                is_active=False,
+            ).first()
+            if not user:
+                form.add_error(
+                    "email",
+                    "Account for this email is not registered or already activated.",
+                )
+                return render(
+                    request,
+                    "registration/resend_activation.html",
+                    {"form": form},
+                )
+
             current_site = get_current_site(request)
-            if request.is_secure():
-                protocol = "https"
-            else:
-                protocol = "http"
+            protocol = "https" if request.is_secure() else "http"
+
             subject = render_to_string(
                 "registration/account_activation_subject.txt",
                 {"site_name": current_site.name},
-            )
+            ).strip()
 
-            message = render_to_string(
+            text_message = render_to_string(
+                "registration/account_activation_email.txt",
+                {
+                    "user": user,
+                    "domain": current_site.domain,
+                    "protocol": protocol,
+                    "site_name": current_site.name,
+                    "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                    "token": account_activation_token.make_token(user),
+                },
+            ).strip()
+
+            html_message = render_to_string(
                 "registration/account_activation_email.html",
                 {
                     "user": user,
@@ -117,14 +154,25 @@ def resend_activation(request):
                     "token": account_activation_token.make_token(user),
                 },
             )
-            user.email_user(subject, message)
-            return redirect("account_activation_sent")
+
+            # Send email via Mailjet in a separate thread
+            send_email_thread(
+                subject,
+                text_message,
+                html_message,
+                user.email,
+                user.get_full_name(),
+            )
+
+            return redirect("auth:account_activation_sent")
         else:
             messages.error(
                 request,
-                "An error occured while sending your account activation email.",
+                "An error occurred while sending your activation email.",
             )
-            return redirect("auth:resend_activation")
+            return render(
+                request, "registration/resend_activation.html", {"form": form}
+            )
     else:
         form = ResendActivationEmailForm()
 
@@ -161,24 +209,12 @@ def account_activate(request, uidb64, token):
             request,
             "Your account has been successully activated.",
         )
+        create_action(
+            user,
+            "Account Email Activated",
+            "has just verified their email address.",
+            user.profile,
+        )
         return redirect("bettor:dashboard")
     else:
         return render(request, "registration/activate.html", {})
-
-
-@login_required
-def disable(request):
-    user = request.user
-    if request.method == "POST":
-        # Disable the user's password
-        user.set_unusable_password()
-        # Disable the user's account
-        user.is_active = False
-        user.save()
-        logout(request)
-        return redirect("core:home")
-
-    template = "accounts/disable.html"
-    context = {}
-
-    return render(request, template, context)

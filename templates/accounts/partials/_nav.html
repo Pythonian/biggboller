@@ -70,7 +70,7 @@
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
                         <span
-                            class="avatar-initial rounded-circle bg-label-primary">{% if request.user.is_bettor %}{{ request.user.profile.get_screen_name }}{% else %}A{% endif %}</span>
+                            class="avatar-initial rounded-circle bg-label-primary">{% if request.user.profile.email_confirmed %}{{ request.user.profile.get_screen_name|make_list|first|title }}{% else %}A{% endif %}</span>
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">

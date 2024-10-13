@@ -264,6 +264,20 @@
                 <div class="text-truncate">Dashboard</div>
             </a>
         </li>
+        <li
+            class="menu-item {% url 'bettor:profile' as profile_url %}{% if request.get_full_path == profile_url %}active{% endif %}">
+            <a href="{% url 'bettor:profile' %}" class="menu-link">
+                <i class="menu-icon fa-solid fa-user"></i>
+                <div class="text-truncate">Profile</div>
+            </a>
+        </li>
+        <li
+            class="menu-item {% url 'bettor:settings' as settings_url %}{% if request.get_full_path == settings_url %}active{% endif %}">
+            <a href="{% url 'bettor:settings' %}" class="menu-link">
+                <i class="menu-icon fa-solid fa-cog"></i>
+                <div class="text-truncate">Settings</div>
+            </a>
+        </li>
 
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Core</span>

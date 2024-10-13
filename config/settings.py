@@ -97,9 +97,30 @@ LOGOUT_REDIRECT_URL = "core:home"
 LOGIN_URL = "auth:login"
 LOGOUT_URL = "auth:logout"
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
 ADMINS = (("Admin", "admin@example.com"),)
 
 PAYSTACK_PUBLIC_KEY = config("PAYSTACK_PUBLIC_KEY")
 PAYSTACK_SECRET_KEY = config("PAYSTACK_SECRET_KEY")
+
+# Email server configuration with Mailjet
+# EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+MAILJET_API_KEY = config("MJ_APIKEY_PUBLIC")
+MAILJET_SECRET_KEY = config("MJ_APIKEY_PRIVATE")
+MAILJET_SENDER_NAME = config("MAILJET_SENDER_NAME")
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "apps.accounts.utils": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+    },
+}

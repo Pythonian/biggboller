@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.views import View
 from django.http import JsonResponse
 from django.contrib import messages
+from django.contrib.auth import logout
 from apps.accounts.forms import BundlePurchaseForm
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -75,6 +76,28 @@ def bettor_settings(request):
         "profile_form": profile_form,
         "bettor": user,
     }
+
+    return render(request, template, context)
+
+
+@login_required
+def bettor_deactivate(request):
+    user = request.user
+    if request.method == "POST":
+        # Disable the user's password
+        user.set_unusable_password()
+        # Disable the user's account
+        user.is_active = False
+        user.save()
+        logout(request)
+        messages.success(
+            request,
+            "Your account has been successfully deactivated.",
+        )
+        return redirect("core:home")
+
+    template = "accounts/bettor/deactivate.html"
+    context = {}
 
     return render(request, template, context)
 

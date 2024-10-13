@@ -1,23 +1,24 @@
 {% load i18n %}
 
-{% blocktrans %}Hello{% endblocktrans %}
-{% if user.get_full_name %}{{ user.get_full_name }}{% else %}{{ user }}{% endif %},
+<!DOCTYPE html>
+<html>
 
-{% blocktrans %}
-You are receiving this email because you (or someone pretending to be you)
-have asked to register an account on {{ domain }}. If you do not
-wish to register for an account with us, please ignore this message.
-{% endblocktrans %}
+<head>
+    <title>Activate Your Account</title>
+</head>
 
-{% blocktrans %}
-To activate your account, please click the following link, or copy and paste it
-into your web browser:
-{% endblocktrans %}
+<body>
+    <p>Hi {{ user.first_name }},</p>
+    <p>Thank you for registering at {{ site_name }}.</p>
+    <p>You are receiving this email because you (or someone pretending to be you)
+        have asked to register an account on {{ domain }}. If you do not
+        wish to register for an account with us, please ignore this message.</p>
+    <p>To activate your account, please click the following link below:</p>
+    <p><a href="{{ protocol }}://{{ domain }}{% url 'auth:activate' uidb64=uid token=token %}">Activate Your Account</a>
+    </p>
+    <p>Or copy and paste this link into your web browser:
+        {{ protocol }}://{{ domain }}{% url 'auth:activate' uidb64=uid token=token %}</p>
+    <p>Best regards,<br />The {{ site_name }} Team</p>
+</body>
 
-{{ protocol }}://{{ domain }}{% url 'auth:activate' uidb64=uid token=token %}
-
-{% blocktrans %}Best regards{% endblocktrans %},
-
-Betbay {% blocktrans %}Management{% endblocktrans %}
-
-{{ protocol }}://www.betbay.com
+</html>

@@ -7,7 +7,7 @@
                     aria-label="Toggle navigation">
                     <i class="fa-solid fa-hamburger align-middle"></i>
                 </button>
-                <a href="/" class="app-brand-link">
+                <a href="{% url 'core:home' %}" class="app-brand-link">
                     <span class="app-brand-text menu-text fw-bold ms-2 ps-1">BetBay</span>
                 </a>
             </div>
@@ -40,9 +40,16 @@
             </div>
             <ul class="navbar-nav flex-row align-items-center ms-auto">
                 <li>
+                    {% if request.user.is_authenticated %}
+                    <a href="{% if user.profile.email_confirmed %}{% url 'bettor:dashboard' %}{% else %}{% url 'administrator:dashboard' %}{% endif %}"
+                        class="btn btn-primary">
+                        Dashboard
+                    </a>
+                    {% else %}
                     <a href="{% url 'auth:login' %}" class="btn btn-primary">
                         Login/Register
                     </a>
+                    {% endif %}
                 </li>
             </ul>
         </div>
