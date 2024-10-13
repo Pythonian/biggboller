@@ -9,6 +9,7 @@ from apps.accounts.forms.auth import (
     ResendActivationEmailForm,
 )
 from apps.accounts.forms.transactions import BundlePurchaseForm
+from apps.accounts.forms.bettors import UserUpdateForm, ProfileUpdateForm
 
 __all__ = [
     "BundleCreateForm",
@@ -19,4 +20,6 @@ __all__ = [
     "UserRegistrationForm",
     "ResendActivationEmailForm",
     "BundlePurchaseForm",
+    "UserUpdateForm",
+    "ProfileUpdateForm",
 ]

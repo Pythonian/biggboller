@@ -11,7 +11,9 @@ from apps.accounts.forms import BundlePurchaseForm
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
+from apps.accounts.forms import UserUpdateForm, ProfileUpdateForm
 from apps.accounts.models import Bundle, Deposit, Action
+from apps.accounts.utils import create_action
 from apps.core.utils import mk_paginator
 
 PAGINATION_COUNT = 10
@@ -41,11 +43,37 @@ def bettor_profile(request):
 
 @login_required
 def bettor_settings(request):
-    bettor = request.user
+    user = request.user
+    profile = user.profile
+
+    if request.method == "POST":
+        user_form = UserUpdateForm(request.POST, instance=user)
+        profile_form = ProfileUpdateForm(request.POST, instance=profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+
+            messages.success(
+                request,
+                "Your profile has been updated successfully.",
+            )
+            create_action(
+                user,
+                "User profile updated",
+                "You updated your profile information successfully.",
+                user.profile,
+            )
+            return redirect("bettor:profile")
+    else:
+        user_form = UserUpdateForm(instance=user)
+        profile_form = ProfileUpdateForm(instance=profile)
 
     template = "accounts/bettor/settings.html"
     context = {
-        "bettor": bettor,
+        "user_form": user_form,
+        "profile_form": profile_form,
+        "bettor": user,
     }
 
     return render(request, template, context)
