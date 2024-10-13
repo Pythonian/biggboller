@@ -64,8 +64,8 @@ def admin_dashboard(request):
 ##############
 
 
-# @login_required
-# @user_passes_test(is_admin)
+@login_required
+@user_passes_test(is_admin)
 def admin_groups_all(request):
     """View to list all betting groups."""
 
@@ -123,6 +123,8 @@ def admin_groups_all(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_groups_running(request):
     groups = Group.objects.running()
     running_groups = groups.filter(status=Group.Status.RUNNING).count()
@@ -137,6 +139,8 @@ def admin_groups_running(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_groups_closed(request):
     groups = Group.objects.closed()
     closed_groups = groups.filter(status=Group.Status.CLOSED).count()
@@ -151,6 +155,8 @@ def admin_groups_closed(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_groups_detail(request, id):
     group = get_object_or_404(Group, id=id)
 
@@ -175,6 +181,8 @@ def admin_groups_detail(request, id):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_groups_new(request):
     template = "accounts/administrator/groups/new.html"
     context = {}
@@ -187,6 +195,8 @@ def admin_groups_new(request):
 ##############
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_bundles_all(request):
     bundles = Bundle.objects.all()
     total_bundles = bundles.count()
@@ -208,6 +218,8 @@ def admin_bundles_all(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_bundles_pending(request):
     bundles = Bundle.objects.pending()
     pending_bundles = bundles.filter(status=Bundle.Status.PENDING).count()
@@ -223,6 +235,8 @@ def admin_bundles_pending(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_bundles_won(request):
     bundles = Bundle.objects.won()
     won_bundles = bundles.filter(status=Bundle.Status.WON).count()
@@ -238,6 +252,8 @@ def admin_bundles_won(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_bundles_lost(request):
     bundles = Bundle.objects.lost()
     lost_bundles = bundles.filter(status=Bundle.Status.LOST).count()
@@ -253,6 +269,8 @@ def admin_bundles_lost(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_bundles_detail(request, id):
     bundle = get_object_or_404(Bundle, id=id)
 
@@ -279,6 +297,8 @@ def admin_bundles_detail(request, id):
 ##############
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_users_all(request):
     bettors = Profile.objects.filter(user__is_staff=False)
     registered_users = bettors.count()
@@ -304,6 +324,8 @@ def admin_users_all(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_users_active(request):
     template = "accounts/administrator/users/active.html"
     context = {}
@@ -311,6 +333,8 @@ def admin_users_active(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_users_banned(request):
     template = "accounts/administrator/users/banned.html"
     context = {}
@@ -318,6 +342,8 @@ def admin_users_banned(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_users_unverified(request):
     template = "accounts/administrator/users/unverified.html"
     context = {}
@@ -325,6 +351,8 @@ def admin_users_unverified(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_users_verified(request):
     template = "accounts/administrator/users/verified.html"
     context = {}
@@ -332,6 +360,8 @@ def admin_users_verified(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_users_deactivated(request):
     template = "accounts/administrator/users/deactivated.html"
     context = {}
@@ -356,6 +386,8 @@ def admin_users_notifications(request):
 ##############
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_tickets_all(request):
     tickets = Ticket.objects.all()
     total_tickets = tickets.count()
@@ -377,6 +409,8 @@ def admin_tickets_all(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_tickets_detail(request, ticket_id):
     ticket = get_object_or_404(Ticket, ticket_id=ticket_id)
     replies = ticket.replies.all().order_by("created")
@@ -422,58 +456,8 @@ def admin_tickets_detail(request, ticket_id):
     return render(request, template, context)
 
 
-# def admin_tickets_detail(request, ticket_id):
-#     ticket = get_object_or_404(Ticket, ticket_id=ticket_id)
-#     replies = ticket.replies.all().order_by("created")
-
-#     if request.method == "POST":
-#         if "reply" in request.POST:
-#             reply_form = TicketReplyForm(request.POST)
-#             if reply_form.is_valid():
-#                 reply = reply_form.save(commit=False)
-#                 reply.ticket = ticket
-#                 reply.user = request.user
-#                 reply.save()
-#                 messages.success(
-#                     request,
-#                     "Your reply to this ticket has been posted.",
-#                 )
-#                 return redirect(
-#                     "administrator:tickets_detail",
-#                     ticket_id=ticket.ticket_id,
-#                 )
-#         elif "update_status" in request.POST:
-#             new_status = request.POST.get("status")
-#             if new_status in dict(Ticket.Status.choices):
-#                 ticket.status = new_status
-#                 ticket.save()
-#                 messages.success(request, "Ticket status updated successfully.")
-#                 return redirect(ticket)
-#             else:
-#                 messages.error(request, "Invalid status selected.")
-#         # elif "update_status" in request.POST:
-#         #     status_form = TicketStatusForm(request.POST)
-#         #     if status_form.is_valid():
-#         #         new_status = status_form.cleaned_data["status"]
-#         #         if new_status in dict(Ticket.STATUS_CHOICES).keys():
-#         #             ticket.status = new_status
-#         #             ticket.save()
-#         #             messages.success(request, f"Ticket status updated to {new_status}.")
-#         #         return redirect("admin_ticket_detail", ticket_id=ticket.ticket_id)
-#     else:
-#         reply_form = TicketReplyForm()
-#         # status_form = TicketStatusForm()
-
-#     template = "accounts/administrator/tickets/detail.html"
-#     context = {
-#         "ticket": ticket,
-#         "replies": replies,
-#         "reply_form": reply_form,
-#         # "status_form": status_form,
-#     }
-#     return render(request, template, context)
-
-
+@login_required
+@user_passes_test(is_admin)
 def admin_tickets_pending(request):
     tickets = Ticket.objects.pending()
     pending_tickets = tickets.filter(status=Ticket.Status.PENDING).count()
@@ -489,6 +473,8 @@ def admin_tickets_pending(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_tickets_answered(request):
     tickets = Ticket.objects.answered()
     answered_tickets = tickets.filter(status=Ticket.Status.ANSWERED).count()
@@ -502,6 +488,8 @@ def admin_tickets_answered(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_tickets_closed(request):
     tickets = Ticket.objects.closed()
     closed_tickets = tickets.filter(status=Ticket.Status.CLOSED).count()
@@ -522,6 +510,8 @@ def admin_tickets_closed(request):
 ##############
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_deposits_all(request):
     template = "accounts/administrator/deposits/all.html"
     context = {}
@@ -529,6 +519,8 @@ def admin_deposits_all(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_deposits_pending(request):
     template = "accounts/administrator/deposits/pending.html"
     context = {}
@@ -536,6 +528,8 @@ def admin_deposits_pending(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_deposits_approved(request):
     template = "accounts/administrator/deposits/approved.html"
     context = {}
@@ -543,6 +537,8 @@ def admin_deposits_approved(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_deposits_rejected(request):
     template = "accounts/administrator/deposits/rejected.html"
     context = {}
@@ -555,6 +551,8 @@ def admin_deposits_rejected(request):
 ##############
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_withdrawals_all(request):
     template = "accounts/administrator/withdrawals/all.html"
     context = {}
@@ -562,6 +560,8 @@ def admin_withdrawals_all(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_withdrawals_pending(request):
     template = "accounts/administrator/withdrawals/pending.html"
     context = {}
@@ -569,6 +569,8 @@ def admin_withdrawals_pending(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_withdrawals_approved(request):
     template = "accounts/administrator/withdrawals/approved.html"
     context = {}
@@ -576,6 +578,8 @@ def admin_withdrawals_approved(request):
     return render(request, template, context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def admin_withdrawals_rejected(request):
     template = "accounts/administrator/withdrawals/rejected.html"
     context = {}

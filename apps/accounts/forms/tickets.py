@@ -11,7 +11,10 @@ class TicketCreateForm(forms.ModelForm):
                 attrs={"class": "form-control", "placeholder": "Subject"}
             ),
             "description": forms.Textarea(
-                attrs={"class": "form-control", "placeholder": "Describe your issue"}
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Describe your issue",
+                }
             ),
         }
 

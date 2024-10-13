@@ -1,6 +1,5 @@
 <tr>
     <td>#{{ ticket.ticket_id }}</td>
-    <td>{{ ticket.user }}</td>
     <td>{{ ticket.subject }}</td>
     <td>{{ ticket.created|date:"M j, Y" }}</td>
     <td>
@@ -10,7 +9,7 @@
     <td>
         <div class="d-flex">
             <div class="avatar me-2">
-                <a href="{% url 'administrator:tickets_detail' ticket.ticket_id %}"
+                <a href="{% url 'bettor:tickets_detail' ticket.ticket_id %}"
                     class="avatar-initial rounded bg-label-primary" data-bs-toggle="tooltip" data-bs-offset="0,8"
                     data-bs-placement="top" data-bs-custom-class="tooltip-primary" title="View Ticket">
                     <i class="fa-solid fa-eye"></i>

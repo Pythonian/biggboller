@@ -2,10 +2,12 @@ import uuid
 import string
 import random
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
+
+User = get_user_model()
 
 
 class TicketManager(models.Manager):
@@ -80,12 +82,6 @@ class Ticket(models.Model):
             )
             if not Ticket.objects.filter(ticket_id=ticket_id).exists():
                 return ticket_id
-
-    def get_absolute_url(self):
-        return reverse(
-            "administrator:tickets_detail",
-            args=[self.ticket_id],
-        )
 
 
 class Reply(models.Model):

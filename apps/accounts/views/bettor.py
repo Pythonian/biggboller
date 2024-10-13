@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 import uuid
 import requests
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.views import View
 from django.http import JsonResponse
@@ -12,8 +12,13 @@ from apps.accounts.forms import BundlePurchaseForm
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-from apps.accounts.forms import UserUpdateForm, ProfileUpdateForm
-from apps.accounts.models import Bundle, Deposit, Action
+from apps.accounts.forms import (
+    UserUpdateForm,
+    ProfileUpdateForm,
+    TicketCreateForm,
+    TicketReplyForm,
+)
+from apps.accounts.models import Bundle, Deposit, Action, Ticket
 from apps.accounts.utils import create_action
 from apps.core.utils import mk_paginator
 
@@ -223,3 +228,159 @@ class GetBundlePriceView(View):
             return JsonResponse({"price": float(bundle.price)})
         except Bundle.DoesNotExist:
             return JsonResponse({"error": "Bundle not found"}, status=404)
+
+
+##############
+# TICKETS
+##############
+
+
+def bettor_tickets_all(request):
+    tickets = Ticket.objects.filter(user=request.user)
+    total_tickets = tickets.count()
+    pending_tickets = tickets.filter(status=Ticket.Status.PENDING).count()
+    answered_tickets = tickets.filter(status=Ticket.Status.ANSWERED).count()
+    closed_tickets = tickets.filter(status=Ticket.Status.CLOSED).count()
+
+    if request.method == "POST":
+        form = TicketCreateForm(request.POST)
+
+        if form.is_valid():
+            ticket = form.save(commit=False)
+            ticket.status = Ticket.Status.PENDING
+            ticket.user = request.user
+            ticket.save()
+
+            messages.success(
+                request,
+                f'Your Ticket with ID "#{ticket.ticket_id}" have been created successfully.',
+            )
+            create_action(
+                request.user,
+                "New Ticket Opened",
+                "You created a new ticket for resolution.",
+                ticket,
+            )
+            return redirect("bettor:tickets_all")
+        else:
+            messages.error(request, "Please correct the form errors below.")
+    else:
+        form = TicketCreateForm()
+
+    tickets = mk_paginator(request, tickets, PAGINATION_COUNT)
+
+    template = "accounts/bettor/tickets/all.html"
+    context = {
+        "tickets": tickets,
+        "total_tickets": total_tickets,
+        "pending_tickets": pending_tickets,
+        "answered_tickets": answered_tickets,
+        "closed_tickets": closed_tickets,
+        "form": form,
+    }
+
+    return render(request, template, context)
+
+
+def bettor_tickets_detail(request, ticket_id):
+    ticket = get_object_or_404(Ticket, ticket_id=ticket_id)
+    replies = ticket.replies.all().order_by("created")
+
+    if request.method == "POST":
+        if "reply" in request.POST:
+            reply_form = TicketReplyForm(request.POST)
+            if reply_form.is_valid():
+                reply = reply_form.save(commit=False)
+                reply.ticket = ticket
+                reply.user = request.user
+                reply.save()
+                messages.success(
+                    request,
+                    "Your reply to this ticket has been posted.",
+                )
+                create_action(
+                    request.user,
+                    "New Reply To Ticket",
+                    "You posted a new reply to your ticket.",
+                    ticket,
+                )
+                return redirect(
+                    "bettor:tickets_detail",
+                    ticket_id=ticket.ticket_id,
+                )
+
+        elif "update_status" in request.POST:
+            new_status = request.POST.get("status")
+            if new_status in dict(Ticket.Status.choices):
+                ticket.status = new_status
+                ticket.save()
+                messages.success(
+                    request,
+                    "Ticket status updated successfully.",
+                )
+                create_action(
+                    request.user,
+                    "Ticket Status Update",
+                    "You updated the status of your ticket.",
+                    ticket,
+                )
+            else:
+                messages.error(request, "Invalid status selected.")
+            return redirect(
+                "bettor:tickets_detail",
+                ticket_id=ticket.ticket_id,
+            )
+
+    else:
+        reply_form = TicketReplyForm()
+
+    template = "accounts/bettor/tickets/detail.html"
+    context = {
+        "ticket": ticket,
+        "replies": replies,
+        "reply_form": reply_form,
+    }
+    return render(request, template, context)
+
+
+def bettor_tickets_pending(request):
+    tickets = Ticket.objects.pending().filter(user=request.user)
+    pending_tickets = tickets.filter(status=Ticket.Status.PENDING).count()
+
+    tickets = mk_paginator(request, tickets, PAGINATION_COUNT)
+
+    template = "accounts/bettor/tickets/pending.html"
+    context = {
+        "tickets": tickets,
+        "pending_tickets": pending_tickets,
+    }
+
+    return render(request, template, context)
+
+
+def bettor_tickets_answered(request):
+    tickets = Ticket.objects.answered().filter(user=request.user)
+    answered_tickets = tickets.filter(status=Ticket.Status.ANSWERED).count()
+
+    template = "accounts/bettor/tickets/answered.html"
+    context = {
+        "tickets": tickets,
+        "answered_tickets": answered_tickets,
+    }
+
+    return render(request, template, context)
+
+
+def bettor_tickets_closed(request):
+    tickets = Ticket.objects.closed().filter(user=request.user)
+    closed_tickets = tickets.filter(status=Ticket.Status.CLOSED).count()
+
+    tickets = mk_paginator(request, tickets, PAGINATION_COUNT)
+
+    template = "accounts/bettor/tickets/closed.html"
+    context = {
+        "tickets": tickets,
+        "closed_tickets": closed_tickets,
+    }
+
+    return render(request, template, context)
