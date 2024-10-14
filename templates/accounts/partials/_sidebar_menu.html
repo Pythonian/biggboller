@@ -295,8 +295,8 @@
                     </a>
                 </li>
                 <li
-                    class="menu-item {% url 'administrator:bundles_pending' as bundles_pending_url %}{% if request.get_full_path == bundles_pending_url %}active{% endif %}">
-                    <a href="{% url 'administrator:bundles_pending' %}" class="menu-link">
+                    class="menu-item {% url 'bettor:bundles_owned' as bundles_owned_url %}{% if request.get_full_path == bundles_owned_url %}active{% endif %}">
+                    <a href="{% url 'bettor:bundles_owned' %}" class="menu-link">
                         <div class="text-truncate">My Bundles</div>
                     </a>
                 </li>

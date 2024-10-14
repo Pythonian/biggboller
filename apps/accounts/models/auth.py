@@ -9,12 +9,6 @@ class Profile(models.Model):
         on_delete=models.CASCADE,
         verbose_name=_("user"),
     )
-    about = models.CharField(
-        _("about"),
-        blank=True,
-        max_length=140,
-        help_text=_("Tell us about yourself in 140 characters."),
-    )
     email_confirmed = models.BooleanField(
         _("email confirmed?"),
         default=False,
@@ -23,12 +17,6 @@ class Profile(models.Model):
     verified_account = models.BooleanField(
         _("verified account?"),
         default=False,
-    )
-    location = models.CharField(
-        _("location"),
-        max_length=30,
-        blank=True,
-        null=True,
     )
     phone_number = models.CharField(
         _("phone number"),

@@ -107,16 +107,90 @@ def bettor_deactivate(request):
     return render(request, template, context)
 
 
+##############
+# BUNDLES
+##############
+
+
+@login_required
 def bettor_bundles_all(request):
-    bundles = Bundle.objects.all()
-    pending_bundles = bundles.filter(status=Bundle.Status.PENDING).count()
+    bundles = Bundle.objects.filter(status=Bundle.Status.PENDING)
+    pending_bundles = bundles.count()
 
     bundles = mk_paginator(request, bundles, PAGINATION_COUNT)
+
+    if request.method == "POST":
+        bundle_id = request.POST.get("bundle_id")
+        try:
+            bundle = Bundle.objects.get(id=bundle_id)
+        except Bundle.DoesNotExist:
+            # Handle the case where the bundle does not exist
+            print(f"Bundle with ID {bundle_id} does not exist.")
+            return redirect("bettor:bundles_all")
+
+        form = BundlePurchaseForm(request.POST, bundle=bundle)
+        if form.is_valid():
+            quantity = int(form.cleaned_data["quantity"])
+            total_amount = bundle.price * quantity
+            # Generate a unique reference
+            reference = f"DEP-{uuid.uuid4().hex[:10].upper()}"
+            # Create a Deposit instance
+            deposit = Deposit.objects.create(
+                user=request.user,
+                bundle=bundle,
+                quantity=quantity,
+                amount=total_amount,
+                reference=reference,
+                status=Deposit.Status.PENDING,
+            )
+            return redirect("bettor:bundles_purchase", id=bundle.id)
+        else:
+            # Optionally, handle form errors
+            print("Form is invalid:", form.errors)
+    else:
+        form = BundlePurchaseForm()
 
     template = "accounts/bettor/bundles/all.html"
     context = {
         "bundles": bundles,
         "pending_bundles": pending_bundles,
+        "form": form,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+def bettor_bundles_purchase(request, id):
+    bundle = get_object_or_404(Bundle, id=id)
+    deposit = get_object_or_404(Deposit, bundle=bundle)
+
+    template = "accounts/bettor/bundles/purchase.html"
+    context = {
+        "bundle": bundle,
+        "deposit": deposit,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+def bettor_bundles_owned(request):
+    # Retrieve all deposits made by the user,
+    # along with related bundle and group data
+    bundles = (
+        Deposit.objects.filter(user=request.user)
+        .select_related("bundle", "bundle__group")
+        .order_by("-created")
+    )
+    total_bundles = bundles.count()
+
+    bundles = mk_paginator(request, bundles, PAGINATION_COUNT)
+
+    template = "accounts/bettor/bundles/owned.html"
+    context = {
+        "bundles": bundles,
+        "total_bundles": total_bundles,
     }
 
     return render(request, template, context)
@@ -218,16 +292,6 @@ class PaymentCallbackView(View):
             messages.error(request, "Payment verification failed.")
 
         return redirect("purchase_bundle")
-
-
-class GetBundlePriceView(View):
-    def get(self, request):
-        bundle_id = request.GET.get("bundle_id")
-        try:
-            bundle = Bundle.objects.get(id=bundle_id)
-            return JsonResponse({"price": float(bundle.price)})
-        except Bundle.DoesNotExist:
-            return JsonResponse({"error": "Bundle not found"}, status=404)
 
 
 ##############

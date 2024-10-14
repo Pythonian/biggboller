@@ -1,50 +1,22 @@
 from django import forms
-from apps.accounts.models import Bundle
 
 
 class BundlePurchaseForm(forms.Form):
-    bundle = forms.ModelChoiceField(
-        queryset=Bundle.objects.filter(status=Bundle.Status.PENDING),
-        label="Select Bundle",
-        widget=forms.Select(
-            attrs={
-                "class": "form-control",
-                "id": "bundle-select",
-            }
-        ),
-    )
-    quantity = forms.IntegerField(
-        min_value=1,
-        label="Quantity",
-        initial=1,
-        widget=forms.NumberInput(
-            attrs={"class": "form-control", "id": "quantity-input"}
-        ),
-    )
-    total_amount = forms.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        label="Total Amount",
-        required=False,
-        widget=forms.TextInput(
-            attrs={
-                "class": "form-control",
-                "id": "total-amount",
-                "readonly": "readonly",
-            }
-        ),
-    )
-
-    def clean_quantity(self):
-        quantity = self.cleaned_data.get("quantity")
-        bundle = self.cleaned_data.get("bundle")
+    def __init__(self, *args, **kwargs):
+        bundle = kwargs.pop("bundle", None)
+        super().__init__(*args, **kwargs)
         if bundle:
-            if quantity < bundle.min_bundles_per_user:
-                raise forms.ValidationError(
-                    f"Minimum {bundle.min_bundles_per_user} bundles required."
-                )
-            if quantity > bundle.max_bundles_per_user:
-                raise forms.ValidationError(
-                    f"Maximum {bundle.max_bundles_per_user} bundles allowed."
-                )
-        return quantity
+            min_qty = bundle.min_bundles_per_user
+            max_qty = bundle.max_bundles_per_user
+            self.fields["quantity"].choices = [
+                (i, i) for i in range(min_qty, max_qty + 1)
+            ]
+        else:
+            # Optionally, handle cases where bundle is not provided
+            self.fields["quantity"].choices = []
+
+    quantity = forms.ChoiceField(
+        label="Quantity",
+        # This will be populated dynamically in the __init__ method
+        choices=[],
+    )

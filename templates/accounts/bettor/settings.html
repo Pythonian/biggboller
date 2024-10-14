@@ -90,36 +90,6 @@
                         {% endif %}
                     </div>
 
-                    <!-- About Field -->
-                    <div class="mb-3">
-                        <label for="{{ profile_form.about.id_for_label }}" class="form-label">About</label>
-                        {% if profile_form.about.errors %}
-                        {% render_field profile_form.about class="form-control is-invalid" placeholder="Tell us about yourself" %}
-                        {% for error in profile_form.about.errors %}
-                        <div class="invalid-feedback">
-                            {{ error }}
-                        </div>
-                        {% endfor %}
-                        {% else %}
-                        {% render_field profile_form.about class="form-control" placeholder="Tell us about yourself" %}
-                        {% endif %}
-                    </div>
-
-                    <!-- Location Field -->
-                    <div class="mb-3">
-                        <label for="{{ profile_form.location.id_for_label }}" class="form-label">Location</label>
-                        {% if profile_form.location.errors %}
-                        {% render_field profile_form.location class="form-control is-invalid" placeholder="Enter your location" %}
-                        {% for error in profile_form.location.errors %}
-                        <div class="invalid-feedback">
-                            {{ error }}
-                        </div>
-                        {% endfor %}
-                        {% else %}
-                        {% render_field profile_form.location class="form-control" placeholder="Enter your location" %}
-                        {% endif %}
-                    </div>
-
                     <!-- Submit Button -->
                     <div class="mb-3">
                         <button class="btn btn-primary" type="submit">Update Profile</button>

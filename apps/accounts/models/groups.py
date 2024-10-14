@@ -203,11 +203,11 @@ class Bundle(models.Model):
         """
         Calculate the minimum potential win dynamically.
         """
-        return self.price * self.minimum_win_multiplier
+        return self.price * self.minimum_win_multiplier * self.min_bundles_per_user
 
     @property
     def potential_max_win(self):
         """
         Calculate the maximum potential win dynamically.
         """
-        return self.price * self.maximum_win_multiplier
+        return self.price * self.maximum_win_multiplier * self.max_bundles_per_user

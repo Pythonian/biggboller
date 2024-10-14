@@ -1,0 +1,100 @@
+{% extends "accounts/base.html" %}
+{% load humanize %}
+
+{% block title %}Purchase Bundle{% endblock title %}
+
+{% block content %}
+
+<div class="row invoice-preview">
+    <!-- Invoice -->
+    <div class="col-xl-9 col-12 mb-md-0 mb-4">
+        <div class="card invoice-preview-card">
+            <div class="card-body">
+                <div
+                    class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column p-sm-3 p-0">
+                    <div class="mb-xl-0 mb-4">
+                        <div class="d-flex mb-3 gap-2">
+                            <span class="app-brand-text demo fw-bold">
+                                <i class="fa-solid fa-coins me-2 text-primary"></i> BetBay
+                            </span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="me-1">Date:</span>
+                            <span class="fw-medium">{{ deposit.created|date:"F j, Y" }}</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="me-1">Reference:</span>
+                            <span class="fw-medium">{{ deposit.reference }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-0" />
+            <div class="card-body">
+                <div class="row p-sm-3 p-0">
+                    <div class="col-xl-6 col-md-6 col-12 mb-xl-0 mb-md-4 mb-sm-0 mb-4">
+                        <h6 class="pb-2">Purchase from:</h6>
+                        <p class="mb-1">{{ deposit.user.profile.get_screen_name }}</p>
+                        <p class="mb-1">{{ deposit.user.email }}</p>
+                    </div>
+                    <div class="col-xl-6 col-md-6 col-12">
+                        <h6 class="pb-2">Bundle Information:</h6>
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td class="pe-3">Name:</td>
+                                    <td class="fw-medium">{{ bundle.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="pe-3">Group:</td>
+                                    <td class="fw-medium">{{ bundle.group.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="pe-3">Price:</td>
+                                    <td class="fw-medium">₦{{ bundle.price|floatformat:0|intcomma }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="pe-3">Win Multipliers:</td>
+                                    <td class="fw-medium">x{{ bundle.minimum_win_multiplier }} -
+                                        x{{ bundle.maximum_win_multiplier }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="pe-3">Bundle Limits:</td>
+                                    <td class="fw-medium">{{ bundle.min_bundles_per_user }} -
+                                        {{ bundle.max_bundles_per_user }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table border-top m-0">
+                    <thead>
+                        <tr>
+                            <th>Bundle</th>
+                            <th>Unit Cost</th>
+                            <th>Quantity</th>
+                            <th>Total Amount</th>
+                            <th>Potential Win</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ deposit.bundle.name }}</td>
+                            <td>₦{{ deposit.bundle.price|floatformat:0|intcomma }}</td>
+                            <td>x{{ deposit.quantity }}</td>
+                            <td>₦{{ deposit.amount|floatformat:0|intcomma }}</td>
+                            <td>₦{{ deposit.potential_min_win|floatformat:0|intcomma }} -
+                                ₦{{ deposit.potential_max_win|floatformat:0|intcomma }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-body">
+                <button id="paystack-button" class="btn btn-success">Pay to Paystack</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

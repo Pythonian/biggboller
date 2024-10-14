@@ -41,6 +41,8 @@ from apps.accounts.views.bettor import (
     bettor_tickets_detail,
     bettor_tickets_answered,
     bettor_tickets_pending,
+    bettor_bundles_purchase,
+    bettor_bundles_owned,
 )
 
 __all__ = [
@@ -85,4 +87,6 @@ __all__ = [
     "bettor_tickets_detail",
     "bettor_tickets_answered",
     "bettor_tickets_pending",
+    "bettor_bundles_purchase",
+    "bettor_bundles_owned",
 ]

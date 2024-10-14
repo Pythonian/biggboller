@@ -1,0 +1,69 @@
+{% extends "accounts/base.html" %}
+{% load humanize %}
+{% block title %}My Bundles{% endblock title %}
+
+{% block content %}
+
+<div class="py-3">
+    <h4>My Bundles</h4>
+</div>
+
+<div class="row mb-4">
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=total_bundles label="My Bundles" icon_class="fa-solid fa-layer-group" color_class="primary" %}
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/bettor/partials/_card_header.html' with card_header="My Bundles List" %}
+
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Unit Cost</th>
+                            <th>Quantity</th>
+                            <th>Total Amount</th>
+                            <th>Potential Win</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for deposit in bundles %}
+                        <tr>
+                            <td>{{ deposit.bundle.name }}</td>
+                            <td>₦{{ deposit.bundle.price|floatformat:0|intcomma }}</td>
+                            <td>{{ deposit.quantity }}</td>
+                            <td>{{ deposit.amount|floatformat:0|intcomma }}</td>
+                            <td>₦{{ deposit.potential_min_win|floatformat:0|intcomma }} -
+                                ₦{{ deposit.potential_max_win|floatformat:0|intcomma }}
+                            </td>
+                            <td>{{ deposit.bundle.get_status_display }}</td>
+                            <td>
+                                <div class="d-flex">
+                                    <div class="avatar me-2">
+                                        <a href="#" class="avatar-initial rounded bg-label-primary"
+                                            data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="top"
+                                            data-bs-custom-class="tooltip-primary" title="View Bundle">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=bundles %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

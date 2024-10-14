@@ -16,11 +16,13 @@ class UserUpdateForm(forms.ModelForm):
     def clean_email(self):
         email = self.cleaned_data.get("email")
         if User.objects.filter(email=email).exclude(id=self.instance.id).exists():
-            raise forms.ValidationError("A user with that email already exists.")
+            raise forms.ValidationError(
+                "A user with that email already exists.",
+            )
         return email
 
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ["phone_number", "about", "location"]
+        fields = ["phone_number"]

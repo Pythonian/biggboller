@@ -61,3 +61,17 @@ class Deposit(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.bundle.name} - {self.amount}"
+
+    @property
+    def potential_min_win(self):
+        """
+        Calculate the minimum potential win dynamically.
+        """
+        return self.amount * self.bundle.minimum_win_multiplier
+
+    @property
+    def potential_max_win(self):
+        """
+        Calculate the maximum potential win dynamically.
+        """
+        return self.amount * self.bundle.maximum_win_multiplier
