@@ -27,8 +27,22 @@ PAGINATION_COUNT = 10
 
 @login_required
 def bettor_dashboard(request):
+    bundles = (
+        Deposit.objects.filter(user=request.user)
+        .select_related("bundle", "bundle__group")
+        .order_by("-created")
+    )
+    total_bundles = bundles.count()
+    actions = Action.objects.filter(user=request.user)
+    total_tickets = Ticket.objects.filter(user=request.user).count()
+
     template = "accounts/bettor/dashboard.html"
-    context = {}
+    context = {
+        "bundles": bundles,
+        "total_bundles": total_bundles,
+        "actions": actions,
+        "total_tickets": total_tickets,
+    }
 
     return render(request, template, context)
 

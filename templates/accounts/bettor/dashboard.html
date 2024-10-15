@@ -66,7 +66,7 @@
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="content-left">
-                        <h3 class="mb-0">2</h3>
+                        <h3 class="mb-0">{{ total_bundles }}</h3>
                         <small>My Bundles</small>
                     </div>
                     <span class="badge bg-label-info rounded-circle p-2">
@@ -81,7 +81,7 @@
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="content-left">
-                        <h3 class="mb-0">3</h3>
+                        <h3 class="mb-0">{{ total_tickets }}</h3>
                         <small>Total Tickets</small>
                     </div>
                     <span class="badge bg-label-warning rounded-circle p-2">
@@ -93,8 +93,7 @@
     </div>
 </div>
 
-<div class="row mb-4">
-    <!-- Bundle Performance -->
+<!-- <div class="row mb-4">
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
             <div class="card-header pb-0 mb-3">
@@ -110,8 +109,6 @@
             </div>
         </div>
     </div>
-    <!--/ Bundle Performance -->
-    <!-- Withdrawals -->
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
             <div class="card-header">
@@ -124,8 +121,6 @@
             </div>
         </div>
     </div>
-    <!--/ Withdrawals -->
-    <!-- Deposits -->
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
             <div class="card-header">
@@ -138,29 +133,26 @@
             </div>
         </div>
     </div>
-    <!--/ Deposits -->
-</div>
+</div> -->
 
 <div class="row">
-    <!-- Activity Timeline -->
-    <div class="col-md-12 col-lg-6 order-4 order-lg-3 ">
+    <div class="col-md-12 col-lg-6">
         <div class="card">
             <div class="card-header">
                 <h5 class="card-title m-0 me-2">Activity Timeline</h5>
             </div>
             <div class="card-body">
-                <!-- Activity Timeline -->
                 <ul class="timeline">
+                    {% for action in actions %}
                     {% include "accounts/partials/_timeline_item.html" %}
+                    {% endfor %}
                     <li class="timeline-end-indicator">
                         <i class="fas fa-check-circle"></i>
                     </li>
                 </ul>
-                <!-- /Activity Timeline -->
             </div>
         </div>
     </div>
-    <!--/ Activity Timeline -->
 </div>
 
 {% endblock content %}
