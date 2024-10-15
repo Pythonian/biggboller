@@ -8,10 +8,18 @@
     <td>
         <div class="d-flex">
             <div class="avatar me-2">
+                {% if bundle.status == "P" %}
+                <a href="{% url 'bettor:bundles_purchase' bundle.id %}" class="avatar-initial rounded bg-label-primary"
+                    data-bs-toggle="tooltip" data-bs-offset="0,8" data-bs-placement="top"
+                    data-bs-custom-class="tooltip-primary" title="View Bundle">
+                    <i class="fa-solid fa-eye"></i>
+                </a>
+                {% else %}
                 <a href="#purchaseBundle{{ bundle.id }}" class="avatar-initial rounded bg-label-primary"
                     data-bs-toggle="modal" title="Purchase Bundle">
                     <i class="fa-solid fa-sack-dollar"></i>
                 </a>
+                {% endif %}
             </div>
         </div>
     </td>
