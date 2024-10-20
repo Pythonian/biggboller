@@ -38,6 +38,7 @@ app_name = "administrator"
 
 urlpatterns = [
     path("dashboard/", admin_dashboard, name="dashboard"),
+    # Deposits
     path(
         "deposits/",
         include(
@@ -65,6 +66,7 @@ urlpatterns = [
             ]
         ),
     ),
+    # Withdrawals
     path(
         "withdrawals/",
         include(
@@ -92,6 +94,7 @@ urlpatterns = [
             ]
         ),
     ),
+    # Tickets
     path(
         "tickets/",
         include(
@@ -124,6 +127,7 @@ urlpatterns = [
             ]
         ),
     ),
+    # Users
     path(
         "users/",
         include(
@@ -166,6 +170,7 @@ urlpatterns = [
             ]
         ),
     ),
+    # Groups
     path(
         "groups/",
         include(
@@ -198,6 +203,7 @@ urlpatterns = [
             ]
         ),
     ),
+    # Bundles
     path(
         "bundles/",
         include(

@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import AuthenticationForm
 from django.core.validators import RegexValidator
 # from .models import Profile
 
@@ -20,6 +21,19 @@ DISALLOWED_USERNAMES = [
     "auth",
     "authentication",
 ]
+
+
+class UserLoginForm(AuthenticationForm):
+    """Custom Login form that extends Django's Login form."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    username = forms.EmailField(
+        label="Email address",
+        widget=forms.EmailInput(),
+    )
+    password = forms.CharField(widget=forms.PasswordInput())
 
 
 class UserRegistrationForm(forms.ModelForm):

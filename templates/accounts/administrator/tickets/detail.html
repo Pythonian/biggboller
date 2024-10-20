@@ -10,9 +10,11 @@
         <h4><span class="text-muted fw-light">Tickets /</span> #{{ ticket.ticket_id }}</h4>
         <p>{{ ticket.subject }}</p>
     </div>
+    {% if ticket.status == ticket.Status.PENDING %}
     <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#updateTicketStatus">
         <i class="fa-solid fa-hourglass-half me-2"></i> Update Status
     </button>
+    {% endif %}
 </div>
 
 <div class="row mb-4">
@@ -32,11 +34,11 @@
         </div>
     </div>
     <div class="col-sm-6 col-lg-3 mb-4">
-        <div class="card card-border-shadow-success h-100">
+        <div class="card card-border-shadow-dark h-100">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-2 pb-1">
                     <div class="avatar me-2">
-                        <span class="avatar-initial rounded bg-label-success">
+                        <span class="avatar-initial rounded bg-label-dark">
                             <i class="fa-solid fa-user"></i>
                         </span>
                     </div>
@@ -47,12 +49,15 @@
         </div>
     </div>
     <div class="col-sm-6 col-lg-3 mb-4">
-        <div class="card card-border-shadow-warning h-100">
+        <div
+            class="card card-border-shadow-{% if ticket.status == ticket.Status.PENDING %}info{% elif ticket.status == ticket.Status.ANSWERED %}success{% else %}danger{% endif %} h-100">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-2 pb-1">
                     <div class="avatar me-2">
-                        <span class="avatar-initial rounded bg-label-warning">
-                            <i class="fa-solid fa-hourglass-half"></i>
+                        <span
+                            class="avatar-initial rounded bg-label-{% if ticket.status == ticket.Status.PENDING %}info{% elif ticket.status == ticket.Status.ANSWERED %}success{% else %}danger{% endif %}">
+                            <i
+                                class="fa-solid {% if ticket.status == ticket.Status.PENDING %}fa-hourglass-half{% elif ticket.status == ticket.Status.ANSWERED %}fa-check{% else %}fa-ban{% endif %}"></i>
                         </span>
                     </div>
                     <h4 class="ms-1 mb-0">{{ ticket.get_status_display }}</h4>
@@ -105,6 +110,7 @@
         {% empty %}
         <p class="text-center text-muted mb-5">No Reply Yet.</p>
         {% endfor %}
+        {% if ticket.status == ticket.Status.PENDING %}
         <div class="card mt-4 border">
             <h6 class="card-header border-0">Enter your Reply</h6>
             <div class="card-body pt-0 px-3">
@@ -120,6 +126,7 @@
                 </form>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 

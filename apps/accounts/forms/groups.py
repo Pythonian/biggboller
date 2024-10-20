@@ -10,7 +10,10 @@ class GroupCreateForm(forms.ModelForm):
         fields = ["name", "description"]
         widgets = {
             "name": forms.TextInput(
-                attrs={"class": "form-control", "placeholder": _("Enter group name")}
+                attrs={
+                    "class": "form-control",
+                    "placeholder": _("Enter group name"),
+                }
             ),
             "description": forms.Textarea(
                 attrs={

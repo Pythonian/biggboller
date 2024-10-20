@@ -5,7 +5,7 @@
     <td>₦{{ bundle.price|floatformat:0|intcomma }}</td>
     <td>₦{{ bundle.potential_min_win|floatformat:0|intcomma }} - ₦{{ bundle.potential_max_win|floatformat:0|intcomma }}
     </td>
-    <td>{{ bundle.participants|default:0 }}</td>
+    <td>{{ bundle.participants_count }}</td>
     <td>
         <span
             class="badge rounded bg-label-{% if bundle.status == bundle.Status.PENDING %}info{% elif bundle.status == bundle.Status.WON %}success{% else %}danger{% endif %}">{{ bundle.get_status_display }}</span>

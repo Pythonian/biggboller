@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db import transaction
-from apps.accounts.models import Group, Bundle, Ticket, Profile, Action
+from apps.accounts.models import Group, Bundle, Ticket, Profile, Action, Deposit
 from apps.accounts.forms import (
     GroupCreateForm,
     GroupUpdateForm,
@@ -74,6 +74,24 @@ def admin_groups_all(request):
     running_groups = groups.filter(status=Group.Status.RUNNING).count()
     closed_groups = groups.filter(status=Group.Status.CLOSED).count()
 
+    groups = mk_paginator(request, groups, PAGINATION_COUNT)
+
+    template = "accounts/administrator/groups/all.html"
+    context = {
+        "groups": groups,
+        "total_groups": total_groups,
+        "running_groups": running_groups,
+        "closed_groups": closed_groups,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_groups_new(request):
+    """View to create a new betting group and its bundle."""
+
     if request.method == "POST":
         group_form = GroupCreateForm(request.POST, prefix="group")
         bundle_form = BundleCreateForm(request.POST, prefix="bundle")
@@ -96,26 +114,23 @@ def admin_groups_all(request):
                     request,
                     f'Group "{group.name}" and its Bundle "{bundle.name}" have been created successfully.',
                 )
-                return redirect("administrator:groups_all")
+                return redirect(group)
             except Exception as e:
                 messages.error(
                     request,
                     f"An error occurred while creating the Group and Bundle: {str(e)}",
                 )
         else:
-            messages.error(request, "Please correct the errors below.")
+            messages.error(
+                request,
+                "Please correct the errors below.",
+            )
     else:
         group_form = GroupCreateForm(prefix="group")
         bundle_form = BundleCreateForm(prefix="bundle")
 
-    groups = mk_paginator(request, groups, PAGINATION_COUNT)
-
-    template = "accounts/administrator/groups/all.html"
+    template = "accounts/administrator/groups/new.html"
     context = {
-        "groups": groups,
-        "total_groups": total_groups,
-        "running_groups": running_groups,
-        "closed_groups": closed_groups,
         "group_form": group_form,
         "bundle_form": bundle_form,
     }
@@ -177,15 +192,6 @@ def admin_groups_detail(request, id):
         "group": group,
         "form": form,
     }
-
-    return render(request, template, context)
-
-
-@login_required
-@user_passes_test(is_admin)
-def admin_groups_new(request):
-    template = "accounts/administrator/groups/new.html"
-    context = {}
 
     return render(request, template, context)
 
@@ -284,9 +290,13 @@ def admin_bundles_detail(request, id):
         else:
             messages.error(request, "Invalid status selected.")
 
+    # Get all deposits that are approved for this bundle
+    approved_deposits = bundle.deposits.filter(status=Deposit.Status.APPROVED)
+
     template = "accounts/administrator/bundles/detail.html"
     context = {
         "bundle": bundle,
+        "approved_deposits": approved_deposits,
     }
 
     return render(request, template, context)

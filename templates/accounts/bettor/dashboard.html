@@ -1,4 +1,5 @@
 {% extends "accounts/base.html" %}
+{% load humanize %}
 
 {% block title %}My Dashboard{% endblock title %}
 
@@ -36,8 +37,8 @@
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="content-left">
-                        <h3 class="mb-0">₦ 0.00</h3>
-                        <small>Total Stake</small>
+                        <h3 class="mb-0">₦ {{ total_deposits|floatformat:0|intcomma }}</h3>
+                        <small>Total Deposits</small>
                     </div>
                     <span class="badge bg-label-primary rounded-circle p-2">
                         <i class="fa-solid fa-money-bill-transfer fa-2x"></i>

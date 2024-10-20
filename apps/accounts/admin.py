@@ -21,7 +21,7 @@ class GroupAdmin(admin.ModelAdmin):
 @admin.register(Bundle)
 class BundleAdmin(admin.ModelAdmin):
     list_display = (
-        "group",
+        "name",
         "price",
         "potential_min_win",
         "potential_max_win",

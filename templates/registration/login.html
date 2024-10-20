@@ -19,16 +19,18 @@
                             Please try again.
                         </p>
                         {% endif %}
-                        <form class="mb-3" action="{% url 'auth:login' %}" method="POST">
+                        <form class="mb-3" action="{% url 'auth:login' %}" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="next" value="{{ next }}" />
                             <div class="mb-3">
-                                <label for="id_username" class="form-label">Username</label>
-                                {% render_field form.username class="form-control" placeholder="Enter your username" autofocus=autofocus %}
+                                <label for="{{ form.username.id_for_label }}"
+                                    class="form-label">{{ form.username.label }}</label>
+                                {% render_field form.username class="form-control" placeholder="Enter your email" autofocus=autofocus %}
                             </div>
                             <div class="mb-3">
                                 <div class="d-flex justify-content-between">
-                                    <label class="form-label" for="id_password">Password</label>
+                                    <label class="form-label"
+                                        for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
                                     <a href="{% url 'auth:password_reset' %}">
                                         <small>Forgot Password?</small>
                                     </a>

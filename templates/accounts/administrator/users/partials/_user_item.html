@@ -1,6 +1,6 @@
 <tr>
-    <td>{{ user.get_screen_name }}</td>
-    <td>{{ user.user.email }}</td>
+    <td>{{ user.get_screen_name }} <br>{{ user.user.email }}</td>
+    <td>{{ user.country }}</td>
     <td>{{ user.phone_number }}</td>
     <td>{{ user.user.date_joined }}</td>
     <td><span class="badge rounded bg-label-{{ status_label }}">{{ status }}</span></td>

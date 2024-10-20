@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth import get_user_model
 from django.utils.translation import gettext_lazy as _
 
 
@@ -22,7 +23,7 @@ class Group(models.Model):
     """
 
     class Status(models.TextChoices):
-        RUNNING = "A", _("Running")
+        RUNNING = "R", _("Running")
         CLOSED = "C", _("Closed")
 
     id = models.UUIDField(
@@ -165,6 +166,13 @@ class Bundle(models.Model):
         verbose_name=_("Updated At"),
         help_text=_("Timestamp when the bundle was last updated."),
     )
+    participants = models.ManyToManyField(
+        get_user_model(),
+        related_name="bundles",
+        blank=True,
+        verbose_name=_("Participants"),
+        help_text=_("Users who have purchased this bundle."),
+    )
 
     objects = BundleManager()
 
@@ -178,6 +186,13 @@ class Bundle(models.Model):
 
     def get_absolute_url(self):
         return reverse("administrator:bundles_detail", args=[self.id])
+
+    @property
+    def participants_count(self):
+        """
+        Return the number of participants who have purchased this bundle.
+        """
+        return self.participants.count()
 
     def clean(self):
         if self.maximum_win_multiplier <= self.minimum_win_multiplier:

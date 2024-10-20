@@ -1,13 +1,19 @@
 {% extends "accounts/base.html" %}
 {% load humanize %}
 
-{% block title %}Purchase Bundle - {{ bundle.name }}{% endblock title %}
+{% block title %}Payment Successful{% endblock title %}
 
 {% block content %}
-
 <div class="row invoice-preview">
-    <!-- Invoice -->
     <div class="col-xl-9 col-12 mb-md-0 mb-4">
+        <div class="alert alert-success text-center" role="alert">
+            <h4 class="alert-heading">Payment Successful!</h4>
+            <p>Thank you, {{ deposit.user.profile.get_screen_name }}, for your purchase!</p>
+            <p>Your payment for the bundle <strong>{{ deposit.bundle.name }}</strong> has been confirmed.</p>
+            <hr>
+            <p class="mb-0">Transaction Reference: <strong>{{ deposit.reference }}</strong></p>
+        </div>
+
         <div class="card invoice-preview-card">
             <div class="card-body">
                 <div
@@ -33,7 +39,7 @@
             <div class="card-body">
                 <div class="row p-sm-3 p-0">
                     <div class="col-xl-6 col-md-6 col-12 mb-xl-0 mb-md-4 mb-sm-0 mb-4">
-                        <h6 class="pb-2">Purchase from:</h6>
+                        <h6 class="pb-2">Purchased By:</h6>
                         <p class="mb-1">{{ deposit.user.profile.get_screen_name }}</p>
                         <p class="mb-1">{{ deposit.user.email }}</p>
                     </div>
@@ -68,6 +74,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="table-responsive">
                 <table class="table border-top m-0">
                     <thead>
@@ -91,34 +98,11 @@
                     </tbody>
                 </table>
             </div>
-            <div class="card-body">
-                <form>
-                    <script src="https://js.paystack.co/v1/inline.js"></script>
-                    <button id="paystack-button" class="btn btn-success" type="button" onclick="payWithPaystack()"> Pay
-                        With Paystack </button>
-                </form>
-            </div>
+        </div>
+
+        <div class="alert alert-info mt-4" role="alert">
+            <p class="mb-0">If you have any questions or need further assistance, please contact our support team.</p>
         </div>
     </div>
 </div>
 {% endblock content %}
-
-{% block paystack %}
-<script>
-    function payWithPaystack() {
-        var handler = PaystackPop.setup({
-            key: '{{ paystack_key }}',
-            email: '{{ deposit.user.email }}',
-            amount: {{ paystack_amount }},
-    reference: '' + Math.floor((Math.random() * 1000000000) + 1),
-        callback: function(response) {
-            window.location.href = "{{ paystack_redirect_url }}&trxref=" + response.reference
-        },
-    onClose: function() {
-        alert('Your transaction was either aborted or not completed, this window would be closed.');
-    }
-    });
-    handler.openIframe();
-  }
-</script>
-{% endblock %}

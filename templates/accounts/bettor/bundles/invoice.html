@@ -1,7 +1,7 @@
 {% extends "accounts/base.html" %}
 {% load humanize %}
 
-{% block title %}Purchase Bundle - {{ bundle.name }}{% endblock title %}
+{% block title %}Payment Invoice{% endblock title %}
 
 {% block content %}
 
@@ -91,34 +91,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="card-body">
-                <form>
-                    <script src="https://js.paystack.co/v1/inline.js"></script>
-                    <button id="paystack-button" class="btn btn-success" type="button" onclick="payWithPaystack()"> Pay
-                        With Paystack </button>
-                </form>
-            </div>
         </div>
     </div>
 </div>
 {% endblock content %}
-
-{% block paystack %}
-<script>
-    function payWithPaystack() {
-        var handler = PaystackPop.setup({
-            key: '{{ paystack_key }}',
-            email: '{{ deposit.user.email }}',
-            amount: {{ paystack_amount }},
-    reference: '' + Math.floor((Math.random() * 1000000000) + 1),
-        callback: function(response) {
-            window.location.href = "{{ paystack_redirect_url }}&trxref=" + response.reference
-        },
-    onClose: function() {
-        alert('Your transaction was either aborted or not completed, this window would be closed.');
-    }
-    });
-    handler.openIframe();
-  }
-</script>
-{% endblock %}

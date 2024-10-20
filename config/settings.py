@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "apps.accounts.apps.AccountsConfig",
     "apps.core.apps.CoreConfig",
     "widget_tweaks",
+    "paystack.frameworks.django",
 ]
 
 MIDDLEWARE = [
@@ -49,6 +50,9 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
+            "libraries": {
+                "paystack": "paystack.frameworks.django.templatetags.paystack",
+            },
         },
     },
 ]
@@ -124,3 +128,8 @@ LOGGING = {
         },
     },
 }
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "apps.accounts.authentication.EmailAuthenticationBackend",
+]

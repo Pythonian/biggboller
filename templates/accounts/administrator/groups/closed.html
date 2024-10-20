@@ -4,9 +4,14 @@
 
 {% block content %}
 
-<h4 class="py-3">
-    <span class="text-muted fw-light">Groups /</span> Closed Groups
-</h4>
+<div class="d-flex justify-content-between align-items-center py-3">
+    <h4>
+        <span class="text-muted fw-light">Groups /</span> Closed Groups
+    </h4>
+    <a href="{% url 'administrator:groups_new' %}" class="btn btn-outline-primary">
+        <i class="fa-solid fa-plus me-2"></i> Create New
+    </a>
+</div>
 
 <div class="row mb-4">
     {% include 'accounts/administrator/partials/_stats_card.html' with count=closed_groups label="Closed Groups" icon_class="fa-solid fa-times-circle" color_class="danger" %}

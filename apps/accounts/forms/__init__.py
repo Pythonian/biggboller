@@ -7,6 +7,7 @@ from apps.accounts.forms.tickets import TicketCreateForm, TicketReplyForm
 from apps.accounts.forms.auth import (
     UserRegistrationForm,
     ResendActivationEmailForm,
+    UserLoginForm,
 )
 from apps.accounts.forms.transactions import BundlePurchaseForm
 from apps.accounts.forms.bettors import UserUpdateForm, ProfileUpdateForm
@@ -22,4 +23,5 @@ __all__ = [
     "BundlePurchaseForm",
     "UserUpdateForm",
     "ProfileUpdateForm",
+    "UserLoginForm",
 ]

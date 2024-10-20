@@ -1,6 +1,5 @@
 import uuid
 from django.conf import settings
-from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -44,6 +43,10 @@ class Deposit(models.Model):
         max_length=100,
         unique=True,
         verbose_name=_("Payment Reference"),
+    )
+    paystack_id = models.CharField(
+        max_length=150,
+        blank=True,
     )
     status = models.CharField(
         max_length=1,

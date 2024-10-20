@@ -1,7 +1,7 @@
 {% extends "accounts/base.html" %}
 {% load humanize %}
 
-{% block title %}{{ group.name }}{% endblock title %}
+{% block title %}{{ group.name }} | Group{% endblock title %}
 
 {% block content %}
 
@@ -31,7 +31,8 @@
                 <div class="d-flex align-items-center gap-3">
                     <span
                         class=" bg-label-{% if group.status == group.Status.RUNNING %}success{% else %}danger{% endif %} py-2 px-3 rounded">
-                        <i class='fa-solid fa-hourglass-half'></i>
+                        <i
+                            class='fa-solid {% if group.status == group.Status.RUNNING %}fa-check-circle{% else %}fa-times-circle{% endif %}'></i>
                     </span>
                     <div class="content-right">
                         <p class="mb-0">Status</p>
@@ -113,9 +114,9 @@
                             <i class="fa-solid fa-trophy"></i>
                         </span>
                     </div>
-                    <h4 class="ms-1 mb-0">₦{{ group.bundle.potential_min_win|floatformat:0|intcomma }} -
+                    <h6 class="ms-1 mb-0">₦{{ group.bundle.potential_min_win|floatformat:0|intcomma }} -
                         ₦{{ group.bundle.potential_max_win|floatformat:0|intcomma }}
-                    </h4>
+                    </h6>
                 </div>
                 <p class="mb-1">Potential Winnings</p>
                 <p class="mb-0">

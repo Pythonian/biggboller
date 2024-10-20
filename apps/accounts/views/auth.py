@@ -1,14 +1,14 @@
-from django.contrib.auth import login
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth import get_user_model, logout
+from django.contrib.auth import get_user_model, login
+from django.contrib.auth.views import LogoutView, PasswordChangeView
 from django.contrib.sites.shortcuts import get_current_site
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
+from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
-from apps.accounts.forms import UserRegistrationForm, ResendActivationEmailForm
+from apps.accounts.forms import ResendActivationEmailForm, UserRegistrationForm
 from apps.accounts.tokens import account_activation_token
 from apps.accounts.utils import create_action, send_email_thread
 
@@ -77,7 +77,7 @@ def register(request):
             create_action(
                 user,
                 "New user registration",
-                "has just registered for an account.",
+                "registered for an account.",
                 user.profile,
             )
             return redirect("auth:account_activation_sent")
@@ -204,7 +204,11 @@ def account_activate(request, uidb64, token):
         user.is_active = True
         user.profile.email_confirmed = True
         user.save()
-        login(request, user)
+        login(
+            request,
+            user,
+            backend="apps.accounts.authentication.EmailAuthenticationBackend",
+        )
         messages.success(
             request,
             "Your account has been successully activated.",
@@ -212,9 +216,27 @@ def account_activate(request, uidb64, token):
         create_action(
             user,
             "Account Email Activated",
-            "has just verified their email address.",
+            "verified their account's email address.",
             user.profile,
         )
         return redirect("bettor:dashboard")
     else:
         return render(request, "registration/activate.html", {})
+
+
+class CustomPasswordChangeView(PasswordChangeView):  # login_required
+    success_url = reverse_lazy("auth:password_change")
+
+    def form_valid(self, form):
+        messages.success(
+            self.request,
+            "Your password was successfully changed.",
+        )
+        return super().form_valid(form)
+
+
+class CustomLogoutView(LogoutView):
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            messages.success(request, "You have successfully logged out.")
+        return super().dispatch(request, *args, **kwargs)
