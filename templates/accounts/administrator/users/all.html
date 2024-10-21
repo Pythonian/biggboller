@@ -34,10 +34,9 @@
                     </tbody>
                 </table>
             </div>
-            {% include "accounts/administrator/partials/_pagination.html" %}
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=bettors %}
         </div>
     </div>
 </div>
 
-{% include "accounts/administrator/users/modals/ban_user.html" %}
 {% endblock content %}

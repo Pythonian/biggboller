@@ -2,7 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db import transaction
-from apps.accounts.models import Group, Bundle, Ticket, Profile, Action, Deposit
+from apps.accounts.models import (
+    Group,
+    Bundle,
+    Ticket,
+    Profile,
+    Action,
+    Deposit,
+)
 from apps.accounts.forms import (
     GroupCreateForm,
     GroupUpdateForm,
@@ -312,7 +319,10 @@ def admin_bundles_detail(request, id):
 def admin_users_all(request):
     bettors = Profile.objects.filter(user__is_staff=False)
     registered_users = bettors.count()
-    active_users = bettors.filter(email_confirmed=True).count()
+    active_users = bettors.filter(
+        email_confirmed=True,
+        is_banned=False,
+    ).count()
     banned_users = bettors.filter(is_banned=True).count()
     deactivated_users = bettors.filter(user__is_active=False).count()
     verified_users = bettors.filter(verified_account=True).count()
@@ -337,8 +347,20 @@ def admin_users_all(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_users_active(request):
+    bettors = Profile.objects.filter(
+        user__is_staff=False,
+        email_confirmed=True,
+        is_banned=False,
+    )
+    active_users = bettors.count()
+
+    bettors = mk_paginator(request, bettors, PAGINATION_COUNT)
+
     template = "accounts/administrator/users/active.html"
-    context = {}
+    context = {
+        "bettors": bettors,
+        "active_users": active_users,
+    }
 
     return render(request, template, context)
 
@@ -346,8 +368,19 @@ def admin_users_active(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_users_banned(request):
+    bettors = Profile.objects.filter(
+        user__is_staff=False,
+        is_banned=True,
+    )
+    banned_users = bettors.count()
+
+    bettors = mk_paginator(request, bettors, PAGINATION_COUNT)
+
     template = "accounts/administrator/users/banned.html"
-    context = {}
+    context = {
+        "bettors": bettors,
+        "banned_users": banned_users,
+    }
 
     return render(request, template, context)
 
@@ -355,8 +388,19 @@ def admin_users_banned(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_users_unverified(request):
+    bettors = Profile.objects.filter(
+        user__is_staff=False,
+        verified_account=False,
+    )
+    unverified_users = bettors.count()
+
+    bettors = mk_paginator(request, bettors, PAGINATION_COUNT)
+
     template = "accounts/administrator/users/unverified.html"
-    context = {}
+    context = {
+        "bettors": bettors,
+        "unverified_users": unverified_users,
+    }
 
     return render(request, template, context)
 
@@ -364,8 +408,19 @@ def admin_users_unverified(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_users_verified(request):
+    bettors = Profile.objects.filter(
+        user__is_staff=False,
+        verified_account=True,
+    )
+    verified_users = bettors.count()
+
+    bettors = mk_paginator(request, bettors, PAGINATION_COUNT)
+
     template = "accounts/administrator/users/verified.html"
-    context = {}
+    context = {
+        "bettors": bettors,
+        "verified_users": verified_users,
+    }
 
     return render(request, template, context)
 
@@ -373,8 +428,20 @@ def admin_users_verified(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_users_deactivated(request):
+    bettors = Profile.objects.filter(
+        user__is_staff=False,
+        email_confirmed=True,
+        user__is_active=False,
+    )
+    deactivated_users = bettors.count()
+
+    bettors = mk_paginator(request, bettors, PAGINATION_COUNT)
+
     template = "accounts/administrator/users/deactivated.html"
-    context = {}
+    context = {
+        "bettors": bettors,
+        "deactivated_users": deactivated_users,
+    }
 
     return render(request, template, context)
 
@@ -446,7 +513,10 @@ def admin_tickets_detail(request, ticket_id):
             if new_status in dict(Ticket.Status.choices):
                 ticket.status = new_status
                 ticket.save()
-                messages.success(request, "Ticket status updated successfully.")
+                messages.success(
+                    request,
+                    "Ticket status updated successfully.",
+                )
             else:
                 messages.error(request, "Invalid status selected.")
             return redirect(

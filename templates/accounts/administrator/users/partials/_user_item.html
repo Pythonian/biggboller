@@ -1,9 +1,11 @@
 <tr>
-    <td>{{ user.get_screen_name }} <br>{{ user.user.email }}</td>
-    <td>{{ user.country }}</td>
+    <td>{{ user.get_screen_name }}</td>
+    <td>{{ user.user.email }}</td>
     <td>{{ user.phone_number }}</td>
     <td>{{ user.user.date_joined }}</td>
-    <td><span class="badge rounded bg-label-{{ status_label }}">{{ status }}</span></td>
+    <td><span
+            class="badge rounded bg-label-{% if user.is_banned %}danger{% elif user.email_confirmed %}success{% else %}info{% endif %}">{% if user.is_banned %}Banned{% elif user.email_confirmed %}Active{% else %}Pending{% endif %}</span>
+    </td>
     <td>
         <div class="d-flex">
             <div class="avatar me-2">
