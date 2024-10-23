@@ -1,4 +1,4 @@
-# Betbay
+# Bigg-Boller
 
 ## **Project Overview**
 
@@ -277,13 +277,13 @@ Bettors interact with the platform to view betting groups, purchase bundles, man
 
 ----------------------------------------
 
-Absolutely! To develop a robust and scalable betting web application like **Betbay**, it's crucial to design a well-structured database schema. This schema will define the tables, their fields, and the relationships between them, ensuring that all features operate seamlessly. Below is a comprehensive breakdown of the necessary database tables, their fields, data types, primary and foreign keys, along with the relationships between them.
+Absolutely! To develop a robust and scalable betting web application like **Bigg-Boller**, it's crucial to design a well-structured database schema. This schema will define the tables, their fields, and the relationships between them, ensuring that all features operate seamlessly. Below is a comprehensive breakdown of the necessary database tables, their fields, data types, primary and foreign keys, along with the relationships between them.
 
 ---
 
 ## **Database Schema Overview**
 
-The database schema for **Betbay** encompasses several interconnected tables designed to handle user management, betting operations, financial transactions, support, notifications, and system configurations. Below is a detailed description of each table, including their fields and relationships.
+The database schema for **Bigg-Boller** encompasses several interconnected tables designed to handle user management, betting operations, financial transactions, support, notifications, and system configurations. Below is a detailed description of each table, including their fields and relationships.
 
 ---
 

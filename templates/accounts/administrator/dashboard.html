@@ -51,7 +51,7 @@
                     </div>
                 </div>
                 <span>Total Payouts</span>
-                <h3 class="card-title text-nowrap mb-1">₦1,005,500</h3>
+                <h3 class="card-title text-nowrap mb-1">₦0.00</h3>
             </div>
         </div>
     </div>
@@ -212,7 +212,25 @@
             </div>
             <div class="card-body">
                 <ul class="p-0 m-0">
-                    {% include "accounts/partials/_latest_withdrawal_item.html" %}
+                    {% for deposit in latest_deposits %}
+                    <li class="d-flex mb-4 pb-1">
+                        <div class="avatar flex-shrink-0 me-3">
+                            <span class="avatar-initial rounded-circle bg-label-success">
+                                {{ deposit.user__first_name|make_list|first|title }}
+                            </span>
+                        </div>
+                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="me-2">
+                                <small class="text-muted d-block mb-1">{{ deposit.user__first_name }}
+                                    {{ deposit.user__last_name }}</small>
+                                <h6 class="mb-0">{{ deposit.paystack_id }}</h6>
+                            </div>
+                            <div class="user-progress d-flex align-items-center gap-1">
+                                <h6 class="mb-0">₦{{ deposit.amount|floatformat:0|intcomma }}</h6>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>

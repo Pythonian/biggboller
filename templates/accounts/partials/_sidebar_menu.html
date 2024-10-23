@@ -3,7 +3,7 @@
         <a href="{% if 'administrator' in request.path %}{% url 'administrator:dashboard' %}{% else %}{% url 'bettor:dashboard' %}{% endif %}"
             class="app-brand-link">
             <span class="app-brand-text demo menu-text fw-bold">
-                <i class="fa-solid fa-coins me-2 text-primary"></i> BetBay
+                <i class="fa-solid fa-coins me-2 text-primary"></i> Bigg-Boller
             </span>
         </a>
     </div>
@@ -233,7 +233,7 @@
         </li>
 
         <!-- Reports -->
-        <li class="menu-header small text-uppercase">
+        <!-- <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Reports</span>
         </li>
         <li class="menu-item">
@@ -253,7 +253,7 @@
                 <i class="menu-icon fa-solid fa-bullhorn"></i>
                 <div class="text-truncate">Notification History</div>
             </a>
-        </li>
+        </li> -->
     </ul>
     {% else %}
     <ul class="menu-inner py-1">
