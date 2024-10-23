@@ -29,7 +29,7 @@ def payment_successful_email(deposit_id):
     deposit = get_object_or_404(Deposit, id=deposit_id)
 
     # Prepare the email content
-    subject = "Thank you for your contribution on When Will I Be Famous?"
+    subject = "Your Bundle Purchase Has Been Completed"
     text_content = render_to_string(
         "accounts/bettor/bundles/email/acknowledgment.txt",
         {"deposit": deposit},
@@ -47,3 +47,34 @@ def payment_successful_email(deposit_id):
         recipient_email=deposit.user.email,
         recipient_name=deposit.user.get_full_name(),
     )
+
+
+# def payment_successful_email(deposit_id):
+#     deposit = get_object_or_404(Deposit, id=deposit_id)
+
+#     # Prepare the email content
+#     subject = "Thank you for your contribution on When Will I Be Famous?"
+
+#     # Render the email contents
+#     text_content = render_to_string(
+#         "accounts/bettor/bundles/email/acknowledgment.txt",
+#         {"deposit": deposit},
+#     )
+#     html_content = render_to_string(
+#         "accounts/bettor/bundles/email/acknowledgment.html",
+#         {"deposit": deposit},
+#     )
+
+#     # Log for debugging
+#     if not text_content and not html_content:
+#         logger.error(f"Email content is empty for deposit ID: {deposit_id}")
+#         return
+
+#     # Send the email asynchronously using threading
+#     send_email_thread(
+#         subject=subject,
+#         text_content=text_content,
+#         html_content=html_content,
+#         recipient_email=deposit.user.email,
+#         recipient_name=deposit.user.get_full_name(),
+#     )

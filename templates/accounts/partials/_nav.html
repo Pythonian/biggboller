@@ -96,6 +96,7 @@
                     <li>
                         <div class="dropdown-divider"></div>
                     </li>
+                    {% if request.user.profile.email_confirmed %}
                     <li>
                         <a class="dropdown-item" href="{% url 'bettor:profile' %}">
                             <i class="fas fa-user me-2"></i>
@@ -111,6 +112,7 @@
                     <li>
                         <div class="dropdown-divider"></div>
                     </li>
+                    {% endif %}
                     <li>
                         <a class="dropdown-item" href="{% url 'auth:password_change' %}">
                             <i class="fas fa-key me-2"></i>

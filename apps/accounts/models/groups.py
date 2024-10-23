@@ -81,7 +81,10 @@ class Group(models.Model):
 
 class BundleManager(models.Manager):
     def pending(self):
-        return self.filter(status=Bundle.Status.PENDING)
+        return self.filter(
+            status=Bundle.Status.PENDING,
+            group__status=Group.Status.RUNNING,
+        )
 
     def won(self):
         return self.filter(status=Bundle.Status.WON)

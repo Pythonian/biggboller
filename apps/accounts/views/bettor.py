@@ -17,7 +17,7 @@ from apps.accounts.forms import (
     TicketCreateForm,
     TicketReplyForm,
 )
-from apps.accounts.models import Bundle, Deposit, Action, Ticket
+from apps.accounts.models import Bundle, Deposit, Action, Ticket, Group
 from apps.accounts.utils import create_action
 from apps.core.utils import mk_paginator
 
@@ -89,7 +89,7 @@ def bettor_settings(request):
             create_action(
                 user,
                 "User profile updated",
-                "You updated your profile information successfully.",
+                "updated their profile information successfully.",
                 user.profile,
             )
             return redirect("bettor:profile")
@@ -158,67 +158,127 @@ def bettor_bundles_owned(request):
 
 @login_required
 def bettor_bundles_all(request):
-    bundles = Bundle.objects.filter(status=Bundle.Status.PENDING)
+    # Get all bundles
+    bundles = Bundle.objects.filter(
+        status=Bundle.Status.PENDING,
+        group__status=Group.Status.RUNNING,
+    )
+
+    # Get bundles where the user has an Approved deposit
+    approved_bundles = Deposit.objects.filter(
+        user=request.user, status=Deposit.Status.APPROVED
+    ).values_list("bundle_id", flat=True)
+
+    # Exclude the bundles the user has an Approved deposit for
+    bundles = bundles.exclude(id__in=approved_bundles)
+
     pending_bundles = bundles.count()
 
+    # Apply pagination
     bundles = mk_paginator(request, bundles, PAGINATION_COUNT)
-
-    if request.method == "POST":
-        bundle_id = request.POST.get("bundle_id")
-        try:
-            bundle = Bundle.objects.get(id=bundle_id)
-        except Bundle.DoesNotExist:
-            messages.success(request, f"Bundle with ID {bundle_id} does not exist.")
-            return redirect("bettor:bundles_all")
-
-        form = BundlePurchaseForm(request.POST, bundle=bundle)
-        if form.is_valid():
-            quantity = int(form.cleaned_data["quantity"])
-            total_amount = bundle.price * quantity
-
-            # Check if there is an existing pending deposit for this bundle
-            deposit = Deposit.objects.filter(
-                user=request.user,
-                bundle=bundle,
-                status=Deposit.Status.PENDING,
-            ).first()
-
-            if deposit:
-                # Update the existing deposit if it's found
-                deposit.quantity = quantity
-                deposit.amount = total_amount
-                deposit.save()
-                messages.info(
-                    request, "Your previous pending deposit has been updated."
-                )
-            else:
-                # Generate a unique reference and create a new deposit if none exists
-                reference = f"DEP-{uuid.uuid4().hex[:10].upper()}"
-                deposit = Deposit.objects.create(
-                    user=request.user,
-                    bundle=bundle,
-                    quantity=quantity,
-                    amount=total_amount,
-                    reference=reference,
-                    status=Deposit.Status.PENDING,
-                )
-
-            return redirect("bettor:bundles_purchase", id=bundle.id)
-        else:
-            messages.error(
-                request,
-                "An error occured while submitting the form.",
-            )
-            # Optionally, handle form errors
-            print("Form is invalid:", form.errors)
-    else:
-        form = BundlePurchaseForm()
 
     template = "accounts/bettor/bundles/all.html"
     context = {
         "bundles": bundles,
         "pending_bundles": pending_bundles,
+    }
+
+    return render(request, template, context)
+
+
+# @login_required
+# def bettor_bundles_detail(request, id):
+#     bundle = get_object_or_404(Bundle, id=id)
+
+#     if request.method == "POST":
+#         form = BundlePurchaseForm(request.POST, bundle=bundle)
+#         if form.is_valid():
+#             quantity = int(form.cleaned_data["quantity"])
+#             total_amount = bundle.price * quantity
+
+#             # Check if there's already a pending deposit for this user and bundle
+#             deposit, created = Deposit.objects.get_or_create(
+#                 user=request.user,
+#                 bundle=bundle,
+#                 status=Deposit.Status.PENDING,
+#                 defaults={
+#                     "quantity": quantity,
+#                     "amount": total_amount,
+#                 },
+#             )
+
+#             # If the deposit already exists but has a different quantity/amount, update it
+#             if not created and (
+#                 deposit.quantity != quantity or deposit.amount != total_amount
+#             ):
+#                 deposit.quantity = quantity
+#                 deposit.amount = total_amount
+#                 deposit.save()
+
+#             request.session["deposit_id"] = str(deposit.id)
+
+#             return redirect("bettor:bundles_purchase", id=bundle.id)
+#         else:
+#             messages.error(
+#                 request,
+#                 "An error occurred while submitting the form. Try again.",
+#             )
+#     else:
+#         form = BundlePurchaseForm(bundle=bundle)
+
+#     template = "accounts/bettor/bundles/detail.html"
+#     context = {
+#         "bundle": bundle,
+#         "form": form,
+#     }
+
+#     return render(request, template, context)
+
+
+@login_required
+def bettor_bundles_detail(request, id):
+    bundle = get_object_or_404(Bundle, id=id)
+    try:
+        deposit = Deposit.objects.get(
+            bundle=bundle,
+            status=Deposit.Status.APPROVED,
+        )
+    except Deposit.DoesNotExist:
+        deposit = None
+
+    if request.method == "POST":
+        form = BundlePurchaseForm(request.POST, bundle=bundle)
+        if form.is_valid():
+            quantity = int(form.cleaned_data["quantity"])
+            total_amount = bundle.price * quantity
+
+            try:
+                deposit = Deposit.objects.create(
+                    user=request.user,
+                    bundle=bundle,
+                    quantity=quantity,
+                    amount=total_amount,
+                    status=Deposit.Status.PENDING,
+                )
+            except Exception as e:
+                messages.error(request, f"Deposit creation failed: {str(e)}")
+                return redirect("bettor:bundles_detail", id=bundle.id)
+            request.session["deposit_id"] = str(deposit.id)
+
+            return redirect("bettor:bundles_purchase", id=bundle.id)
+        else:
+            messages.error(
+                request,
+                "An error occured while submitting the form. Try again.",
+            )
+    else:
+        form = BundlePurchaseForm(bundle=bundle)
+
+    template = "accounts/bettor/bundles/detail.html"
+    context = {
+        "bundle": bundle,
         "form": form,
+        "deposit": deposit,
     }
 
     return render(request, template, context)
@@ -226,30 +286,27 @@ def bettor_bundles_all(request):
 
 @login_required
 def bettor_bundles_purchase(request, id):
+    # Fetch the bundle and pending deposit
     bundle = get_object_or_404(Bundle, id=id)
-
-    # Fetch the pending deposit for the current user and bundle
-    deposit = Deposit.objects.filter(
-        user=request.user,
+    deposit_id = request.session.get("deposit_id")
+    deposit = get_object_or_404(
+        Deposit,
+        id=deposit_id,
         bundle=bundle,
+        user=request.user,
         status=Deposit.Status.PENDING,
-    ).first()
+    )
 
-    if not deposit:
-        # If no deposit exists, handle it (redirect or raise error)
-        messages.error(request, "No pending deposit found for this bundle.")
-        return redirect("bettor:bundles_all")
-
-    request.session["deposit_id"] = str(deposit.id)
-
+    # Calculate Paystack amount (in kobo)
     paystack_amount = int(deposit.amount * 100)
 
+    # Generate the Paystack reference if it doesn't already exist
     paystack_ref = deposit.paystack_id or get_random_string(length=12).upper()
-
     if not deposit.paystack_id:
         deposit.paystack_id = paystack_ref
         deposit.save()
 
+    # Create the Paystack redirect URL for after payment
     paystack_redirect_url = "{}?amount={}".format(
         reverse("paystack:verify_payment", args=[paystack_ref]),
         paystack_amount,
@@ -270,27 +327,30 @@ def bettor_bundles_purchase(request, id):
 
 @csrf_exempt
 def payment_done(request, ref):
-    # deposit_id = request.session.get("deposit_id")
-    # deposit = get_object_or_404(Deposit, id=deposit_id)
+    # Fetch the Deposit using the paystack_id
     deposit = get_object_or_404(Deposit, paystack_id=ref)
-    if deposit:
-        create_action(
-            deposit.user,
-            "has just purchased a bundle.",
-            deposit.bundle,
+    print(f"deposit - {deposit}")
+
+    if deposit.status == Deposit.Status.APPROVED:
+        # Add success message
+        messages.success(
+            request,
+            f"Payment successful! Your purchase of {deposit.quantity} bundle(s) for {deposit.bundle.name} is complete.",
         )
 
-    template = "paystack/invoice.html"
-    context = {
-        "deposit": deposit,
-    }
-
-    return render(request, template, context)
+        # Redirect to bundles_detail view with the bundle ID
+        return redirect("bettor:bundles_detail", id=deposit.bundle.id)
+    else:
+        # Handle the case where payment was not successful
+        messages.error(
+            request, "There was an issue with your payment. Please contact support."
+        )
+        return redirect("bettor:bundles_detail", id=deposit.bundle.id)
 
 
 @csrf_exempt
 def payment_cancelled(request):
-    return render(request, "paystack/cancelled.html")
+    return render(request, "paystack/failed-page.html")
 
 
 ##############

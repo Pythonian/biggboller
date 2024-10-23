@@ -39,14 +39,11 @@ class Deposit(models.Model):
         decimal_places=2,
         verbose_name=_("Amount"),
     )
-    reference = models.CharField(
-        max_length=100,
-        unique=True,
-        verbose_name=_("Payment Reference"),
-    )
     paystack_id = models.CharField(
         max_length=150,
         blank=True,
+        unique=True,
+        verbose_name=_("Paystack Reference ID"),
     )
     status = models.CharField(
         max_length=1,

@@ -12,12 +12,18 @@ from apps.accounts.views import (
     bettor_tickets_pending,
     bettor_bundles_purchase,
     bettor_bundles_owned,
+    bettor_bundles_detail,
 )
 
 app_name = "bettor"
 
 urlpatterns = [
     path("dashboard/", bettor_dashboard, name="dashboard"),
+    path(
+        "bundles/<uuid:id>/",
+        bettor_bundles_detail,
+        name="bundles_detail",
+    ),
     path(
         "bundles/purchase/<uuid:id>/",
         bettor_bundles_purchase,

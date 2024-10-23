@@ -98,7 +98,7 @@
                         <div class="text-truncate">Active Users</div>
                     </a>
                 </li>
-                <li
+                <!-- <li
                     class="menu-item {% url 'administrator:users_verified' as users_verified_url %}{% if request.get_full_path == users_verified_url %}active{% endif %}">
                     <a href="{% url 'administrator:users_verified' %}" class="menu-link">
                         <div class="text-truncate">Verified Users</div>
@@ -109,7 +109,7 @@
                     <a href="{% url 'administrator:users_unverified' %}" class="menu-link">
                         <div class="text-truncate">Unverified Users</div>
                     </a>
-                </li>
+                </li> -->
                 <li
                     class="menu-item {% url 'administrator:users_banned' as users_banned_url %}{% if request.get_full_path == users_banned_url %}active{% endif %}">
                     <a href="{% url 'administrator:users_banned' %}" class="menu-link">
@@ -122,12 +122,12 @@
                         <div class="text-truncate">Deactivated Users</div>
                     </a>
                 </li>
-                <li
+                <!-- <li
                     class="menu-item {% url 'administrator:users_notifications' as users_notifications_url %}{% if request.get_full_path == users_notifications_url %}active{% endif %}">
                     <a href="{% url 'administrator:users_notifications' %}" class="menu-link">
                         <div class="text-truncate">Send Notifications</div>
                     </a>
-                </li>
+                </li> -->
             </ul>
         </li>
         <li class="menu-item {% if 'tickets' in request.path %}active open{% endif %}">

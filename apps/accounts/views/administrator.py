@@ -593,8 +593,22 @@ def admin_tickets_closed(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_deposits_all(request):
+    deposits = Deposit.objects.all()
+    total_deposits = deposits.count()
+    pending_deposits = deposits.filter(status=Deposit.Status.PENDING).count()
+    approved_deposits = deposits.filter(status=Deposit.Status.APPROVED).count()
+    rejected_deposits = deposits.filter(status=Deposit.Status.REJECTED).count()
+
+    deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
+
     template = "accounts/administrator/deposits/all.html"
-    context = {}
+    context = {
+        "deposits": deposits,
+        "total_deposits": total_deposits,
+        "pending_deposits": pending_deposits,
+        "approved_deposits": approved_deposits,
+        "rejected_deposits": rejected_deposits,
+    }
 
     return render(request, template, context)
 

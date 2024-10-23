@@ -1,22 +1,17 @@
+{% load humanize %}
 <tr>
-    <td>{{ name }} <br>myemail@example.com</td>
-    <td>{{ transaction }}</td>
-    <td>₦{{ amount }}</td>
-    <td>{{ date }}</td>
-    <td><span class="badge rounded bg-label-{{ status_label }}">{{ status }}</span></td>
+    <td>{{ deposit.user.profile.get_screen_name }} <br>{{ deposit.user.email }}</td>
+    <td>{{ deposit.bundle.name }}</td>
+    <td>₦{{ deposit.amount|floatformat:0|intcomma }}</td>
+    <td>{{ deposit.paystack_id }}</td>
+    <td>{{ deposit.get_status_display }}</td>
+    <td>{{ deposit.updated|date:"F j, Y" }}</td>
     <td>
         <div class="d-flex">
             <div class="avatar me-2">
                 <a href="" class="avatar-initial rounded bg-label-primary" data-bs-toggle="tooltip" data-bs-offset="0,8"
                     data-bs-placement="top" data-bs-custom-class="tooltip-primary" title="View Deposit">
                     <i class="fa-solid fa-eye"></i>
-                </a>
-            </div>
-            <div class="avatar me-2">
-                <a href="/edit/" class="avatar-initial rounded bg-label-warning" data-bs-toggle="tooltip"
-                    data-bs-offset="0,8" data-bs-placement="top" data-bs-custom-class="tooltip-warning"
-                    title="Edit Deposit">
-                    <i class="fa-solid fa-pen"></i>
                 </a>
             </div>
         </div>

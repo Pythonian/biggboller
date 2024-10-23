@@ -6,9 +6,8 @@
 {% block content %}
 
 <div class="row invoice-preview">
-    <!-- Invoice -->
     <div class="col-xl-9 col-12 mb-md-0 mb-4">
-        <div class="card invoice-preview-card">
+        <div class="card">
             <div class="card-body">
                 <div
                     class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column p-sm-3 p-0">
@@ -23,8 +22,8 @@
                             <span class="fw-medium">{{ deposit.created|date:"F j, Y" }}</span>
                         </div>
                         <div class="mb-2">
-                            <span class="me-1">Reference:</span>
-                            <span class="fw-medium">{{ deposit.reference }}</span>
+                            <span class="me-1">Status:</span>
+                            <span class="fw-medium">{{ deposit.get_status_display }}</span>
                         </div>
                     </div>
                 </div>
@@ -110,12 +109,12 @@
             key: '{{ paystack_key }}',
             email: '{{ deposit.user.email }}',
             amount: {{ paystack_amount }},
-    reference: '' + Math.floor((Math.random() * 1000000000) + 1),
+    reference: '{{ paystack_ref }}',
         callback: function(response) {
-            window.location.href = "{{ paystack_redirect_url }}&trxref=" + response.reference
+            window.location.href = "{{ paystack_redirect_url }}&trxref=" + response.reference;
         },
     onClose: function() {
-        alert('Your transaction was either aborted or not completed, this window would be closed.');
+        alert('Your transaction was either aborted or not completed, this window will close.');
     }
     });
     handler.openIframe();
