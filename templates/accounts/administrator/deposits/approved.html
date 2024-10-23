@@ -3,32 +3,37 @@
 {% block title %}Approved Deposits{% endblock title %}
 
 {% block content %}
-<div class="container-xxl flex-grow-1 container-p-y">
 
-    {% include 'accounts/administrator/partials/_header_item.html' with head_title="Approved Deposits" %}
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="Approved Deposits" %}
 
-    <div class="row mb-4">
-        <!-- Approved Deposits -->
-        {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-thumbs-up" aria_label="Approved Deposits" count="4" title="Approved Deposits" additional_value="0" additional_text="Deposits today" %}
-    </div>
+<div class="row mb-4">
+    <!-- Approved Deposits -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" count=approved_deposits title="Approved Deposits" %}
+</div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                {% include 'accounts/administrator/partials/_card_header.html' with card_header="Approved Deposits List" %}
-                <div class="table-responsive">
-                    <table class="table table-lg">
-                        <thead>
-                            {% include 'accounts/administrator/deposits/partials/_table_head.html' %}
-                        </thead>
-                        <tbody>
-                            {% include "accounts/administrator/deposits/partials/_deposit_item.html" with transaction="48BC13KRCW" name="Bjorn Ironside" status_label="success" status="Approved" amount="2,000" date="15th Sep, 2024" %}
-                        </tbody>
-                    </table>
-                </div>
-                {% include "accounts/administrator/partials/_pagination.html" %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Approved Deposits List" %}
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        {% include 'accounts/administrator/deposits/partials/_table_head.html' %}
+                    </thead>
+                    <tbody>
+                        {% for deposit in deposits %}
+                        {% include "accounts/administrator/deposits/partials/_deposit_item.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=deposits %}
         </div>
     </div>
 </div>
+
 {% endblock content %}

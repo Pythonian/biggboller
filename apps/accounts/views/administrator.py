@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.db import transaction
+from django.db import models, transaction
 from apps.accounts.models import (
     Group,
     Bundle,
@@ -50,6 +50,27 @@ def admin_dashboard(request):
 
     activities = Action.objects.exclude(user=request.user)[:5]
 
+    # Get the top 5 bundles based on deposit/stake amount
+    top_bundles = (
+        Deposit.objects.filter(status=Deposit.Status.APPROVED)
+        .values("bundle__name", "bundle__group__name")
+        .annotate(total_amount=models.Sum("amount"))
+        .order_by("-total_amount")[:5]
+    )
+
+    # Get the latest 5 deposits/stakes
+    latest_deposits = (
+        Deposit.objects.filter(status=Deposit.Status.APPROVED)
+        .select_related("user__profile")
+        .values("user__last_name", "user__first_name", "paystack_id", "amount")
+        .order_by("-created")[:5]
+    )
+
+    # Calculate the total deposits
+    total_deposits = Deposit.objects.filter(status=Deposit.Status.APPROVED).aggregate(
+        total=models.Sum("amount")
+    )["total"]
+
     template = "accounts/administrator/dashboard.html"
     context = {
         "total_groups": total_groups,
@@ -61,6 +82,9 @@ def admin_dashboard(request):
         "total_users": total_users,
         "active_users": active_users,
         "activities": activities,
+        "top_bundles": top_bundles,
+        "latest_deposits": latest_deposits,
+        "total_deposits": total_deposits,
     }
 
     return render(request, template, context)
@@ -616,8 +640,14 @@ def admin_deposits_all(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_deposits_pending(request):
+    deposits = Deposit.objects.filter(status=Deposit.Status.PENDING)
+    pending_deposits = deposits.count()
+
     template = "accounts/administrator/deposits/pending.html"
-    context = {}
+    context = {
+        "deposits": deposits,
+        "pending_deposits": pending_deposits,
+    }
 
     return render(request, template, context)
 
@@ -625,8 +655,14 @@ def admin_deposits_pending(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_deposits_approved(request):
+    deposits = Deposit.objects.filter(status=Deposit.Status.APPROVED)
+    approved_deposits = deposits.count()
+
     template = "accounts/administrator/deposits/approved.html"
-    context = {}
+    context = {
+        "deposits": deposits,
+        "approved_deposits": approved_deposits,
+    }
 
     return render(request, template, context)
 
@@ -634,8 +670,14 @@ def admin_deposits_approved(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_deposits_rejected(request):
+    deposits = Deposit.objects.filter(status=Deposit.Status.REJECTED)
+    rejected_deposits = deposits.count()
+
     template = "accounts/administrator/deposits/rejected.html"
-    context = {}
+    context = {
+        "deposits": deposits,
+        "rejected_deposits": rejected_deposits,
+    }
 
     return render(request, template, context)
 

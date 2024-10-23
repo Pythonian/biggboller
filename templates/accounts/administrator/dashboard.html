@@ -1,4 +1,5 @@
 {% extends "accounts/base.html" %}
+{% load humanize %}
 
 {% block title %}Admin Dashboard{% endblock title %}
 
@@ -13,12 +14,12 @@
                 <div class="col-sm-7">
                     <div class="card-body">
                         <h5 class="card-title text-primary">Welcome back, Admin!</h5>
-                        <p class="mb-4">Check your dashboard for some new updates today.</p>
+                        <p>Check your dashboard for some new updates today.</p>
                     </div>
                 </div>
                 <div class="col-sm-5 text-center text-primary">
                     <div class="card-body pb-0 px-0 px-md-4">
-                        <i class="fas fa-user-ninja fa-10x"></i>
+                        <i class="fas fa-user-ninja fa-9x"></i>
                     </div>
                 </div>
             </div>
@@ -34,9 +35,8 @@
                         </span>
                     </div>
                 </div>
-                <span>Deposits</span>
-                <h3 class="card-title text-nowrap mb-1">₦4,679,000</h3>
-                <small class="text-success fw-medium"><i class='fa-solid fa-arrow-up'></i> +28.42%</small>
+                <span>Total Stakes</span>
+                <h3 class="card-title text-nowrap mb-1">₦{{ total_deposits|floatformat:0|intcomma }}</h3>
             </div>
         </div>
     </div>
@@ -50,9 +50,8 @@
                         </span>
                     </div>
                 </div>
-                <span>Withdrawals</span>
+                <span>Total Payouts</span>
                 <h3 class="card-title text-nowrap mb-1">₦1,005,500</h3>
-                <small class="text-success fw-medium"><i class='fa-solid fa-arrow-up'></i> +28.42%</small>
             </div>
         </div>
     </div>
@@ -146,25 +145,70 @@
     <!-- Bundle Performance -->
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
-            <div class="card-header pb-0 mb-3">
-                <div class="card-title mb-0">
-                    <h5 class="m-0 me-2">Top Bundles</h5>
-                    <small class="text-muted">₦21,000,000 Total Stake</small>
-                </div>
+            <div class="card-header">
+                <h5 class="card-title m-0 me-2">Top Bundles</h5>
             </div>
             <div class="card-body">
                 <ul class="p-0 m-0">
-                    {% include "accounts/partials/_top_bundle_item.html" %}
+                    {% for bundle in top_bundles %}
+                    <li class="d-flex mb-4 pb-1">
+                        <div class="avatar flex-shrink-0 me-3">
+                            <span class="avatar-initial rounded bg-label-success"><i
+                                    class='fas fa-{{ forloop.counter }}'></i></span>
+                        </div>
+                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="me-2">
+                                <h6 class="mb-0">{{ bundle.bundle__name }}</h6>
+                                <small class="text-muted">{{ bundle.bundle__group__name }}</small>
+                            </div>
+                            <div class="user-progress">
+                                <small class="fw-medium">₦{{ bundle.total_amount|floatformat:0|intcomma }}</small>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
                 </ul>
             </div>
         </div>
     </div>
     <!--/ Bundle Performance -->
+    <!-- Deposits -->
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title m-0 me-2">Latest Deposits</h5>
+            </div>
+            <div class="card-body">
+                <ul class="p-0 m-0">
+                    {% for deposit in latest_deposits %}
+                    <li class="d-flex mb-4 pb-1">
+                        <div class="avatar flex-shrink-0 me-3">
+                            <span class="avatar-initial rounded-circle bg-label-success">
+                                {{ deposit.user__first_name|make_list|first|title }}
+                            </span>
+                        </div>
+                        <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                            <div class="me-2">
+                                <small class="text-muted d-block mb-1">{{ deposit.user__first_name }}
+                                    {{ deposit.user__last_name }}</small>
+                                <h6 class="mb-0">{{ deposit.paystack_id }}</h6>
+                            </div>
+                            <div class="user-progress d-flex align-items-center gap-1">
+                                <h6 class="mb-0">₦{{ deposit.amount|floatformat:0|intcomma }}</h6>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--/ Deposits -->
     <!-- Withdrawals -->
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
             <div class="card-header">
-                <h5 class="card-title m-0 me-2">Withdrawals History</h5>
+                <h5 class="card-title m-0 me-2">Latest Payouts</h5>
             </div>
             <div class="card-body">
                 <ul class="p-0 m-0">
@@ -174,42 +218,7 @@
         </div>
     </div>
     <!--/ Withdrawals -->
-    <!-- Deposits -->
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100">
-            <div class="card-header">
-                <h5 class="card-title m-0 me-2">Deposits History</h5>
-            </div>
-            <div class="card-body">
-                <ul class="p-0 m-0">
-                    {% include "accounts/partials/_latest_withdrawal_item.html" %}
-                </ul>
-            </div>
-        </div>
-    </div>
-    <!--/ Deposits -->
-</div>
 
-<div class="row">
-    <!-- Activity Timeline -->
-    <div class="col-md-12 col-lg-6 order-4 order-lg-3 ">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title m-0 me-2">Activity Timeline</h5>
-            </div>
-            <div class="card-body">
-                <!-- Activity Timeline -->
-                <ul class="timeline">
-                    {% include "accounts/partials/_timeline_item.html" %}
-                    <li class="timeline-end-indicator">
-                        <i class="fas fa-check-circle"></i>
-                    </li>
-                </ul>
-                <!-- /Activity Timeline -->
-            </div>
-        </div>
-    </div>
-    <!--/ Activity Timeline -->
 </div>
 
 {% endblock content %}

@@ -32,6 +32,10 @@
                     <tbody>
                         {% for deposit in deposits %}
                         {% include "accounts/administrator/deposits/partials/_deposit_item.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
