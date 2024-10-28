@@ -28,10 +28,9 @@ from apps.accounts.views import (
     admin_deposits_all,
     admin_deposits_approved,
     admin_deposits_pending,
-    admin_withdrawals_rejected,
-    admin_withdrawals_all,
-    admin_withdrawals_approved,
-    admin_withdrawals_pending,
+    admin_payouts_all,
+    admin_payouts_approved,
+    admin_payouts_pending,
 )
 
 app_name = "administrator"
@@ -66,30 +65,25 @@ urlpatterns = [
             ]
         ),
     ),
-    # Withdrawals
+    # Payouts
     path(
-        "withdrawals/",
+        "payouts/",
         include(
             [
                 path(
-                    "rejected/",
-                    admin_withdrawals_rejected,
-                    name="withdrawals_rejected",
-                ),
-                path(
                     "approved/",
-                    admin_withdrawals_approved,
-                    name="withdrawals_approved",
+                    admin_payouts_approved,
+                    name="payouts_approved",
                 ),
                 path(
                     "pending/",
-                    admin_withdrawals_pending,
-                    name="withdrawals_pending",
+                    admin_payouts_pending,
+                    name="payouts_pending",
                 ),
                 path(
                     "",
-                    admin_withdrawals_all,
-                    name="withdrawals_all",
+                    admin_payouts_all,
+                    name="payouts_all",
                 ),
             ]
         ),

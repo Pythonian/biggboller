@@ -23,6 +23,11 @@ class UserUpdateForm(forms.ModelForm):
 
 
 class ProfileUpdateForm(forms.ModelForm):
+    payout_information = forms.CharField(
+        required=True,
+        widget=forms.Textarea(),
+    )
+
     class Meta:
         model = Profile
-        fields = ["phone_number"]
+        fields = ["phone_number", "payout_information"]

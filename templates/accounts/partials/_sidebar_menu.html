@@ -199,34 +199,28 @@
                 </li>
             </ul>
         </li>
-        <li class="menu-item {% if 'withdrawals' in request.path %}active open{% endif %}">
+        <li class="menu-item {% if 'payouts' in request.path %}active open{% endif %}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class='menu-icon fa-solid fa-wallet'></i>
-                <div class="text-truncate">Manage Withdrawals</div>
+                <div class="text-truncate">Manage Payouts</div>
             </a>
             <ul class="menu-sub">
                 <li
-                    class="menu-item {% url 'administrator:withdrawals_all' as withdrawals_all_url %}{% if request.get_full_path == withdrawals_all_url %}active{% endif %}">
-                    <a href="{% url 'administrator:withdrawals_all' %}" class="menu-link">
-                        <div class="text-truncate">All Withdrawals</div>
+                    class="menu-item {% url 'administrator:payouts_all' as payouts_all_url %}{% if request.get_full_path == payouts_all_url %}active{% endif %}">
+                    <a href="{% url 'administrator:payouts_all' %}" class="menu-link">
+                        <div class="text-truncate">All Payouts</div>
                     </a>
                 </li>
                 <li
-                    class="menu-item {% url 'administrator:withdrawals_pending' as withdrawals_pending_url %}{% if request.get_full_path == withdrawals_pending_url %}active{% endif %}">
-                    <a href="{% url 'administrator:withdrawals_pending' %}" class="menu-link">
-                        <div class="text-truncate">Pending Withdrawals</div>
+                    class="menu-item {% url 'administrator:payouts_pending' as payouts_pending_url %}{% if request.get_full_path == payouts_pending_url %}active{% endif %}">
+                    <a href="{% url 'administrator:payouts_pending' %}" class="menu-link">
+                        <div class="text-truncate">Pending Payouts</div>
                     </a>
                 </li>
                 <li
-                    class="menu-item {% url 'administrator:withdrawals_approved' as withdrawals_approved_url %}{% if request.get_full_path == withdrawals_approved_url %}active{% endif %}">
-                    <a href="{% url 'administrator:withdrawals_approved' %}" class="menu-link">
-                        <div class="text-truncate">Approved Withdrawals</div>
-                    </a>
-                </li>
-                <li
-                    class="menu-item {% url 'administrator:withdrawals_rejected' as withdrawals_rejected_url %}{% if request.get_full_path == withdrawals_rejected_url %}active{% endif %}">
-                    <a href="{% url 'administrator:withdrawals_rejected' %}" class="menu-link">
-                        <div class="text-truncate">Rejected Withdrawals</div>
+                    class="menu-item {% url 'administrator:payouts_approved' as payouts_approved_url %}{% if request.get_full_path == payouts_approved_url %}active{% endif %}">
+                    <a href="{% url 'administrator:payouts_approved' %}" class="menu-link">
+                        <div class="text-truncate">Approved Payouts</div>
                     </a>
                 </li>
             </ul>

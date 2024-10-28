@@ -3,12 +3,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4">
-                    <a href="/" class="app-brand-link mb-4 h2">
-                        <span class="app-brand-text footer-link fw-bold">Bigg-Boller</span>
+                    <a href="{% url 'core:dashboard' %}" class="app-brand-link mb-4 h2">
+                        <span class="footer-link fw-bold">Bigg-Boller</span>
                     </a>
                     <p class="footer-text footer-logo-description mb-4">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem magnam similique consectetur
-                        assumenda reiciendis amet placeat ratione quod corporis possimus.
+                        At Bigg-Boller, we combine sophisticated analysis with deep football knowledge to deliver
+                        premium sports predictions to the Nigerian market.
                     </p>
                 </div>
                 <div class="col-lg-2 col-md-4 col-sm-6">
@@ -32,16 +32,16 @@
                     <h6 class="footer-title mb-4">My Account</h6>
                     <ul class="list-unstyled">
                         <li class="mb-3">
-                            <a href="" class="footer-link">My Dashboard</a>
+                            <a href="{% url 'core:dashboard' %}" class="footer-link">My Dashboard</a>
                         </li>
                         <li class="mb-3">
-                            <a href="" class="footer-link">Login</a>
+                            <a href="{% url 'auth:login' %}" class="footer-link">Login</a>
                         </li>
                         <li class="mb-3">
-                            <a href="" class="footer-link">Sign Up</a>
+                            <a href="{% url 'auth:register' %}" class="footer-link">Sign Up</a>
                         </li>
                         <li class="mb-3">
-                            <a href="" class="footer-link">Forgot Password</a>
+                            <a href="{% url 'auth:password_reset' %}" class="footer-link">Forgot Password</a>
                         </li>
                     </ul>
                 </div>

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db import models, transaction
+from django.utils import timezone
 from apps.accounts.models import (
     Group,
     Bundle,
@@ -9,6 +10,7 @@ from apps.accounts.models import (
     Profile,
     Action,
     Deposit,
+    Payout,
 )
 from apps.accounts.forms import (
     GroupCreateForm,
@@ -16,6 +18,7 @@ from apps.accounts.forms import (
     BundleCreateForm,
     TicketReplyForm,
 )
+from apps.accounts.utils import create_action
 from apps.core.utils import mk_paginator
 
 PAGINATION_COUNT = 20
@@ -66,10 +69,29 @@ def admin_dashboard(request):
         .order_by("-created")[:5]
     )
 
+    # Get the latest 5 payouts
+    latest_payouts = (
+        Payout.objects.filter(status=Payout.Status.APPROVED)
+        .select_related("user__profile")
+        .values("user__last_name", "user__first_name", "amount", "paid_on")
+        .order_by("-paid_on")[:5]
+    )
+
     # Calculate the total deposits
-    total_deposits = Deposit.objects.filter(status=Deposit.Status.APPROVED).aggregate(
-        total=models.Sum("amount")
-    )["total"]
+    total_deposits = (
+        Deposit.objects.filter(status=Deposit.Status.APPROVED)
+        .aggregate(total=models.Sum("amount"))
+        .get("total")
+        or 0.00
+    )
+
+    # Calculate the total payouts
+    total_payouts = (
+        Payout.objects.filter(status=Payout.Status.APPROVED)
+        .aggregate(total=models.Sum("amount"))
+        .get("total")
+        or 0.00
+    )
 
     template = "accounts/administrator/dashboard.html"
     context = {
@@ -85,6 +107,8 @@ def admin_dashboard(request):
         "top_bundles": top_bundles,
         "latest_deposits": latest_deposits,
         "total_deposits": total_deposits,
+        "latest_payouts": latest_payouts,
+        "total_payouts": total_payouts,
     }
 
     return render(request, template, context)
@@ -316,6 +340,38 @@ def admin_bundles_detail(request, id):
         if new_status in dict(Bundle.Status.choices):
             bundle.status = new_status
             bundle.save()
+
+            # Check if the new status is "Won" and create Payouts
+            if new_status == Bundle.Status.WON:
+                for participant in bundle.participants.all():
+                    # Get the participant's deposit with an approved status
+                    deposit = Deposit.objects.filter(
+                        user=participant,
+                        bundle=bundle,
+                        status=Deposit.Status.APPROVED,
+                    ).first()
+
+                    if deposit:
+                        # Use payout_amount if available, else default to 0
+                        payout_amount = (
+                            deposit.payout_amount if deposit.payout_amount else 0
+                        )
+                        payout, created = Payout.objects.get_or_create(
+                            user=participant,
+                            bundle=bundle,
+                            defaults={
+                                "amount": payout_amount,
+                                "status": Payout.Status.PENDING,
+                            },
+                        )
+                        if created:
+                            create_action(
+                                participant,
+                                "New Payout Initiated",
+                                f"A payout amount of #{payout_amount} has been initiated.",
+                                payout,
+                            )
+
             messages.success(request, "Bundle status updated successfully.")
             return redirect(bundle)
         else:
@@ -683,14 +739,66 @@ def admin_deposits_rejected(request):
 
 
 ##############
-# WITHDRAWALS
+# PAYOUTS
 ##############
 
 
 @login_required
 @user_passes_test(is_admin)
-def admin_withdrawals_all(request):
-    template = "accounts/administrator/withdrawals/all.html"
+def admin_payouts_all(request):
+    # Query all payouts
+    payouts = Payout.objects.all().select_related("user")
+
+    # Calculate statistics
+    total_payouts = payouts.count()
+    pending_payouts = payouts.filter(status=Payout.Status.PENDING).count()
+    approved_payouts = payouts.filter(status=Payout.Status.APPROVED).count()
+
+    # Handle form submission for payout updates
+    if request.method == "POST":
+        payout_id = request.POST.get("payout_id")
+        note = request.POST.get("note")
+
+        if payout_id:
+            try:
+                payout = Payout.objects.get(
+                    id=payout_id,
+                    status=Payout.Status.PENDING,
+                )
+                payout.note = note
+                payout.status = Payout.Status.APPROVED
+                payout.paid_on = timezone.now()
+                payout.save()
+                messages.success(
+                    request,
+                    "Payout approved successfully.",
+                )
+                create_action(
+                    payout.user,
+                    "Payout Wins Completed.",
+                    f"{payout.user.get_full_name} has been paid their winnings.",
+                    payout.user,
+                )
+            except Payout.DoesNotExist:
+                messages.error(request, "Payout not found.")
+
+    payouts = mk_paginator(request, payouts, PAGINATION_COUNT)
+
+    template = "accounts/administrator/payouts/all.html"
+    context = {
+        "payouts": payouts,
+        "total_payouts": total_payouts,
+        "pending_payouts": pending_payouts,
+        "approved_payouts": approved_payouts,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_payouts_pending(request):
+    template = "accounts/administrator/payouts/pending.html"
     context = {}
 
     return render(request, template, context)
@@ -698,26 +806,8 @@ def admin_withdrawals_all(request):
 
 @login_required
 @user_passes_test(is_admin)
-def admin_withdrawals_pending(request):
-    template = "accounts/administrator/withdrawals/pending.html"
-    context = {}
-
-    return render(request, template, context)
-
-
-@login_required
-@user_passes_test(is_admin)
-def admin_withdrawals_approved(request):
-    template = "accounts/administrator/withdrawals/approved.html"
-    context = {}
-
-    return render(request, template, context)
-
-
-@login_required
-@user_passes_test(is_admin)
-def admin_withdrawals_rejected(request):
-    template = "accounts/administrator/withdrawals/rejected.html"
+def admin_payouts_approved(request):
+    template = "accounts/administrator/payouts/approved.html"
     context = {}
 
     return render(request, template, context)

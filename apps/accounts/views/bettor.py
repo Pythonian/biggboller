@@ -4,6 +4,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -17,7 +18,14 @@ from apps.accounts.forms import (
     TicketCreateForm,
     TicketReplyForm,
 )
-from apps.accounts.models import Bundle, Deposit, Action, Ticket, Group
+from apps.accounts.models import (
+    Bundle,
+    Deposit,
+    Action,
+    Ticket,
+    Group,
+    Payout,
+)
 from apps.accounts.utils import create_action
 from apps.core.utils import mk_paginator
 
@@ -41,6 +49,12 @@ def bettor_dashboard(request):
         status=Deposit.Status.APPROVED,
     ).aggregate(total_amount=Sum("amount")).get("total_amount") or Decimal(0.00)
 
+    # Calculate the total of all approved payouts
+    total_payouts = Payout.objects.filter(
+        user=request.user,
+        status=Payout.Status.APPROVED,
+    ).aggregate(total_amount=Sum("amount")).get("total_amount") or Decimal(0.00)
+
     # Calculate the total of all approved/sent withdrawals
 
     template = "accounts/bettor/dashboard.html"
@@ -50,6 +64,7 @@ def bettor_dashboard(request):
         "actions": actions,
         "total_tickets": total_tickets,
         "total_deposits": total_deposits,
+        "total_payouts": total_payouts,
     }
 
     return render(request, template, context)
@@ -384,7 +399,7 @@ def bettor_tickets_all(request):
                 "created a new ticket for resolution.",
                 ticket,
             )
-            return redirect("bettor:tickets_all")
+            return redirect(ticket)
         else:
             messages.error(request, "Please correct the form errors below.")
     else:
@@ -415,6 +430,7 @@ def bettor_tickets_detail(request, ticket_id):
             if reply_form.is_valid():
                 reply = reply_form.save(commit=False)
                 reply.ticket = ticket
+                reply.ticket.updated = timezone.now()
                 reply.user = request.user
                 reply.save()
                 messages.success(
@@ -436,6 +452,7 @@ def bettor_tickets_detail(request, ticket_id):
             new_status = request.POST.get("status")
             if new_status in dict(Ticket.Status.choices):
                 ticket.status = new_status
+                ticket.updated = timezone.now()
                 ticket.save()
                 messages.success(
                     request,

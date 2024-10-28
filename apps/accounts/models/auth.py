@@ -22,6 +22,11 @@ class Profile(models.Model):
         _("phone number"),
         max_length=11,
     )
+    payout_information = models.TextField(
+        _("Payout Information"),
+        blank=True,
+        help_text=_("Bank account information for Payouts"),
+    )
     is_banned = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

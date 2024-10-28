@@ -39,6 +39,13 @@ class Deposit(models.Model):
         decimal_places=2,
         verbose_name=_("Amount"),
     )
+    payout_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        verbose_name=_("Payout Amount"),
+    )
     paystack_id = models.CharField(
         max_length=150,
         blank=True,
@@ -75,3 +82,59 @@ class Deposit(models.Model):
         Calculate the maximum potential win dynamically.
         """
         return self.amount * self.bundle.maximum_win_multiplier
+
+
+class Payout(models.Model):
+    """
+    Represents a payout for a bettor after a bundle is won.
+    """
+
+    class Status(models.TextChoices):
+        PENDING = "P", _("Pending")
+        APPROVED = "A", _("Approved")
+        FAILED = "F", _("Failed")
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="payouts",
+        verbose_name=_("User"),
+    )
+    bundle = models.ForeignKey(
+        "Bundle",
+        on_delete=models.CASCADE,
+        related_name="payouts",
+        verbose_name=_("Bundle"),
+    )
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        verbose_name=_("Amount"),
+        help_text=_("The amount the bettor will be paid."),
+    )
+    note = models.TextField(
+        verbose_name=_("Payout Note"),
+        help_text=_("A note by the admin."),
+    )
+    status = models.CharField(
+        max_length=1,
+        choices=Status.choices,
+        default=Status.PENDING,
+        verbose_name=_("Status"),
+    )
+    paid_on = models.DateTimeField(blank=True, null=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("Payout")
+        verbose_name_plural = _("Payouts")
+        ordering = ["-created"]
+
+    def __str__(self):
+        return f"{self.user} - {self.bundle.name} - {self.amount}"
