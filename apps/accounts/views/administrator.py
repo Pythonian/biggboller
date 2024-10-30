@@ -402,11 +402,10 @@ def admin_users_all(request):
     active_users = bettors.filter(
         email_confirmed=True,
         is_banned=False,
+        user__is_active=True,
     ).count()
     banned_users = bettors.filter(is_banned=True).count()
     deactivated_users = bettors.filter(user__is_active=False).count()
-    verified_users = bettors.filter(verified_account=True).count()
-    unverified_users = bettors.filter(verified_account=False).count()
 
     bettors = mk_paginator(request, bettors, PAGINATION_COUNT)
 
@@ -417,8 +416,6 @@ def admin_users_all(request):
         "deactivated_users": deactivated_users,
         "active_users": active_users,
         "banned_users": banned_users,
-        "verified_users": verified_users,
-        "unverified_users": unverified_users,
     }
 
     return render(request, template, context)
@@ -677,7 +674,7 @@ def admin_deposits_all(request):
     total_deposits = deposits.count()
     pending_deposits = deposits.filter(status=Deposit.Status.PENDING).count()
     approved_deposits = deposits.filter(status=Deposit.Status.APPROVED).count()
-    rejected_deposits = deposits.filter(status=Deposit.Status.REJECTED).count()
+    cancelled_deposits = deposits.filter(status=Deposit.Status.CANCELLED).count()
 
     deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
 
@@ -687,7 +684,7 @@ def admin_deposits_all(request):
         "total_deposits": total_deposits,
         "pending_deposits": pending_deposits,
         "approved_deposits": approved_deposits,
-        "rejected_deposits": rejected_deposits,
+        "cancelled_deposits": cancelled_deposits,
     }
 
     return render(request, template, context)
@@ -725,14 +722,14 @@ def admin_deposits_approved(request):
 
 @login_required
 @user_passes_test(is_admin)
-def admin_deposits_rejected(request):
-    deposits = Deposit.objects.filter(status=Deposit.Status.REJECTED)
-    rejected_deposits = deposits.count()
+def admin_deposits_cancelled(request):
+    deposits = Deposit.objects.filter(status=Deposit.Status.CANCELLED)
+    cancelled_deposits = deposits.count()
 
-    template = "accounts/administrator/deposits/rejected.html"
+    template = "accounts/administrator/deposits/cancelled.html"
     context = {
         "deposits": deposits,
-        "rejected_deposits": rejected_deposits,
+        "cancelled_deposits": cancelled_deposits,
     }
 
     return render(request, template, context)
@@ -753,6 +750,7 @@ def admin_payouts_all(request):
     total_payouts = payouts.count()
     pending_payouts = payouts.filter(status=Payout.Status.PENDING).count()
     approved_payouts = payouts.filter(status=Payout.Status.APPROVED).count()
+    cancelled_payouts = payouts.filter(status=Payout.Status.CANCELLED).count()
 
     # Handle form submission for payout updates
     if request.method == "POST":
@@ -790,6 +788,7 @@ def admin_payouts_all(request):
         "total_payouts": total_payouts,
         "pending_payouts": pending_payouts,
         "approved_payouts": approved_payouts,
+        "cancelled_payouts": cancelled_payouts,
     }
 
     return render(request, template, context)
@@ -798,8 +797,14 @@ def admin_payouts_all(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_payouts_pending(request):
+    payouts = Payout.objects.filter(status=Payout.Status.PENDING)
+    pending_payouts = payouts.count()
+
     template = "accounts/administrator/payouts/pending.html"
-    context = {}
+    context = {
+        "payouts": payouts,
+        "pending_payouts": pending_payouts,
+    }
 
     return render(request, template, context)
 
@@ -807,7 +812,28 @@ def admin_payouts_pending(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_payouts_approved(request):
+    payouts = Payout.objects.filter(status=Payout.Status.APPROVED)
+    approved_payouts = payouts.count()
+
     template = "accounts/administrator/payouts/approved.html"
-    context = {}
+    context = {
+        "payouts": payouts,
+        "approved_payouts": approved_payouts,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_payouts_cancelled(request):
+    payouts = Payout.objects.filter(status=Payout.Status.CANCELLED)
+    cancelled_payouts = payouts.count()
+
+    template = "accounts/administrator/payouts/cancelled.html"
+    context = {
+        "payouts": payouts,
+        "cancelled_payouts": cancelled_payouts,
+    }
 
     return render(request, template, context)

@@ -22,13 +22,14 @@ from apps.accounts.views.administrator import (
     admin_tickets_detail,
     admin_tickets_answered,
     admin_tickets_pending,
-    admin_deposits_rejected,
+    admin_deposits_cancelled,
     admin_deposits_all,
     admin_deposits_approved,
     admin_deposits_pending,
     admin_payouts_all,
     admin_payouts_approved,
     admin_payouts_pending,
+    admin_payouts_cancelled,
 )
 from apps.accounts.views.bettor import (
     bettor_dashboard,
@@ -43,6 +44,12 @@ from apps.accounts.views.bettor import (
     bettor_bundles_purchase,
     bettor_bundles_owned,
     bettor_bundles_detail,
+    bettor_deposits_all,
+    bettor_deposits_approved,
+    bettor_deposits_pending,
+    bettor_payouts_all,
+    bettor_payouts_approved,
+    bettor_payouts_pending,
 )
 
 __all__ = [
@@ -69,13 +76,14 @@ __all__ = [
     "admin_tickets_detail",
     "admin_tickets_answered",
     "admin_tickets_pending",
-    "admin_deposits_rejected",
+    "admin_deposits_cancelled",
     "admin_deposits_all",
     "admin_deposits_approved",
     "admin_deposits_pending",
     "admin_payouts_all",
     "admin_payouts_approved",
     "admin_payouts_pending",
+    "admin_payouts_cancelled",
     # Bettor
     "bettor_dashboard",
     "bettor_bundles_all",
@@ -89,4 +97,10 @@ __all__ = [
     "bettor_bundles_purchase",
     "bettor_bundles_owned",
     "bettor_bundles_detail",
+    "bettor_deposits_all",
+    "bettor_deposits_approved",
+    "bettor_deposits_pending",
+    "bettor_payouts_all",
+    "bettor_payouts_approved",
+    "bettor_payouts_pending",
 ]

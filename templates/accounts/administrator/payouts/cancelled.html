@@ -1,20 +1,20 @@
 {% extends "accounts/base.html" %}
 
-{% block title %}Approved payouts{% endblock title %}
+{% block title %}Cancelled payouts{% endblock title %}
 
 {% block content %}
 
-{% include 'accounts/administrator/partials/_header_item.html' with head_title="Approved payouts" %}
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="Cancelled payouts" %}
 
 <div class="row mb-4">
-    <!-- Approved payouts -->
-    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" count=approved_payouts title="Approved Payouts" %}
+    <!-- Cancelled payouts -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-times" count=cancelled_payouts title="Cancelled Payouts" %}
 </div>
 
 <div class="row">
     <div class="col-12">
         <div class="card">
-            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Approved Payouts List" %}
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Cancelled payouts List" %}
             <div class="table-responsive">
                 <table class="table table-lg">
                     <thead>

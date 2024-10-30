@@ -132,25 +132,21 @@ class Bundle(models.Model):
         verbose_name=_("Minimum Win Multiplier"),
         help_text=_("Minimum multiplier value to calculate minimum potential wins."),
         validators=[MinValueValidator(1)],
-        default=3,
     )
     maximum_win_multiplier = models.PositiveSmallIntegerField(
         verbose_name=_("Maximum Win Multiplier"),
         help_text=_("Maximum multiplier value to calculate maximum potential wins."),
         validators=[MinValueValidator(1)],
-        default=5,
     )
     min_bundles_per_user = models.PositiveIntegerField(
         verbose_name=_("Minimum Bundles per User"),
         help_text=_("Minimum number of bundles a user can purchase."),
         validators=[MinValueValidator(1)],
-        default=2,
     )
     max_bundles_per_user = models.PositiveIntegerField(
         verbose_name=_("Maximum Bundles per User"),
         help_text=_("Maximum number of bundles a user can purchase."),
         validators=[MinValueValidator(1)],
-        default=10,
     )
     status = models.CharField(
         max_length=1,

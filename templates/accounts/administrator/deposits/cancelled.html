@@ -1,19 +1,19 @@
 {% extends "accounts/base.html" %}
 
-{% block title %}Rejected Deposits{% endblock title %}
+{% block title %}Cancelled Deposits{% endblock title %}
 
 {% block content %}
 
-{% include 'accounts/administrator/partials/_header_item.html' with head_title="Rejected Deposits" %}
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="Cancelled Deposits" %}
 
 <div class="row mb-4">
-    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-stop" count=rejected_deposits title="Rejected Deposits" %}
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-times" count=cancelled_deposits title="Cancelled Deposits" %}
 </div>
 
 <div class="row">
     <div class="col-12">
         <div class="card">
-            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Rejected Deposits List" %}
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Cancelled Deposits List" %}
             <div class="table-responsive">
                 <table class="table table-lg">
                     <thead>

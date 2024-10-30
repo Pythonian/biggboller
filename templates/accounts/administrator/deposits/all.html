@@ -8,7 +8,7 @@
 
 <div class="row mb-4">
     <!-- Total Deposits -->
-    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="primary" label_color="primary" icon_class="fa-solid fa-ticket" title="Total Deposits" count=total_deposits %}
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="primary" label_color="primary" icon_class="fa-solid fa-naira-sign" title="Total Deposits" count=total_deposits %}
 
     <!-- Pending Deposits -->
     {% include 'accounts/administrator/partials/_stat_card.html' with border_color="info" label_color="info" icon_class="fa-solid fa-hourglass-half" count=pending_deposits title="Pending Deposits" %}
@@ -16,8 +16,8 @@
     <!-- Approved Deposits -->
     {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" count=approved_deposits title="Approved Deposits" %}
 
-    <!-- Rejected Deposits -->
-    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-stop" count=rejected_deposits title="Rejected Deposits" %}
+    <!-- Cancelled Deposits -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-times" count=cancelled_deposits title="Cancelled Deposits" %}
 </div>
 
 <div class="row">

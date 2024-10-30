@@ -24,13 +24,14 @@ from apps.accounts.views import (
     admin_tickets_detail,
     admin_tickets_answered,
     admin_tickets_pending,
-    admin_deposits_rejected,
+    admin_deposits_cancelled,
     admin_deposits_all,
     admin_deposits_approved,
     admin_deposits_pending,
     admin_payouts_all,
     admin_payouts_approved,
     admin_payouts_pending,
+    admin_payouts_cancelled,
 )
 
 app_name = "administrator"
@@ -43,9 +44,9 @@ urlpatterns = [
         include(
             [
                 path(
-                    "rejected/",
-                    admin_deposits_rejected,
-                    name="deposits_rejected",
+                    "cancelled/",
+                    admin_deposits_cancelled,
+                    name="deposits_cancelled",
                 ),
                 path(
                     "approved/",
@@ -79,6 +80,11 @@ urlpatterns = [
                     "pending/",
                     admin_payouts_pending,
                     name="payouts_pending",
+                ),
+                path(
+                    "cancelled/",
+                    admin_payouts_cancelled,
+                    name="payouts_cancelled",
                 ),
                 path(
                     "",

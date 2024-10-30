@@ -8,13 +8,16 @@
 
 <div class="row mb-4">
     <!-- Total payouts -->
-    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="primary" label_color="primary" icon_class="fa-solid fa-ticket" count=total_payouts title="Total payouts" %}
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="primary" label_color="primary" icon_class="fa-solid fa-naira-sign" count=total_payouts title="Total Payouts" %}
 
     <!-- Pending payouts -->
-    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="info" label_color="info" icon_class="fa-solid fa-play-circle" count=pending_payouts title="Pending payouts" %}
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="info" label_color="info" icon_class="fa-solid fa-hourglass-half" count=pending_payouts title="Pending Payouts" %}
 
     <!-- Approved payouts -->
-    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" count=approved_payouts title="Approved payouts" %}
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" count=approved_payouts title="Approved Payouts" %}
+
+    <!-- Cancelled payouts -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-times" count=cancelled_payouts title="Cancelled Payouts" %}
 </div>
 
 <div class="row">
@@ -32,13 +35,13 @@
                         {% include "accounts/administrator/payouts/modals/update_payout.html" %}
                         {% empty %}
                         <tr>
-                            <td colspan="6" class="text-center">No payouts available.</td>
+                            <td colspan="6" class="text-center">No record yet.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-            {% include "accounts/administrator/partials/_pagination.html" %}
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=payouts %}
         </div>
     </div>
 </div>

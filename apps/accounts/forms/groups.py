@@ -56,25 +56,25 @@ class BundleCreateForm(forms.ModelForm):
             "minimum_win_multiplier": forms.NumberInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": _("Enter minimum win multiplier"),
+                    "placeholder": _("Example: 2"),
                 }
             ),
             "maximum_win_multiplier": forms.NumberInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": _("Enter maximum win multiplier"),
+                    "placeholder": _("Example: 5"),
                 }
             ),
             "min_bundles_per_user": forms.NumberInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": _("Enter minimum bundles per user"),
+                    "placeholder": _("Example: 3"),
                 }
             ),
             "max_bundles_per_user": forms.NumberInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": _("Enter maximum bundles per user"),
+                    "placeholder": _("Example: 8"),
                 }
             ),
         }

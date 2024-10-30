@@ -1,13 +1,12 @@
 <div class="card-header d-flex align-items-center justify-content-between">
     <h5 class="mb-0">{{ card_header }}</h5>
     <div class="dropdown">
-        <button class="btn text-muted p-0" type="button" id="pendingBundlesOptions" data-bs-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
+        <button class="btn text-muted p-0" type="button" data-bs-toggle="dropdown" aria-haspopup="true"
+            aria-expanded="false">
             <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
-        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="pendingBundlesOptions">
+        <div class="dropdown-menu dropdown-menu-end">
             <a class="dropdown-item" href="{{ request.path }}">Refresh</a>
-            <a class="dropdown-item" href="javascript:void(0);">Export</a>
         </div>
     </div>
 </div>

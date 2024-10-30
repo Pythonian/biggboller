@@ -12,7 +12,7 @@ class Deposit(models.Model):
     class Status(models.TextChoices):
         PENDING = "P", _("Pending")
         APPROVED = "A", _("Approved")
-        REJECTED = "R", _("Rejected")
+        CANCELLED = "C", _("Cancelled")
 
     id = models.UUIDField(
         primary_key=True,
@@ -92,7 +92,7 @@ class Payout(models.Model):
     class Status(models.TextChoices):
         PENDING = "P", _("Pending")
         APPROVED = "A", _("Approved")
-        FAILED = "F", _("Failed")
+        CANCELLED = "C", _("Cancelled")
 
     id = models.UUIDField(
         primary_key=True,

@@ -142,6 +142,7 @@
 </div>
 
 <div class="row mb-4">
+    {% if top_bundles %}
     <!-- Bundle Performance -->
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
@@ -172,6 +173,9 @@
         </div>
     </div>
     <!--/ Bundle Performance -->
+    {% endif %}
+
+    {% if latest_deposits %}
     <!-- Deposits -->
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
@@ -204,6 +208,9 @@
         </div>
     </div>
     <!--/ Deposits -->
+    {% endif %}
+
+    {% if latest_payouts %}
     <!-- Payouts -->
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
@@ -236,6 +243,7 @@
         </div>
     </div>
     <!--/ Payouts -->
+    {% endif %}
 
 </div>
 

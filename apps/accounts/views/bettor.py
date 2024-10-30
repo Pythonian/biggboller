@@ -524,3 +524,124 @@ def bettor_tickets_closed(request):
     }
 
     return render(request, template, context)
+
+
+##############
+# DEPOSITS
+##############
+
+
+@login_required
+def bettor_deposits_all(request):
+    deposits = Deposit.objects.filter(user=request.user)
+    total_deposits = deposits.count()
+    pending_deposits = deposits.filter(status=Deposit.Status.PENDING).count()
+    approved_deposits = deposits.filter(status=Deposit.Status.APPROVED).count()
+    rejected_deposits = deposits.filter(status=Deposit.Status.REJECTED).count()
+
+    deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
+
+    template = "accounts/bettor/deposits/all.html"
+    context = {
+        "deposits": deposits,
+        "total_deposits": total_deposits,
+        "pending_deposits": pending_deposits,
+        "approved_deposits": approved_deposits,
+        "rejected_deposits": rejected_deposits,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+def bettor_deposits_pending(request):
+    deposits = Deposit.objects.filter(
+        status=Deposit.Status.PENDING,
+        user=request.user,
+    )
+    pending_deposits = deposits.count()
+
+    template = "accounts/bettor/deposits/pending.html"
+    context = {
+        "deposits": deposits,
+        "pending_deposits": pending_deposits,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+def bettor_deposits_approved(request):
+    deposits = Deposit.objects.filter(
+        status=Deposit.Status.APPROVED,
+        user=request.user,
+    )
+    approved_deposits = deposits.count()
+
+    template = "accounts/bettor/deposits/approved.html"
+    context = {
+        "deposits": deposits,
+        "approved_deposits": approved_deposits,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+def bettor_deposits_rejected(request):
+    deposits = Deposit.objects.filter(
+        status=Deposit.Status.REJECTED,
+        user=request.user,
+    )
+    rejected_deposits = deposits.count()
+
+    template = "accounts/bettor/deposits/rejected.html"
+    context = {
+        "deposits": deposits,
+        "rejected_deposits": rejected_deposits,
+    }
+
+    return render(request, template, context)
+
+
+##############
+# PAYOUTS
+##############
+
+
+@login_required
+def bettor_payouts_all(request):
+    payouts = Payout.objects.filter(user=request.user)
+
+    # Calculate statistics
+    total_payouts = payouts.count()
+    pending_payouts = payouts.filter(status=Payout.Status.PENDING).count()
+    approved_payouts = payouts.filter(status=Payout.Status.APPROVED).count()
+
+    payouts = mk_paginator(request, payouts, PAGINATION_COUNT)
+
+    template = "accounts/bettor/payouts/all.html"
+    context = {
+        "payouts": payouts,
+        "total_payouts": total_payouts,
+        "pending_payouts": pending_payouts,
+        "approved_payouts": approved_payouts,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+def bettor_payouts_pending(request):
+    template = "accounts/bettor/payouts/pending.html"
+    context = {}
+
+    return render(request, template, context)
+
+
+@login_required
+def bettor_payouts_approved(request):
+    template = "accounts/bettor/payouts/approved.html"
+    context = {}
+
+    return render(request, template, context)
