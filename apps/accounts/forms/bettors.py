@@ -6,6 +6,12 @@ User = get_user_model()
 
 
 class UserUpdateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Make all fields required
+        for field in self.fields.values():
+            field.required = True
+
     class Meta:
         model = User
         fields = ["username", "first_name", "last_name", "email"]

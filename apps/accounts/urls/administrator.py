@@ -20,6 +20,9 @@ from apps.accounts.views import (
     admin_users_notifications,
     admin_users_verified,
     admin_users_unverified,
+    admin_users_detail,
+    admin_unban_user,
+    admin_suspend_user,
     admin_tickets_closed,
     admin_tickets_all,
     admin_tickets_detail,
@@ -167,6 +170,21 @@ urlpatterns = [
                     "deactivated/",
                     admin_users_deactivated,
                     name="users_deactivated",
+                ),
+                path(
+                    "<str:username>/suspend/",
+                    admin_suspend_user,
+                    name="suspend_user",
+                ),
+                path(
+                    "<str:username>/unban/",
+                    admin_unban_user,
+                    name="unban_user",
+                ),
+                path(
+                    "<str:username>/",
+                    admin_users_detail,
+                    name="users_detail",
                 ),
                 path(
                     "",

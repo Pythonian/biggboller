@@ -1,5 +1,5 @@
 <tr>
-    <td>{{ user.get_screen_name }}</td>
+    <td>{{ user.user.get_full_name }}</td>
     <td>{{ user.user.email }}</td>
     <td>{{ user.phone_number }}</td>
     <td>{{ user.user.date_joined }}</td>
@@ -9,7 +9,8 @@
     <td>
         <div class="d-flex">
             <div class="avatar me-2">
-                <a href="" class="avatar-initial rounded bg-label-primary" data-bs-toggle="tooltip" data-bs-offset="0,8"
+                <a href="{% url 'administrator:users_detail' user.user.username %}"
+                    class="avatar-initial rounded bg-label-primary" data-bs-toggle="tooltip" data-bs-offset="0,8"
                     data-bs-placement="top" data-bs-custom-class="tooltip-primary" title="View User">
                     <i class="fa-solid fa-eye"></i>
                 </a>

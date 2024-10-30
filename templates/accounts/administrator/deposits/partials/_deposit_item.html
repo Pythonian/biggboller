@@ -1,6 +1,6 @@
 {% load humanize %}
 <tr>
-    <td>{{ deposit.user.profile.get_screen_name }} <br>{{ deposit.user.email }}</td>
+    <td>{{ deposit.user.get_full_name }} <br>{{ deposit.user.email }}</td>
     <td>{{ deposit.bundle.name }}</td>
     <td>₦{{ deposit.amount|floatformat:0|intcomma }}</td>
     <td>{{ deposit.paystack_id }}</td>

@@ -28,6 +28,12 @@ class Profile(models.Model):
         help_text=_("Bank account information for Payouts"),
     )
     is_banned = models.BooleanField(default=False)
+    account_activated_at = models.DateTimeField(
+        _("Account Activation Date"),
+        null=True,
+        blank=True,
+        help_text="The date when the user activated their account.",
+    )
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -38,15 +44,6 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.username
-
-    def get_screen_name(self):
-        try:
-            if self.user.get_full_name():
-                return self.user.get_full_name()
-            else:
-                return self.user.username
-        except:
-            return self.user.username
 
 
 class LoginHistory(models.Model):

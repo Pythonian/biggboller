@@ -70,7 +70,7 @@
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
                         <span
-                            class="avatar-initial rounded-circle bg-label-primary">{% if request.user.profile.email_confirmed %}{{ request.user.profile.get_screen_name|make_list|first|title }}{% else %}A{% endif %}</span>
+                            class="avatar-initial rounded-circle bg-label-primary">{% if request.user.profile.email_confirmed %}{{ request.user.get_full_name|make_list|first|title }}{% else %}A{% endif %}</span>
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
@@ -80,13 +80,13 @@
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar avatar-online">
                                         <span class="avatar-initial rounded-circle bg-label-primary">
-                                            {% if request.user.profile.email_confirmed %}{{ request.user.profile.get_screen_name|make_list|first|title }}{% else %}A{% endif %}
+                                            {% if request.user.profile.email_confirmed %}{{ request.user.get_full_name|make_list|first|title }}{% else %}A{% endif %}
                                         </span>
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
                                     <span
-                                        class="fw-medium d-block">{% if request.user.profile.email_confirmed %}{{ request.user.profile.get_screen_name }}{% else %}Administrator{% endif %}</span>
+                                        class="fw-medium d-block">{% if request.user.profile.email_confirmed %}{{ request.user.get_full_name }}{% else %}Administrator{% endif %}</span>
                                     <small
                                         class="text-muted">{% if request.user.profile.email_confirmed %}Bettor{% else %}Admin{% endif %}</small>
                                 </div>

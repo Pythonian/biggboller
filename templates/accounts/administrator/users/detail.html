@@ -1,0 +1,162 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}{{ profile.user.get_full_name }} | Profile{% endblock title %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-xl-4 col-lg-5 col-md-5 order-1 order-md-0">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class=" d-flex align-items-center flex-column">
+                    <div class="flex-shrink-0 my-4">
+                        <div class="avatar avatar-xl">
+                            <span class="avatar-initial rounded-circle bg-label-primary">
+                                {{ profile.user.get_full_name|make_list|first|title }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="user-info text-center">
+                        <h4 class="mb-2">{{ profile.user.get_full_name }}</h4>
+                        <span class="badge bg-label-secondary">Bettor</span>
+                    </div>
+                </div>
+
+                <h5 class="pb-2 border-bottom my-4">Details</h5>
+                <div class="info-container">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Username:</span>
+                            <span>{{ user.username }}</span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Email:</span>
+                            <span>{{ user.email }}</span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Status:</span>
+                            <span
+                                class="badge bg-label-{% if profile.is_banned %}danger{% else %}{% if profile.email_confirmed %}success{% else %}info{% endif %}{% endif %}">
+                                {% if profile.is_banned %}Banned{% elif profile.email_confirmed %}Active{% else %}Unverified{% endif %}
+                            </span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Phone Number:</span>
+                            <span>{{ profile.phone_number }}</span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Joined:</span>
+                            <span>{{ profile.user.account_activated_at }}</span>
+                        </li>
+                    </ul>
+                    <div class="d-flex justify-content-center pt-3">
+                        {% if profile.is_banned %}
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#unbanAccountModal"
+                            class="btn btn-info">Unban Account</a>
+                        {% else %}
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#banAccountModal"
+                            class="btn btn-danger">Suspend Account</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">
+        <div class="card mb-4">
+            <h5 class="card-header">Payment Information</h5>
+            <div class="card-body">
+                <p>{{ profile.payout_information|linebreaks }}</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title m-0 me-2">User Activity Timeline</h5>
+            </div>
+            <div class="card-body">
+                <ul class="timeline">
+                    {% for action in actions %}
+                    <li class="timeline-item timeline-item-transparent">
+                        <span class="timeline-point-wrapper">
+                            <span class="timeline-point timeline-point-primary"></span>
+                        </span>
+                        <div class="timeline-event">
+                            <div class="timeline-header mb-1">
+                                <h6 class="mb-0">{{ action.title }}</h6>
+                                <small class="text-muted">{{ action.created|timesince }} ago</small>
+                            </div>
+                            <p class="mb-2"><span class="fw-medium">{{ action.user.get_full_name }}</span>
+                                {{ action.verb }}.</p>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="timeline-item timeline-item-transparent">
+                        <span class="timeline-point-wrapper"><span
+                                class="timeline-point timeline-point-primary"></span></span>
+                        <div class="timeline-event">
+                            <div class="timeline-header mb-1">
+                                <h6 class="mb-0">No user activity found</h6>
+                                <small class="text-muted">N/A</small>
+                            </div>
+                            <p class="mb-2">This user has no recorded activities.</p>
+                        </div>
+                    </li>
+                    {% endfor %}
+
+                    <li class="timeline-end-indicator">
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Suspend Account Modal -->
+<div class="modal fade" id="banAccountModal" tabindex="-1" aria-labelledby="banAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="banAccountModalLabel">Suspend Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to suspend this account? The user will not be able to log in until they contact
+                support.
+            </div>
+            <div class="modal-footer">
+                <form method="post" action="{% url 'administrator:suspend_user' user.username %}">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Proceed</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Unban Account Modal -->
+<div class="modal fade" id="unbanAccountModal" tabindex="-1" aria-labelledby="unbanAccountModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="unbanAccountModalLabel">Unban Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to unban this account?
+            </div>
+            <div class="modal-footer">
+                <form method="post" action="{% url 'administrator:unban_user' user.username %}">
+                    {% csrf_token %}
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Proceed</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

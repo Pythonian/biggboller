@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.db import models, transaction
 from django.utils import timezone
 from apps.accounts.models import (
@@ -19,7 +21,7 @@ from apps.accounts.forms import (
     BundleCreateForm,
     TicketReplyForm,
 )
-from apps.accounts.utils import create_action
+from apps.accounts.utils import create_action, send_email_thread
 from apps.core.utils import mk_paginator
 
 PAGINATION_COUNT = 20
@@ -118,7 +120,10 @@ def admin_dashboard(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_users_login_history(request):
-    login_records = LoginHistory.objects.select_related("user").all()
+    login_records = LoginHistory.objects.select_related("user").filter(
+        user__is_staff=False
+    )
+
     login_records = mk_paginator(request, login_records, PAGINATION_COUNT)
 
     template = "accounts/administrator/login_history.html"
@@ -536,6 +541,107 @@ def admin_users_deactivated(request):
     }
 
     return render(request, template, context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_users_detail(request, username):
+    try:
+        profile = Profile.objects.select_related("user").get(user__username=username)
+        actions = Action.objects.filter(user=profile.user).order_by("-created")[:10]
+    except Profile.DoesNotExist:
+        messages.error(request, "User not found.")
+        return redirect("administrator:users_all")
+
+    template = "accounts/administrator/users/detail.html"
+    context = {
+        "profile": profile,
+        "user": profile.user,
+        "actions": actions,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_suspend_user(request, username):
+    profile = get_object_or_404(Profile, user__username=username)
+
+    # Set the ban status on the Profile and deactivate the User
+    profile.is_banned = True
+    profile.user.is_active = False
+    profile.save()
+    profile.user.save()
+
+    # Log the suspension action
+    create_action(
+        request.user,
+        "User Suspension",
+        f"suspended the user {profile.user.get_full_name()}",
+        target=profile.user,
+    )
+
+    # Send Suspension Email
+    subject = "Account Suspended"
+    html_message = render_to_string(
+        "accounts/administrator/users/emails/suspension_notification.html",
+        {"user": profile.user},
+    )
+    text_message = strip_tags(html_message)
+    send_email_thread(
+        subject,
+        text_message,
+        html_message,
+        profile.user.email,
+        profile.user.get_full_name(),
+    )
+
+    messages.success(
+        request,
+        "User has been suspended and notified by email.",
+    )
+    return redirect("administrator:users_detail", username=username)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_unban_user(request, username):
+    profile = get_object_or_404(Profile, user__username=username)
+
+    profile.is_banned = False
+    profile.user.is_active = True
+    profile.save()
+    profile.user.save()
+
+    # Log the unban action
+    create_action(
+        request.user,
+        "User Unbanning",
+        f"unbanned the user {profile.user.get_full_name()}",
+        target=profile.user,
+    )
+
+    # Send Unban Email
+    subject = "Account Suspension Lifted"
+    html_message = render_to_string(
+        "accounts/administrator/users/emails/unban_notification.html",
+        {"user": profile.user},
+    )
+    text_message = strip_tags(html_message)
+    send_email_thread(
+        subject,
+        text_message,
+        html_message,
+        profile.user.email,
+        profile.user.get_full_name(),
+    )
+
+    messages.success(
+        request,
+        "User has been unbanned and notified by email.",
+    )
+    return redirect("administrator:users_detail", username=username)
 
 
 ################

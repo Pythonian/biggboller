@@ -20,6 +20,14 @@ DISALLOWED_USERNAMES = [
     "account",
     "auth",
     "authentication",
+    "deactivated",
+    "notifications",
+    "verified",
+    "unverified",
+    "banned",
+    "active",
+    "suspend",
+    "unban",
 ]
 
 

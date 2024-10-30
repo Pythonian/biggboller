@@ -53,7 +53,7 @@ def get_location_from_ip(ip_address):
 
 class CustomLoginView(LoginView):
     def form_valid(self, form):
-        response = super().form_valid(form)
+        response = super().form_valid(form)  # noqa: F841
         user = self.request.user
         current_site = get_current_site(self.request)
 
@@ -186,7 +186,7 @@ def register(request):
 
             create_action(
                 user,
-                "New user registration",
+                "New User Registration",
                 "registered for an account.",
                 user.profile,
             )
@@ -313,6 +313,7 @@ def account_activate(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.profile.email_confirmed = True
+        user.profile.account_activated_at = timezone.now()
         user.save()
         login(
             request,
@@ -339,7 +340,6 @@ class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
 
     def form_valid(self, form):
         user = self.request.user
-        # Send email notification for password change
         subject = _("Password Changed Successfully")
         html_message = render_to_string(
             "registration/password_change_confirmation.html",
@@ -365,7 +365,7 @@ class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
         return super().form_valid(form)
 
 
-class CustomLogoutView(LogoutView):
+class CustomLogoutView(LoginRequiredMixin, LogoutView):
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             messages.success(request, "You have successfully logged out.")
