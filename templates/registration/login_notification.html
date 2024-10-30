@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Activation | Bigg-Boller</title>
+    <title>New Login Notification | Bigg-Boller</title>
 
     <style type="text/css">
         body {
@@ -95,17 +95,19 @@
         </tr>
         <tr>
             <td class="content">
-                <h3>Activate Your Account</h3>
+                <h3>Successful Login Update</h3>
                 <p>Hi {{ user.first_name }},</p>
-                <p>Thank you for registering with {{ site_name }}. To complete your registration, please confirm your
-                    email address by clicking the button below:</p>
-                <p style="text-align: center;">
-                    <a href="{{ protocol }}://{{ domain }}{% url 'auth:activate' uidb64=uid token=token %}"
-                        class="button">Verify Email</a>
-                </p>
-                <p>If the button above does not work, please copy and paste the link below into your browser:</p>
-                <p style="color: #0DA487; font-weight: bold;">
-                    {{ protocol }}://{{ domain }}{% url 'auth:activate' uidb64=uid token=token %}
+                <p>We noticed a new login to your account on <strong>{{ login_time }}</strong> from the following
+                    details:</p>
+                <ul>
+                    <li><strong>IP Address:</strong> {{ ip_address }}</li>
+                    <li><strong>Location:</strong> {{ location }}</li>
+                    <li><strong>Device:</strong> {{ device }}</li>
+                    <li><strong>Browser:</strong> {{ browser }}</li>
+                    <li><strong>Operating System:</strong> {{ os }}</li>
+                </ul>
+                <p>If this was you, you can safely ignore this email.</p>
+                <p>If you did not log in recently, please secure your account by resetting your password immediately.
                 </p>
                 <p>Best regards,<br>The {{ site_name }} Team</p>
             </td>

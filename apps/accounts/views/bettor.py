@@ -588,17 +588,17 @@ def bettor_deposits_approved(request):
 
 
 @login_required
-def bettor_deposits_rejected(request):
+def bettor_deposits_cancelled(request):
     deposits = Deposit.objects.filter(
-        status=Deposit.Status.REJECTED,
+        status=Deposit.Status.CANCELLED,
         user=request.user,
     )
-    rejected_deposits = deposits.count()
+    cancelled_deposits = deposits.count()
 
-    template = "accounts/bettor/deposits/rejected.html"
+    template = "accounts/bettor/deposits/cancelled.html"
     context = {
         "deposits": deposits,
-        "rejected_deposits": rejected_deposits,
+        "cancelled_deposits": cancelled_deposits,
     }
 
     return render(request, template, context)

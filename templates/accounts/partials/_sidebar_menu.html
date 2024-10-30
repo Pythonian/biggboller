@@ -233,27 +233,22 @@
         </li>
 
         <!-- Reports -->
-        <!-- <li class="menu-header small text-uppercase">
+        <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Reports</span>
         </li>
         <li class="menu-item">
-            <a href="" class="menu-link">
+            <a href="javascript:void(0);" class="menu-link">
                 <i class="menu-icon fa-solid fa-timeline"></i>
-                <div class="text-truncate">Transaction History</div>
+                <div class="text-truncate">Activity Log</div>
             </a>
         </li>
-        <li class="menu-item">
-            <a href="" class="menu-link">
+        <li
+            class="menu-item {% url 'administrator:login_history' as login_history_url %}{% if request.get_full_path == login_history_url %}active{% endif %}">
+            <a href="{% url 'administrator:login_history' %}" class="menu-link">
                 <i class="menu-icon fa-solid fa-clock-rotate-left"></i>
                 <div class="text-truncate">Login History</div>
             </a>
         </li>
-        <li class="menu-item">
-            <a href="" class="menu-link">
-                <i class="menu-icon fa-solid fa-bullhorn"></i>
-                <div class="text-truncate">Notification History</div>
-            </a>
-        </li> -->
     </ul>
     {% else %}
     <ul class="menu-inner py-1">
@@ -363,8 +358,8 @@
                     </a>
                 </li>
                 <li
-                    class="menu-item {% url 'administrator:deposits_rejected' as deposits_rejected_url %}{% if request.get_full_path == deposits_rejected_url %}active{% endif %}">
-                    <a href="{% url 'administrator:deposits_rejected' %}" class="menu-link">
+                    class="menu-item {% url 'administrator:deposits_cancelled' as deposits_cancelled_url %}{% if request.get_full_path == deposits_cancelled_url %}active{% endif %}">
+                    <a href="{% url 'administrator:deposits_cancelled' %}" class="menu-link">
                         <div class="text-truncate">Cancelled Deposits</div>
                     </a>
                 </li>

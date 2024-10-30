@@ -11,6 +11,7 @@ from apps.accounts.models import (
     Action,
     Deposit,
     Payout,
+    LoginHistory,
 )
 from apps.accounts.forms import (
     GroupCreateForm,
@@ -109,6 +110,20 @@ def admin_dashboard(request):
         "total_deposits": total_deposits,
         "latest_payouts": latest_payouts,
         "total_payouts": total_payouts,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_users_login_history(request):
+    login_records = LoginHistory.objects.select_related("user").all()
+    login_records = mk_paginator(request, login_records, PAGINATION_COUNT)
+
+    template = "accounts/administrator/login_history.html"
+    context = {
+        "login_records": login_records,
     }
 
     return render(request, template, context)

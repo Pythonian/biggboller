@@ -47,3 +47,22 @@ class Profile(models.Model):
                 return self.user.username
         except:
             return self.user.username
+
+
+class LoginHistory(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    login_time = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    browser = models.CharField(max_length=50, null=True, blank=True)
+    location = models.CharField(max_length=100, null=True, blank=True)
+    os = models.CharField(max_length=50, null=True, blank=True)
+    device = models.CharField(max_length=50, null=True, blank=True)
+
+    class Meta:
+        ordering = ["-login_time"]
+
+    def __str__(self):
+        return f"{self.user.username} - {self.login_time}"

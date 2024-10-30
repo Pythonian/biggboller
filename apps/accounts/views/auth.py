@@ -1,18 +1,128 @@
+import requests
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.views import LogoutView, PasswordChangeView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from django.utils.encoding import force_bytes, force_str
+from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.contrib.auth.views import LoginView
+from django.utils import timezone
+
+from user_agents import parse
+
+from apps.accounts.models import LoginHistory
 
 from apps.accounts.forms import ResendActivationEmailForm, UserRegistrationForm
 from apps.accounts.tokens import account_activation_token
 from apps.accounts.utils import create_action, send_email_thread
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 User = get_user_model()
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(",")[0]
+    else:
+        ip = request.META.get("REMOTE_ADDR")
+    return ip
+
+
+def get_location_from_ip(ip_address):
+    if ip_address == "127.0.0.1":
+        return "Localhost"
+    try:
+        response = requests.get(f"https://ipinfo.io/{ip_address}/json")
+        data = response.json()
+        location = f"{data.get('city', 'Unknown')}, {data.get('region', 'Unknown')}, {data.get('country', 'Unknown')}"
+    except Exception:
+        location = "Unknown"
+    return location
+
+
+class CustomLoginView(LoginView):
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        user = self.request.user
+        current_site = get_current_site(self.request)
+
+        # Retrieve IP address
+        ip_address = get_client_ip(self.request)
+
+        # Parse user agent to retrieve browser, OS, and device info
+        user_agent = parse(self.request.META.get("HTTP_USER_AGENT", ""))
+        browser_info = (
+            f"{user_agent.browser.family} {user_agent.browser.version_string}"
+        )
+        os_info = user_agent.os.family
+        device_info = (
+            user_agent.device.family
+            if user_agent.device.family != "Other"
+            else "Unknown Device"
+        )
+        location = get_location_from_ip(ip_address)
+
+        # Check for duplicate login history
+        last_login = LoginHistory.objects.filter(user=user).last()
+        if not last_login or (
+            (timezone.now() - last_login.login_time).total_seconds() > 60
+            or last_login.ip_address != ip_address
+            or last_login.browser != browser_info
+        ):
+            # Create LoginHistory entry if conditions are met
+            LoginHistory.objects.create(
+                user=user,
+                ip_address=ip_address,
+                location=location,
+                browser=browser_info,
+                os=os_info,
+                device=device_info,
+            )
+
+            # Set context for the email template
+            context = {
+                "user": user,
+                "login_time": timezone.now(),
+                "ip_address": ip_address,
+                "location": location,
+                "device": device_info,
+                "browser": browser_info,
+                "os": os_info,
+                "site_name": current_site.name,
+            }
+
+            # Send login notification email
+            subject = f"New Login Alert from {current_site.name}"
+            html_message = render_to_string(
+                "registration/login_notification.html",
+                context,
+            )
+            text_message = strip_tags(html_message)
+
+            try:
+                send_email_thread(
+                    subject,
+                    text_message,
+                    html_message,
+                    user.email,
+                    user.get_full_name(),
+                )
+            except Exception as e:
+                logger.exception(f"Login email notification failed: {e}")
+
+        redirect_url = self.request.GET.get("next") or settings.LOGIN_REDIRECT_URL
+        return redirect(redirect_url)
 
 
 def register(request):
@@ -224,13 +334,33 @@ def account_activate(request, uidb64, token):
         return render(request, "registration/activate.html", {})
 
 
-class CustomPasswordChangeView(PasswordChangeView):  # login_required
-    success_url = reverse_lazy("auth:password_change")
+class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    success_url = reverse_lazy("core:dashboard")
 
     def form_valid(self, form):
+        user = self.request.user
+        # Send email notification for password change
+        subject = _("Password Changed Successfully")
+        html_message = render_to_string(
+            "registration/password_change_confirmation.html",
+            {"user": user},
+        )
+        text_message = strip_tags(html_message)
+
+        try:
+            send_email_thread(
+                subject,
+                text_message,
+                html_message,
+                user.email,
+                user.get_full_name(),
+            )
+        except Exception as e:
+            logger.error(f"Error sending password change email: {e}")
+
         messages.success(
             self.request,
-            "Your password was successfully changed.",
+            _("Your password was successfully changed."),
         )
         return super().form_valid(form)
 

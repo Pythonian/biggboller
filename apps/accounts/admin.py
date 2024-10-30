@@ -8,6 +8,7 @@ from apps.accounts.models import (
     Profile,
     Deposit,
     Payout,
+    LoginHistory,
 )
 
 
@@ -68,4 +69,9 @@ class DepositAdmin(admin.ModelAdmin):
 
 @admin.register(Payout)
 class PayoutAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(LoginHistory)
+class LoginHistoryAdmin(admin.ModelAdmin):
     pass

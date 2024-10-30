@@ -1,0 +1,41 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Users Activity Log{% endblock title %}
+
+{% block content %}
+
+<div class="py-3">
+    <h4>Users Activity Log</h4>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Users Activity Report" %}
+
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in activity_log %}
+                        <tr>
+                            <td>{{ record.user.username }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=activity_log %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

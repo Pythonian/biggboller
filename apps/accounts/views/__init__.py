@@ -5,6 +5,7 @@ from apps.accounts.views.administrator import (
     admin_bundles_won,
     admin_bundles_detail,
     admin_dashboard,
+    admin_users_login_history,
     admin_groups_all,
     admin_groups_detail,
     admin_groups_closed,
@@ -54,6 +55,7 @@ from apps.accounts.views.bettor import (
 
 __all__ = [
     "admin_dashboard",
+    "admin_users_login_history",
     "admin_groups_all",
     "admin_groups_detail",
     "admin_groups_running",

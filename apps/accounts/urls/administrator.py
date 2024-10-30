@@ -2,6 +2,7 @@ from django.urls import include, path
 
 from apps.accounts.views import (
     admin_dashboard,
+    admin_users_login_history,
     admin_groups_all,
     admin_groups_detail,
     admin_groups_running,
@@ -37,6 +38,11 @@ from apps.accounts.views import (
 app_name = "administrator"
 
 urlpatterns = [
+    path(
+        "login-history/",
+        admin_users_login_history,
+        name="login_history",
+    ),
     path("dashboard/", admin_dashboard, name="dashboard"),
     # Deposits
     path(

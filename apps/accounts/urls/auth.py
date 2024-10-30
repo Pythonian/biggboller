@@ -6,6 +6,7 @@ from apps.accounts.views.auth import (
     resend_activation,
     account_activate,
     register,
+    CustomLoginView,
     CustomPasswordChangeView,
     CustomLogoutView,
 )
@@ -17,7 +18,7 @@ urlpatterns = [
     path("logout/", CustomLogoutView.as_view(), name="logout"),
     path(
         "login/",
-        auth_views.LoginView.as_view(
+        CustomLoginView.as_view(
             redirect_authenticated_user=True,
             authentication_form=UserLoginForm,
         ),
