@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 import uuid
+from urllib.parse import urlencode
 from decimal import Decimal
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
@@ -201,65 +202,15 @@ def bettor_bundles_all(request):
     return render(request, template, context)
 
 
-# @login_required
-# def bettor_bundles_detail(request, id):
-#     bundle = get_object_or_404(Bundle, id=id)
-
-#     if request.method == "POST":
-#         form = BundlePurchaseForm(request.POST, bundle=bundle)
-#         if form.is_valid():
-#             quantity = int(form.cleaned_data["quantity"])
-#             total_amount = bundle.price * quantity
-
-#             # Check if there's already a pending deposit for this user and bundle
-#             deposit, created = Deposit.objects.get_or_create(
-#                 user=request.user,
-#                 bundle=bundle,
-#                 status=Deposit.Status.PENDING,
-#                 defaults={
-#                     "quantity": quantity,
-#                     "amount": total_amount,
-#                 },
-#             )
-
-#             # If the deposit already exists but has a different quantity/amount, update it
-#             if not created and (
-#                 deposit.quantity != quantity or deposit.amount != total_amount
-#             ):
-#                 deposit.quantity = quantity
-#                 deposit.amount = total_amount
-#                 deposit.save()
-
-#             request.session["deposit_id"] = str(deposit.id)
-
-#             return redirect("bettor:bundles_purchase", id=bundle.id)
-#         else:
-#             messages.error(
-#                 request,
-#                 "An error occurred while submitting the form. Try again.",
-#             )
-#     else:
-#         form = BundlePurchaseForm(bundle=bundle)
-
-#     template = "accounts/bettor/bundles/detail.html"
-#     context = {
-#         "bundle": bundle,
-#         "form": form,
-#     }
-
-#     return render(request, template, context)
-
-
 @login_required
 def bettor_bundles_detail(request, id):
     bundle = get_object_or_404(Bundle, id=id)
-    try:
-        deposit = Deposit.objects.get(
-            bundle=bundle,
-            status=Deposit.Status.APPROVED,
-        )
-    except Deposit.DoesNotExist:
-        deposit = None
+    # Check if there is a deposit for this bundle and user
+    deposit = (
+        Deposit.objects.filter(user=request.user, bundle=bundle)
+        .exclude(status=Deposit.Status.APPROVED)
+        .first()
+    )
 
     if request.method == "POST":
         form = BundlePurchaseForm(request.POST, bundle=bundle)
@@ -267,24 +218,32 @@ def bettor_bundles_detail(request, id):
             quantity = int(form.cleaned_data["quantity"])
             total_amount = bundle.price * quantity
 
-            try:
-                deposit = Deposit.objects.create(
-                    user=request.user,
-                    bundle=bundle,
-                    quantity=quantity,
-                    amount=total_amount,
-                    status=Deposit.Status.PENDING,
-                )
-            except Exception as e:
-                messages.error(request, f"Deposit creation failed: {str(e)}")
-                return redirect("bettor:bundles_detail", id=bundle.id)
+            # Check if there's already a pending deposit for this user and bundle
+            deposit, created = Deposit.objects.get_or_create(
+                user=request.user,
+                bundle=bundle,
+                status=Deposit.Status.PENDING,
+                defaults={
+                    "quantity": quantity,
+                    "amount": total_amount,
+                },
+            )
+
+            # Update quantity and amount if deposit already exists but differs
+            if not created and (
+                deposit.quantity != quantity or deposit.amount != total_amount
+            ):
+                deposit.quantity = quantity
+                deposit.amount = total_amount
+                deposit.save()
+
             request.session["deposit_id"] = str(deposit.id)
 
             return redirect("bettor:bundles_purchase", id=bundle.id)
         else:
             messages.error(
                 request,
-                "An error occured while submitting the form. Try again.",
+                "An error occurred while submitting the form. Try again.",
             )
     else:
         form = BundlePurchaseForm(bundle=bundle)
@@ -301,7 +260,6 @@ def bettor_bundles_detail(request, id):
 
 @login_required
 def bettor_bundles_purchase(request, id):
-    # Fetch the bundle and pending deposit
     bundle = get_object_or_404(Bundle, id=id)
     deposit_id = request.session.get("deposit_id")
     deposit = get_object_or_404(
@@ -312,7 +270,7 @@ def bettor_bundles_purchase(request, id):
         status=Deposit.Status.PENDING,
     )
 
-    # Calculate Paystack amount (in kobo)
+    # Paystack amount in kobo
     paystack_amount = int(deposit.amount * 100)
 
     # Generate the Paystack reference if it doesn't already exist
@@ -322,6 +280,10 @@ def bettor_bundles_purchase(request, id):
         deposit.save()
 
     # Create the Paystack redirect URL for after payment
+    # paystack_redirect_url = "{}?{}".format(
+    #     reverse("paystack:verify_payment", args=[paystack_ref]),
+    #     urlencode({"amount": paystack_amount}),
+    # )
     paystack_redirect_url = "{}?amount={}".format(
         reverse("paystack:verify_payment", args=[paystack_ref]),
         paystack_amount,
@@ -342,25 +304,49 @@ def bettor_bundles_purchase(request, id):
 
 @csrf_exempt
 def payment_done(request, ref):
-    # Fetch the Deposit using the paystack_id
     deposit = get_object_or_404(Deposit, paystack_id=ref)
-    print(f"deposit - {deposit}")
 
     if deposit.status == Deposit.Status.APPROVED:
-        # Add success message
-        messages.success(
-            request,
-            f"Payment successful! Your purchase of {deposit.quantity} bundle(s) for {deposit.bundle.name} is complete.",
-        )
-
-        # Redirect to bundles_detail view with the bundle ID
+        if request.user.is_authenticated:
+            messages.success(
+                request,
+                f"Payment successful! Your purchase of {deposit.quantity} bundle(s) for {deposit.bundle.name} is complete.",
+            )
         return redirect("bettor:bundles_detail", id=deposit.bundle.id)
     else:
-        # Handle the case where payment was not successful
-        messages.error(
-            request, "There was an issue with your payment. Please contact support."
-        )
+        if request.user.is_authenticated:
+            messages.error(
+                request, "There was an issue with your payment. Please contact support."
+            )
         return redirect("bettor:bundles_detail", id=deposit.bundle.id)
+
+
+# @csrf_exempt
+# def payment_done(request, ref):
+#     # Fetch the Deposit using the paystack_id
+#     deposit = get_object_or_404(Deposit, paystack_id=ref)
+#     print(f"deposit - {deposit}")
+
+#     if deposit.status == Deposit.Status.APPROVED:
+#         # Add success message
+#         messages.success(
+#             request,
+#             f"Payment successful! Your purchase of {deposit.quantity} bundle(s) for {deposit.bundle.name} is complete.",
+#         )
+
+#         # Redirect to bundles_detail view with the bundle ID
+#         try:
+#             return redirect("bettor:bundles_detail", id=deposit.bundle.id)
+#         except AttributeError:
+#             messages.error(request, "Invalid deposit or bundle.")
+#             return redirect("bettor:bundles_overview")
+#         # return redirect("bettor:bundles_detail", id=deposit.bundle.id)
+#     else:
+#         # Handle the case where payment was not successful
+#         messages.error(
+#             request, "There was an issue with your payment. Please contact support."
+#         )
+#         return redirect("bettor:bundles_detail", id=deposit.bundle.id)
 
 
 @csrf_exempt
@@ -537,7 +523,7 @@ def bettor_deposits_all(request):
     total_deposits = deposits.count()
     pending_deposits = deposits.filter(status=Deposit.Status.PENDING).count()
     approved_deposits = deposits.filter(status=Deposit.Status.APPROVED).count()
-    rejected_deposits = deposits.filter(status=Deposit.Status.REJECTED).count()
+    cancelled_deposits = deposits.filter(status=Deposit.Status.CANCELLED).count()
 
     deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
 
@@ -547,7 +533,7 @@ def bettor_deposits_all(request):
         "total_deposits": total_deposits,
         "pending_deposits": pending_deposits,
         "approved_deposits": approved_deposits,
-        "rejected_deposits": rejected_deposits,
+        "cancelled_deposits": cancelled_deposits,
     }
 
     return render(request, template, context)
@@ -560,6 +546,8 @@ def bettor_deposits_pending(request):
         user=request.user,
     )
     pending_deposits = deposits.count()
+
+    deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
 
     template = "accounts/bettor/deposits/pending.html"
     context = {
@@ -578,6 +566,8 @@ def bettor_deposits_approved(request):
     )
     approved_deposits = deposits.count()
 
+    deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
+
     template = "accounts/bettor/deposits/approved.html"
     context = {
         "deposits": deposits,
@@ -594,6 +584,8 @@ def bettor_deposits_cancelled(request):
         user=request.user,
     )
     cancelled_deposits = deposits.count()
+
+    deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
 
     template = "accounts/bettor/deposits/cancelled.html"
     context = {
@@ -633,15 +625,56 @@ def bettor_payouts_all(request):
 
 @login_required
 def bettor_payouts_pending(request):
+    payouts = Payout.objects.filter(
+        status=Payout.Status.PENDING,
+        user=request.user,
+    )
+    pending_payouts = payouts.count()
+
+    payouts = mk_paginator(request, payouts, PAGINATION_COUNT)
+
     template = "accounts/bettor/payouts/pending.html"
-    context = {}
+    context = {
+        "payouts": payouts,
+        "pending_payouts": pending_payouts,
+    }
 
     return render(request, template, context)
 
 
 @login_required
 def bettor_payouts_approved(request):
+    payouts = Payout.objects.filter(
+        status=Payout.Status.APPROVED,
+        user=request.user,
+    )
+    approved_payouts = payouts.count()
+
+    payouts = mk_paginator(request, payouts, PAGINATION_COUNT)
+
     template = "accounts/bettor/payouts/approved.html"
-    context = {}
+    context = {
+        "payouts": payouts,
+        "approved_payouts": approved_payouts,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+def bettor_payouts_cancelled(request):
+    payouts = Payout.objects.filter(
+        status=Payout.Status.CANCELLED,
+        user=request.user,
+    )
+    cancelled_payouts = payouts.count()
+
+    payouts = mk_paginator(request, payouts, PAGINATION_COUNT)
+
+    template = "accounts/bettor/payouts/cancelled.html"
+    context = {
+        "payouts": payouts,
+        "cancelled_payouts": cancelled_payouts,
+    }
 
     return render(request, template, context)

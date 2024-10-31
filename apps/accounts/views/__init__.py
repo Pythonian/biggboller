@@ -51,9 +51,11 @@ from apps.accounts.views.bettor import (
     bettor_deposits_all,
     bettor_deposits_approved,
     bettor_deposits_pending,
+    bettor_deposits_cancelled,
     bettor_payouts_all,
     bettor_payouts_approved,
     bettor_payouts_pending,
+    bettor_payouts_cancelled,
 )
 
 __all__ = [
@@ -108,7 +110,9 @@ __all__ = [
     "bettor_deposits_all",
     "bettor_deposits_approved",
     "bettor_deposits_pending",
+    "bettor_deposits_cancelled",
     "bettor_payouts_all",
     "bettor_payouts_approved",
     "bettor_payouts_pending",
+    "bettor_payouts_cancelled",
 ]

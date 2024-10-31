@@ -1,0 +1,48 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}All Deposits{% endblock title %}
+
+{% block content %}
+
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="All Deposits" %}
+
+<div class="row mb-4">
+    <!-- Total Deposits -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="primary" label_color="primary" icon_class="fa-solid fa-naira-sign" title="Total Deposits" count=total_deposits %}
+
+    <!-- Pending Deposits -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="info" label_color="info" icon_class="fa-solid fa-hourglass-half" count=pending_deposits title="Pending Deposits" %}
+
+    <!-- Approved Deposits -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" count=approved_deposits title="Approved Deposits" %}
+
+    <!-- Cancelled Deposits -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-times" count=cancelled_deposits title="Cancelled Deposits" %}
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="All Deposits List" %}
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        {% include 'accounts/administrator/deposits/partials/_table_head.html' %}
+                    </thead>
+                    <tbody>
+                        {% for deposit in deposits %}
+                        {% include "accounts/administrator/deposits/partials/_deposit_item.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=deposits %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

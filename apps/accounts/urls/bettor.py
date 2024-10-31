@@ -13,6 +13,14 @@ from apps.accounts.views import (
     bettor_bundles_purchase,
     bettor_bundles_owned,
     bettor_bundles_detail,
+    bettor_deposits_all,
+    bettor_deposits_approved,
+    bettor_deposits_pending,
+    bettor_deposits_cancelled,
+    bettor_payouts_all,
+    bettor_payouts_approved,
+    bettor_payouts_pending,
+    bettor_payouts_cancelled,
 )
 
 app_name = "bettor"
@@ -62,6 +70,62 @@ urlpatterns = [
                     "",
                     bettor_tickets_all,
                     name="tickets_all",
+                ),
+            ]
+        ),
+    ),
+    # Deposits
+    path(
+        "deposits/",
+        include(
+            [
+                path(
+                    "approved/",
+                    bettor_deposits_approved,
+                    name="deposits_approved",
+                ),
+                path(
+                    "pending/",
+                    bettor_deposits_pending,
+                    name="deposits_pending",
+                ),
+                path(
+                    "cancelled/",
+                    bettor_deposits_cancelled,
+                    name="deposits_cancelled",
+                ),
+                path(
+                    "",
+                    bettor_deposits_all,
+                    name="deposits_all",
+                ),
+            ]
+        ),
+    ),
+    # Payouts
+    path(
+        "payouts/",
+        include(
+            [
+                path(
+                    "approved/",
+                    bettor_payouts_approved,
+                    name="payouts_approved",
+                ),
+                path(
+                    "pending/",
+                    bettor_payouts_pending,
+                    name="payouts_pending",
+                ),
+                path(
+                    "cancelled/",
+                    bettor_payouts_cancelled,
+                    name="payouts_cancelled",
+                ),
+                path(
+                    "",
+                    bettor_payouts_all,
+                    name="payouts_all",
                 ),
             ]
         ),
