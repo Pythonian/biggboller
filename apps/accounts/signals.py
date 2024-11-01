@@ -7,7 +7,7 @@ from paystack.api.signals import payment_verified
 from apps.accounts.models import Deposit
 
 from .tasks import payment_successful_email
-from apps.accounts.utils import create_action
+# from apps.accounts.utils import create_action
 
 
 @receiver(payment_verified)
@@ -28,12 +28,12 @@ def on_payment_verified(sender, ref, amount, order, **kwargs):
     deposit.bundle.participants.add(deposit.user)
 
     # Create an action for the user
-    create_action(
-        deposit.user,
-        "New Bundle Purchased.",
-        f"has just purchased the {deposit.bundle.name} bundle.",
-        deposit.bundle,
-    )
+    # create_action(
+    #     deposit.user,
+    #     "New Bundle Purchased.",
+    #     f"has just purchased the {deposit.bundle.name} bundle.",
+    #     deposit.bundle,
+    # )
 
     # Send confirmation email to the user
     payment_successful_email(deposit.id)

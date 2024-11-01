@@ -27,7 +27,7 @@ class Action(models.Model):
         related_name="target_obj",
         on_delete=models.CASCADE,
     )
-    target_id = models.PositiveIntegerField(
+    target_id = models.PositiveBigIntegerField(
         null=True,
         blank=True,
     )

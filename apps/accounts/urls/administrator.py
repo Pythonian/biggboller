@@ -31,6 +31,7 @@ from apps.accounts.views import (
     admin_deposits_cancelled,
     admin_deposits_all,
     admin_deposits_approved,
+    admin_deposits_update_payout,
     admin_deposits_pending,
     admin_payouts_all,
     admin_payouts_approved,
@@ -66,6 +67,11 @@ urlpatterns = [
                     "pending/",
                     admin_deposits_pending,
                     name="deposits_pending",
+                ),
+                path(
+                    "update-payout/<uuid:deposit_id>/",
+                    admin_deposits_update_payout,
+                    name="deposits_update_payout",
                 ),
                 path(
                     "",

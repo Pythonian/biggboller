@@ -1,0 +1,40 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Approved payouts{% endblock title %}
+
+{% block content %}
+
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="Approved payouts" %}
+
+<div class="row mb-4">
+    <!-- Approved payouts -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" count=approved_payouts title="Approved Payouts" %}
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Approved Payouts List" %}
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        {% include 'accounts/administrator/payouts/partials/_table_head.html' %}
+                    </thead>
+                    <tbody>
+                        {% for payout in payouts %}
+                        {% include "accounts/administrator/payouts/partials/_payout_item.html" %}
+                        {% include "accounts/administrator/payouts/modals/update_payout.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=payouts %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

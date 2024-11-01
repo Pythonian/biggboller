@@ -92,7 +92,6 @@
             </div>
             <div class="card-body">
                 <form>
-                    <script src="https://js.paystack.co/v2/inline.js"></script>
                     <button id="paystack-button" class="btn btn-success" type="button" onclick="payWithPaystack()">Pay
                         With Paystack</button>
                 </form>
@@ -103,22 +102,31 @@
 {% endblock content %}
 
 {% block paystack %}
+<script src="https://js.paystack.co/v2/inline.js"></script>
 <script>
     function payWithPaystack() {
-        var handler = new PaystackPop({
-            key: '{{ paystack_key }}',
+        const popup = new PaystackPop();
+
+        popup.checkout({
+            key: '{{ paystack_key }}',  // Replace with your public key
             email: '{{ deposit.user.email }}',
             amount: {{ paystack_amount }},
     reference: '{{ paystack_ref }}',
-        callback: function(response) {
-            // Redirect to the success page after payment
-            window.location.href = "{{ paystack_redirect_url }}&trxref=" + response.reference;
+        onSuccess: function(transaction) {
+            // Redirect on successful payment
+            window.location.href = "{{ paystack_redirect_url }}&trxref=" + transaction.reference;
         },
-    onClose: function() {
-        alert('Your transaction was either aborted or not completed, this window will close.');
+    onLoad: function(response) {
+        console.log("Transaction loading:", response);
+    },
+    onCancel: function() {
+        alert('Transaction was cancelled by the user.');
+    },
+    onError: function(error) {
+        alert("Error: " + error.message);
     }
         });
-    handler.open();
     }
 </script>
+
 {% endblock %}

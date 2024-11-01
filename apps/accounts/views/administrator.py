@@ -5,6 +5,8 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.db import models, transaction
 from django.utils import timezone
+from django.views.decorators.http import require_POST
+
 from apps.accounts.models import (
     Group,
     Bundle,
@@ -384,13 +386,13 @@ def admin_bundles_detail(request, id):
                                 "status": Payout.Status.PENDING,
                             },
                         )
-                        if created:
-                            create_action(
-                                participant,
-                                "New Payout Initiated",
-                                f"A payout amount of #{payout_amount} has been initiated.",
-                                payout,
-                            )
+                        # if created:
+                        #     create_action(
+                        #         participant,
+                        #         "New Payout Initiated",
+                        #         f"A payout amount of #{payout_amount} has been initiated.",
+                        #         payout,
+                        #     )
 
             messages.success(request, "Bundle status updated successfully.")
             return redirect(bundle)
@@ -790,6 +792,31 @@ def admin_tickets_closed(request):
 
 @login_required
 @user_passes_test(is_admin)
+@require_POST
+def admin_deposits_update_payout(request, deposit_id):
+    deposit = get_object_or_404(Deposit, id=deposit_id)
+    payout_amount = request.POST.get("payout_amount")
+
+    try:
+        deposit.payout_amount = payout_amount
+        deposit.save()
+        messages.success(request, "Payout amount updated successfully.")
+    except Exception as e:
+        messages.error(
+            request,
+            f"Failed to update payout amount: {str(e)}",
+        )
+
+    return redirect(
+        request.META.get(
+            "HTTP_REFERER",
+            "administrator:deposits_all",
+        )
+    )
+
+
+@login_required
+@user_passes_test(is_admin)
 def admin_deposits_all(request):
     deposits = Deposit.objects.all()
     total_deposits = deposits.count()
@@ -892,12 +919,12 @@ def admin_payouts_all(request):
                     request,
                     "Payout approved successfully.",
                 )
-                create_action(
-                    payout.user,
-                    "Payout Wins Completed.",
-                    f"{payout.user.get_full_name} has been paid their winnings.",
-                    payout.user,
-                )
+                # create_action(
+                #     payout.user,
+                #     "Payout Wins Completed.",
+                #     f"{payout.user.get_full_name} has been paid their winnings.",
+                #     payout.user,
+                # )
             except Payout.DoesNotExist:
                 messages.error(request, "Payout not found.")
 

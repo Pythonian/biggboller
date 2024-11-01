@@ -1,0 +1,39 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Pending payouts{% endblock title %}
+
+{% block content %}
+
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="Pending payouts" %}
+
+<div class="row mb-4">
+    <!-- Pending payouts -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="info" label_color="info" icon_class="fa-solid fa-hourglass-half" count=pending_payouts title="Pending Payouts" %}
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Pending Payouts List" %}
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        {% include 'accounts/administrator/payouts/partials/_table_head.html' %}
+                    </thead>
+                    <tbody>
+                        {% for payout in payouts %}
+                        {% include "accounts/administrator/payouts/partials/_payout_item.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=payouts %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

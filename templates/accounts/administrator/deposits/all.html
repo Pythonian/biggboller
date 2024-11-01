@@ -32,6 +32,7 @@
                     <tbody>
                         {% for deposit in deposits %}
                         {% include "accounts/administrator/deposits/partials/_deposit_item.html" %}
+                        {% include "accounts/administrator/deposits/modals/update_payout.html" %}
                         {% empty %}
                         <tr>
                             <td colspan="7" class="text-center">No record yet.</td>

@@ -2,18 +2,18 @@
 <tr>
     <td>{{ deposit.user.get_full_name }} <br>{{ deposit.user.email }}</td>
     <td>{{ deposit.bundle.name }}</td>
-    <td>₦{{ deposit.amount|floatformat:0|intcomma }}</td>
-    <td>{{ deposit.paystack_id }}</td>
+    <td>₦{{ deposit.amount|floatformat:0|intcomma }} <br><strong>{{ deposit.paystack_id }}</strong></td>
+    <td>₦{{ deposit.payout_amount|floatformat:0|intcomma }}</td>
     <td>{{ deposit.get_status_display }}</td>
     <td>{{ deposit.updated|date:"F j, Y" }}</td>
-    <!-- <td>
+    <td>
         <div class="d-flex">
             <div class="avatar me-2">
-                <a href="" class="avatar-initial rounded bg-label-primary" data-bs-toggle="tooltip" data-bs-offset="0,8"
-                    data-bs-placement="top" data-bs-custom-class="tooltip-primary" title="View Deposit">
-                    <i class="fa-solid fa-eye"></i>
+                <a href="#" class="avatar-initial rounded bg-label-primary" data-bs-toggle="modal"
+                    data-bs-target="#updatePayoutAmount{{ deposit.id }}" title="Update Payout">
+                    <i class="fa-solid fa-naira-sign"></i>
                 </a>
             </div>
         </div>
-    </td> -->
+    </td>
 </tr>
