@@ -214,6 +214,8 @@ def resend_activation(request):
     if request.user.is_authenticated:
         return redirect("core:home")
 
+    # TODO: test out this resend activation implementation
+
     if request.method == "POST":
         form = ResendActivationEmailForm(request.POST)
         if form.is_valid():
@@ -324,6 +326,7 @@ def account_activate(request, uidb64, token):
             request,
             "Your account has been successully activated.",
         )
+        # TODO: Send an email to a bettor when an Account has been activated successfully
         create_action(
             user,
             "Account Email Activated",

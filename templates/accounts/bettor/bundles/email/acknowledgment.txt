@@ -1,0 +1,10 @@
+Hi {{ user.first_name }},
+
+Thank you for purchasing {{ quantity }} unit(s) of the '{{ bundle.name }}' bundle.
+
+Your total purchase amount is ₦{{ total_amount }}.
+
+We appreciate your participation and wish you the best of luck!
+
+Thank you,  
+The Bigg-Boller Team

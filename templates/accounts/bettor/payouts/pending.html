@@ -14,15 +14,15 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Pending Payouts List" %}
+            {% include 'accounts/bettor/partials/_card_header.html' with card_header="Pending Payouts List" %}
             <div class="table-responsive">
                 <table class="table table-lg">
                     <thead>
-                        {% include 'accounts/administrator/payouts/partials/_table_head.html' %}
+                        {% include 'accounts/bettor/payouts/partials/_table_head.html' %}
                     </thead>
                     <tbody>
                         {% for payout in payouts %}
-                        {% include "accounts/administrator/payouts/partials/_payout_item.html" %}
+                        {% include "accounts/bettor/payouts/partials/_payout_item.html" %}
                         {% empty %}
                         <tr>
                             <td colspan="6" class="text-center">No record yet.</td>

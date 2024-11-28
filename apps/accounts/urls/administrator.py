@@ -21,6 +21,7 @@ from apps.accounts.views import (
     admin_users_verified,
     admin_users_unverified,
     admin_users_detail,
+    admin_users_assign_group,
     admin_unban_user,
     admin_suspend_user,
     admin_tickets_closed,
@@ -186,6 +187,11 @@ urlpatterns = [
                     "<str:username>/unban/",
                     admin_unban_user,
                     name="unban_user",
+                ),
+                path(
+                    "<str:username>/assigngroup/",
+                    admin_users_assign_group,
+                    name="assign_group",
                 ),
                 path(
                     "<str:username>/",

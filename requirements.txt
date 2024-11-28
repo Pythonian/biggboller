@@ -1,11 +1,15 @@
+boto3==1.35.57
+celery==5.4.0
 dj-database-url==2.2.0
 Django==5.1.1
+django-storages==1.14.4
 django-widget-tweaks==1.5.0
 gunicorn==23.0.0
 mailjet-rest==1.3.4
 -e git+https://github.com/gbozee/pypaystack.git@24df1c9ca209031e0ec940ff8552d45ca6b55421#egg=pypaystack
 python-decouple==3.8
 psycopg2==2.9.9
+redis==5.2.0
 requests==2.32.3
 six==1.16.0
 pyyaml==6.0.2 

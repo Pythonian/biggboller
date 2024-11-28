@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.db import models, transaction
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_POST
 
 from apps.accounts.models import (
@@ -251,6 +252,7 @@ def admin_groups_closed(request):
 @user_passes_test(is_admin)
 def admin_groups_detail(request, id):
     group = get_object_or_404(Group, id=id)
+    members = group.bettors.all()
 
     if request.method == "POST":
         form = GroupUpdateForm(request.POST, instance=group)
@@ -268,6 +270,7 @@ def admin_groups_detail(request, id):
     context = {
         "group": group,
         "form": form,
+        "members": members,
     }
 
     return render(request, template, context)
@@ -362,6 +365,9 @@ def admin_bundles_detail(request, id):
         if new_status in dict(Bundle.Status.choices):
             bundle.status = new_status
             bundle.save()
+
+            # TODO: An email should be sent to the Bettor participant
+            # when a Bundle status has been marked Lost or Won by the admin
 
             # Check if the new status is "Won" and create Payouts
             if new_status == Bundle.Status.WON:
@@ -549,9 +555,18 @@ def admin_users_deactivated(request):
 @user_passes_test(is_admin)
 def admin_users_detail(request, username):
     try:
+        # Fetch the user's profile and actions
         profile = Profile.objects.select_related("user").get(user__username=username)
         actions = Action.objects.filter(user=profile.user).order_by("-created")[:10]
+
+        # Fetch running groups and exclude groups the user already belongs to
+        running_groups = Group.objects.running()
+        user_groups = profile.user.bet_groups.all()
+        eligible_groups = running_groups.exclude(
+            id__in=user_groups.values_list("id", flat=True)
+        )
     except Profile.DoesNotExist:
+        # Handle the case where the user does not exist
         messages.error(request, "User not found.")
         return redirect("administrator:users_all")
 
@@ -560,9 +575,54 @@ def admin_users_detail(request, username):
         "profile": profile,
         "user": profile.user,
         "actions": actions,
+        "groups": eligible_groups,
     }
 
     return render(request, template, context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_users_assign_group(request, username):
+    try:
+        # Fetch the user by username
+        user = get_user_model().objects.get(username=username)
+    except get_user_model().DoesNotExist:
+        # Handle the case where the user is not found
+        messages.error(request, "User not found.")
+        return redirect("administrator:users_all")
+
+    if request.method == "POST":
+        group_id = request.POST.get("group")  # Get group ID from the request
+        if not group_id:
+            # If no group is selected, show an error and redirect
+            messages.error(request, "Please select a group.")
+            return redirect("administrator:users_detail", username=username)
+
+        try:
+            # Check if the group exists
+            group = Group.objects.get(id=group_id)
+            if group not in user.bet_groups.all():
+                # Add the user to the group if they are not already a member
+                user.bet_groups.add(group)
+                messages.success(
+                    request,
+                    f"{user.username} has been successfully added to the group '{group.name}'.",
+                )
+            else:
+                # Notify if the user is already in the group
+                messages.warning(
+                    request, f"{user.username} is already in {group.name}."
+                )
+        except Group.DoesNotExist:
+            # Handle the case where the group does not exist
+            messages.error(request, "Invalid group selected.")
+
+        # Redirect back to the user detail page after processing
+        return redirect("administrator:users_detail", username=username)
+
+    # For non-POST requests, simply redirect to the detail page
+    return redirect("administrator:users_detail", username=username)
 
 
 @login_required
@@ -704,6 +764,8 @@ def admin_tickets_detail(request, ticket_id):
                     request,
                     "Your reply to this ticket has been posted.",
                 )
+                # TODO: Send an email to the Bettor whenever an Admin replies
+                # to the Ticket
                 return redirect(
                     "administrator:tickets_detail", ticket_id=ticket.ticket_id
                 )
@@ -719,6 +781,8 @@ def admin_tickets_detail(request, ticket_id):
                 )
             else:
                 messages.error(request, "Invalid status selected.")
+            # TODO: Send an email to the Bettor when an Admin updates the
+            # status of the Ticket.
             return redirect(
                 "administrator:tickets_detail",
                 ticket_id=ticket.ticket_id,
@@ -806,6 +870,8 @@ def admin_deposits_update_payout(request, deposit_id):
             request,
             f"Failed to update payout amount: {str(e)}",
         )
+
+    # TODO: Send an email to the Bettor when the Admin updates the Payout amount
 
     return redirect(
         request.META.get(
@@ -899,6 +965,14 @@ def admin_payouts_all(request):
     pending_payouts = payouts.filter(status=Payout.Status.PENDING).count()
     approved_payouts = payouts.filter(status=Payout.Status.APPROVED).count()
     cancelled_payouts = payouts.filter(status=Payout.Status.CANCELLED).count()
+
+    # TODO:
+    # 1. Move the form into its own view
+    # 2. Send an email to the Bettor when the Admin approves the Payout, including the Note
+    # 3. A Payout can either be Approved or Cancelled
+    # 4. Once a Payout status has been changed, it can not be reverted.
+    # 5. Ability to update Payout should only be for ALL or PENDING views
+    # 6. Also send email to Bettor when an Admin Cancels a Payout
 
     # Handle form submission for payout updates
     if request.method == "POST":

@@ -50,6 +50,13 @@ class Group(models.Model):
         help_text=_("Select a status for the betting group."),
         db_index=True,
     )
+    bettors = models.ManyToManyField(
+        get_user_model(),
+        related_name="bet_groups",
+        blank=True,
+        verbose_name=_("Bettors"),
+        help_text=_("Users who are part of this group."),
+    )
     created_at = models.DateTimeField(
         auto_now_add=True,
         verbose_name=_("Created At"),

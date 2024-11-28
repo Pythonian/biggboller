@@ -148,5 +148,41 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Group Members List" %}
+
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone number</th>
+                            </tr>
+                        </thead>
+                    </thead>
+                    <tbody>
+                        {% for member in members %}
+                        <tr>
+                            <td>{{ member.get_full_name }}</td>
+                            <td>{{ member.email }}</td>
+                            <td>{{ member.profile.phone_number }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=members %}
+        </div>
+    </div>
+</div>
+
 {% include "accounts/administrator/groups/modals/update_group.html" %}
 {% endblock content %}

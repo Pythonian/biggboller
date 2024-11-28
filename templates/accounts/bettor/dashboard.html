@@ -7,8 +7,16 @@
 
 <div class="d-flex justify-content-between align-items-center py-3">
     <h4>Dashboard</h4>
-    <a href="{% url 'bettor:profile' %}" class="btn btn-outline-primary"><i class="fa-solid fa-user me-2"></i> My
-        Profile</a>
+    <div>
+
+        <a href="{% url 'wallet:deposit' %}" class="btn btn-success">
+            <i class="fa-solid fa-wallet me-2"></i> Wallet Deposit
+        </a>
+        <a href="{# url 'wallet:withdrawal' #}" class="btn btn-primary">
+            <i class="fa-solid fa-money-bill-transfer me-2"></i> Withdrawal
+        </a>
+    </div>
+
 </div>
 
 <div class="row">
@@ -37,8 +45,8 @@
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="content-left">
-                        <h3 class="mb-0">₦ {{ total_deposits|floatformat:0|intcomma }}</h3>
-                        <small>Total Stakes</small>
+                        <h3 class="mb-0">₦ {{ wallet_balance|floatformat:0|intcomma }}</h3>
+                        <small>Wallet Balance</small>
                     </div>
                     <span class="badge bg-label-primary rounded-circle p-2">
                         <i class="fa-solid fa-money-bill-transfer fa-2x"></i>
@@ -52,6 +60,21 @@
             <div class="card-body">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="content-left">
+                        <h3 class="mb-0">₦ {{ total_deposits|floatformat:0|intcomma }}</h3>
+                        <small>Total Stakes</small>
+                    </div>
+                    <span class="badge bg-label-success rounded-circle p-2">
+                        <i class="fa-solid fa-gift fa-2x"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="col-sm-6 col-xl-3">
+        <div class="card card-border-shadow-success">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="content-left">
                         <h3 class="mb-0">₦ {{ total_payouts|floatformat:0|intcomma }}</h3>
                         <small>Total Payouts</small>
                     </div>
@@ -61,7 +84,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <div class="col-sm-6 col-xl-3">
         <div class="card card-border-shadow-info">
             <div class="card-body">

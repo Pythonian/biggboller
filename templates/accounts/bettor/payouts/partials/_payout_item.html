@@ -1,0 +1,20 @@
+{% load humanize %}
+
+<tr>
+    <td>{{ payout.bundle.name }}</td>
+    <td>₦{{ payout.amount|floatformat:0|intcomma }}</td>
+    <td>{{ payout.paid_on|date:"jS M, Y" }}</td>
+    <td><span
+            class="badge rounded bg-label-{% if payout.status == payout.Status.PENDING %}primary{% elif payout.status == payout.Status.APPROVED %}success{% else %}danger{% endif %}">{{ payout.get_status_display }}</span>
+    </td>
+    <td>
+        <div class="d-flex">
+            <div class="avatar me-2">
+                <a href="#" class="avatar-initial rounded bg-label-primary" data-bs-toggle="modal"
+                    data-bs-target="#payoutNote{{payout.id}}" title="View Note">
+                    <i class="fa-solid fa-circle-info"></i>
+                </a>
+            </div>
+        </div>
+    </td>
+</tr>

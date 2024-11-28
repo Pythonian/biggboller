@@ -1,0 +1,44 @@
+{% extends "accounts/base.html" %}
+{% load humanize %}
+
+{% block title %}Confirm Wallet Deposit{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-6 col-md-6 col-12 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Confirm Your Deposit</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Amount:</strong> ₦{{ deposit.amount|floatformat:0|intcomma }}</p>
+                <p><strong>Description:</strong> {{ deposit.description }}</p>
+                <button class="btn btn-success" type="button" onclick="payWithPaystack()">Pay
+                    Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block paystack %}
+<script src="https://js.paystack.co/v2/inline.js"></script>
+<script>
+    function payWithPaystack() {
+        const paystack = new PaystackPop();
+        paystack.checkout({
+            key: "{{ paystack_key }}",
+            email: "{{ email }}",
+            amount: {{ amount }},
+    reference: "{{ deposit.paystack_id }}",
+        onSuccess: function(transaction) {
+            console.log("Transaction successful:", transaction);
+            window.location.href = "{% url 'wallet:invoice' %}?reference=" + transaction.reference;
+        },
+    onClose: function() {
+        alert("Transaction was not completed. Please try again.");
+    }
+        });
+    }
+</script>
+{% endblock %}

@@ -1,4 +1,4 @@
-# from celery import shared_task
+from celery import shared_task
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
@@ -6,6 +6,43 @@ from django.template.loader import render_to_string
 
 from apps.accounts.models import Deposit
 from apps.accounts.utils import send_email_thread
+
+
+@shared_task
+def send_otp_email(email, otp):
+    subject = "Your OTP for Bundle Purchase"
+    message = f"Your OTP is {otp}. It is valid for the next 10 minutes."
+    html_message = f"""
+    <html>
+        <body>
+            <p>Dear User,</p>
+            <p>Your OTP for bundle purchase is <strong>{otp}</strong>. It is valid for the next 10 minutes.</p>
+            <p>Thank you for using our platform!</p>
+        </body>
+    </html>
+    """
+    send_mail(
+        subject, message, "support@yourdomain.com", [email], html_message=html_message
+    )
+
+
+@shared_task
+def send_success_email(email, amount, balance):
+    subject = "Payment Successful"
+    message = f"Your payment of ₦{amount} was successful. Your new wallet balance is ₦{balance}."
+    html_message = f"""
+    <html>
+        <body>
+            <p>Dear User,</p>
+            <p>Your payment of <strong>₦{amount}</strong> was successful.</p>
+            <p>Your new wallet balance is <strong>₦{balance}</strong>.</p>
+            <p>Thank you for using our platform!</p>
+        </body>
+    </html>
+    """
+    send_mail(
+        subject, message, "support@yourdomain.com", [email], html_message=html_message
+    )
 
 
 # @shared_task

@@ -1,0 +1,74 @@
+{% extends "accounts/base.html" %}
+{% load humanize %}
+
+{% block title %}Deposit Receipt{% endblock title %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-xl-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <div class="card-title mb-0 h5">
+                    Deposit Receipt
+                </div>
+                <span
+                    class="badge bg-label{% if deposit.status == 'C' %}success{% elif deposit.status == 'P' %}warning{% else %}danger{% endif %} small">{{ deposit.get_status_display }}</span>
+            </div>
+            <div class="card-body">
+                <p>
+                    Hey <span class="text-primary">{{ deposit.user.get_full_name }}</span>,
+                    your wallet balance has been credited.
+                </p>
+
+
+                <div class="mt-4">
+                    <div class="text-center">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center text-white">
+                            <i class="fa-solid fa-thumbs-up text-success fa-2x"></i>
+                        </div>
+                    </div>
+                    <h5 class="text-center mt-2 text-success">Top-up Successful</h5>
+                </div>
+
+                <ul class="bg-transparent border-top-0 border-bottom-0 bg-white d-block p-0 m-0 lh-sm my-3">
+                    <li
+                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
+                        <p class="p-0 m-0 text-muted fs-6">Date</p>
+                        <span>{{ deposit.updated|date:"d M Y, h:i A"|default:"N/A" }}</span>
+                    </li>
+                    <li
+                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
+                        <p class="p-0 m-0 text-muted fs-6">Amount</p>
+                        <span>₦{{ deposit.amount|floatformat:0|intcomma }}</span>
+                    </li>
+                    <li
+                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
+                        <p class="p-0 m-0 text-muted fs-6">Payment Method</p>
+                        <span>{{ deposit.channel|default:"N/A" }}</span>
+                    </li>
+                    <li
+                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
+                        <p class="p-0 m-0 text-muted fs-6">Ref ID</p>
+                        <span>{{ deposit.paystack_id }}</span>
+                    </li>
+                    <li
+                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
+                        <p class="p-0 m-0 text-muted fs-6">To</p>
+                        <span>{{ deposit.wallet.user.get_full_name }}</span>
+                    </li>
+                    <li
+                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base pt-3">
+                        <p class="p-0 m-0 text-muted fs-6">Description</p>
+                        <span>{{ deposit.description|default:"N/A" }}</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{% url 'bettor:dashboard' %}">Return to My Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,31 @@
+<div class="modal fade" id="assignGroup" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-primary">
+                    <i class="fa-solid fa-object-group pe-1"></i> Assign {{ user.username }} to a Group
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="row g-3" method="post" action="{% url 'administrator:assign_group' user.username %}">
+                    {% csrf_token %}
+                    <div class="col-12">
+                        <label class="form-label" for="id_group_assign">Group</label>
+                        <select class="form-select" id="id_group_assign" name="group">
+                            <option value="" selected disabled>Select a group</option>
+                            {% for group in groups %}
+                            <option value="{{ group.id }}">{{ group.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary me-sm-3 me-1">Assign User</button>
+                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal"
+                            aria-label="Close">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

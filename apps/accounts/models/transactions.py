@@ -46,12 +46,6 @@ class Deposit(models.Model):
         null=True,
         verbose_name=_("Payout Amount"),
     )
-    paystack_id = models.CharField(
-        max_length=150,
-        blank=True,
-        unique=True,
-        verbose_name=_("Paystack Reference ID"),
-    )
     status = models.CharField(
         max_length=1,
         choices=Status.choices,
@@ -82,6 +76,10 @@ class Deposit(models.Model):
         Calculate the maximum potential win dynamically.
         """
         return self.amount * self.bundle.maximum_win_multiplier
+
+    @property
+    def is_purchase_complete(self):
+        return self.status == self.Status.APPROVED
 
 
 class Payout(models.Model):

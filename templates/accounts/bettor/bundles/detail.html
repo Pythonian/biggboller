@@ -9,12 +9,6 @@
     <h4>
         <span class="text-muted fw-light">Bundle /</span> {{ bundle.name }}
     </h4>
-    {% if not deposit or deposit.status == 'P' %}
-    <button type="button" class="btn btn-success" data-bs-toggle="modal"
-        data-bs-target="#purchaseBundle{{ bundle.id }}">
-        <i class="fa-solid fa-naira-sign me-2"></i> Purchase Bundle
-    </button>
-    {% endif %}
 </div>
 
 <div class="row mb-4">
@@ -101,186 +95,124 @@
     </div>
 </div>
 
-{% if deposit and not deposit.status == 'P' %}
-<div class="row">
-    <div class="col-xl-9 col-12 mb-4">
-        <div class="card">
-            <div class="card-body">
-                <div
-                    class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column p-sm-3 p-0">
-                    <div class="mb-xl-0 mb-4">
-                        <div class="d-flex mb-3 gap-2">
-                            <h2 class="mb-0 fw-bold">
-                                <i class="fa-solid fa-coins me-2 text-primary"></i> Bigg-Boller
-                            </h2>
-                        </div>
-                        <div class="mb-2">
-                            <span class="me-1">Date:</span>
-                            <span class="fw-medium">{{ deposit.created|date:"F j, Y" }}</span>
-                        </div>
-                        <div class="mb-2">
-                            <span class="me-1">Reference:</span>
-                            <span class="fw-medium">{{ deposit.paystack_id }}</span>
-                        </div>
-                    </div>
-                    <div>
-                        <h3>Paid</h3>
-                    </div>
+<!-- Wallet Balance Display -->
+<div class="mb-2">
+    <label for="wallet-balance" class="form-label">Wallet Balance:</label>
+    <span id="wallet-balance" class="fw-bold fs-5 d-block text-info">
+        ₦{{ wallet_balance|floatformat:0|intcomma }}
+    </span>
+</div>
+
+<!-- Warning Message -->
+<div id="insufficient-funds-warning" class="text-danger fw-bold d-none">
+    Insufficient wallet balance to purchase this quantity.
+</div>
+
+{% if not purchased_bundle %}
+<div class="card">
+    <div class="card-body">
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="row g-2">
+                <!-- Hidden fields for price, multipliers, and bundles per user -->
+                <input type="hidden" id="bundle-price" value="{{ bundle.price }}">
+                <input type="hidden" id="min-multiplier" value="{{ bundle.minimum_win_multiplier }}">
+                <input type="hidden" id="max-multiplier" value="{{ bundle.maximum_win_multiplier }}">
+                <input type="hidden" id="min-bundles" value="{{ bundle.min_bundles_per_user }}">
+                <input type="hidden" id="max-bundles" value="{{ bundle.max_bundles_per_user }}">
+
+                <div class="mb-2 col-12">
+                    <label for="quantity" class="form-label">Quantity:</label>
+                    <select name="quantity" id="quantity" class="form-control"></select>
+                </div>
+
+                <!-- Display total amount and potential win -->
+                <div class="mb-2 col-md-6">
+                    <label for="total-amount-display">Total Amount:</label>
+                    <span id="total-amount-display" class="fw-bold fs-5 d-block text-success"></span>
+                </div>
+                <div class="mb-2 col-md-6">
+                    <label for="potential-win-display">Potential Returns:</label>
+                    <span id="potential-win-display" class="fw-bold fs-5 d-block text-primary"></span>
                 </div>
             </div>
-            <hr class="my-0" />
-            <div class="table-responsive">
-                <table class="table border-top m-0">
-                    <thead>
-                        <tr>
-                            <th>Bundle</th>
-                            <th>Unit Cost</th>
-                            <th>Quantity</th>
-                            <th>Total Amount</th>
-                            <th>Potential Win</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{{ deposit.bundle.name }}</td>
-                            <td>₦{{ deposit.bundle.price|floatformat:0|intcomma }}</td>
-                            <td>x{{ deposit.quantity }}</td>
-                            <td>₦{{ deposit.amount|floatformat:0|intcomma }}</td>
-                            <td>₦{{ deposit.potential_min_win|floatformat:0|intcomma }} -
-                                ₦{{ deposit.potential_max_win|floatformat:0|intcomma }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <div class="alert alert-info mt-4" role="alert">
-            <p class="mb-0">If you have any questions or need further assistance, please contact our support team.</p>
-        </div>
+            <div class="text-end">
+                <button type="submit" class="btn btn-success" id="proceed-button" disabled>
+                    <i class="fa-solid fa-check-circle me-2"></i> Proceed
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 {% endif %}
 
-<div class="modal fade" id="purchaseBundle{{ bundle.id }}" tabindex="-1">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <form action="" method="post">
-                {% csrf_token %}
-                <!-- <input type="hidden" name="bundle_id" value="{{ bundle.id }}"> -->
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="fa-solid fa-hand-holding-dollar me-1"></i> Buy Bundle - {{ bundle.name }}
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row g-2">
-                        <!-- Hidden fields for price, multipliers, and bundles per user -->
-                        <input type="hidden" id="bundle-price-{{ bundle.id }}" value="{{ bundle.price }}">
-                        <input type="hidden" id="min-multiplier-{{ bundle.id }}"
-                            value="{{ bundle.minimum_win_multiplier }}">
-                        <input type="hidden" id="max-multiplier-{{ bundle.id }}"
-                            value="{{ bundle.maximum_win_multiplier }}">
-                        <input type="hidden" id="min-bundles-{{ bundle.id }}" value="{{ bundle.min_bundles_per_user }}">
-                        <input type="hidden" id="max-bundles-{{ bundle.id }}" value="{{ bundle.max_bundles_per_user }}">
-
-                        <div class="mb-2 col-12">
-                            <label for="quantity-{{ bundle.id }}" class="form-label">Quantity:</label>
-                            <select name="quantity" id="quantity-{{ bundle.id }}" class="form-control"></select>
-                        </div>
-                        <!-- Display total amount and potential win -->
-                        <div class="mb-2 col-md-6">
-                            <label for="total-amount-display-{{ bundle.id }}">Total Amount:</label>
-                            <span id="total-amount-display-{{ bundle.id }}"
-                                class="fw-bold fs-5 d-block text-success"></span>
-                        </div>
-                        <div class="mb-2 col-md-6">
-                            <label for="potential-win-display-{{ bundle.id }}">Potential Returns:</label>
-                            <span id="potential-win-display-{{ bundle.id }}"
-                                class="fw-bold fs-5 d-block text-primary"></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
-                        <i class="fa-solid fa-times-circle me-2"></i> Cancel
-                    </button>
-                    <button type="submit" class="btn btn-success">
-                        <i class="fa-solid fa-check-circle me-2"></i> Proceed
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('div[id^="purchaseBundle"]').forEach(function (modal) {
-            const bundleId = modal.getAttribute('id').replace('purchaseBundle', '');
+        // Get references to elements
+        const quantitySelect = document.getElementById('quantity');
+        const totalAmountDisplay = document.getElementById('total-amount-display');
+        const potentialWinDisplay = document.getElementById('potential-win-display');
+        const proceedButton = document.getElementById('proceed-button');
+        const walletBalanceDisplay = document.getElementById('wallet-balance');
+        const insufficientFundsWarning = document.getElementById('insufficient-funds-warning');
 
-            // Find the proceed button specific to this modal
-            const proceedButton = modal.querySelector('.modal-footer button[type="submit"]');
-            proceedButton.disabled = true;
+        // Get bundle data from hidden inputs
+        const walletBalance = parseFloat(walletBalanceDisplay.textContent.replace(/[₦,]/g, ''));
+        const bundlePrice = parseFloat(document.getElementById('bundle-price').value);
+        const minMultiplier = parseInt(document.getElementById('min-multiplier').value);
+        const maxMultiplier = parseInt(document.getElementById('max-multiplier').value);
+        const minBundles = parseInt(document.getElementById('min-bundles').value);
+        const maxBundles = parseInt(document.getElementById('max-bundles').value);
 
-            const quantitySelect = document.getElementById(`quantity-${bundleId}`);
-            const totalAmountDisplay = document.getElementById(`total-amount-display-${bundleId}`);
-            const potentialWinDisplay = document.getElementById(`potential-win-display-${bundleId}`);
+        // Add an empty option at the top to prevent pre-selection
+        const defaultOption = document.createElement('option');
+        defaultOption.value = ''; // No value means no option is selected by default
+        defaultOption.textContent = 'Select Quantity';
+        defaultOption.disabled = true;  // Disable this option so it's not selectable again
+        defaultOption.selected = true;  // This ensures it's the initially selected option
+        quantitySelect.appendChild(defaultOption);
 
-            // Get bundle price and win multipliers
-            const bundlePrice = parseFloat(document.getElementById(`bundle-price-${bundleId}`).value);
-            const minMultiplier = parseInt(document.getElementById(`min-multiplier-${bundleId}`).value);
-            const maxMultiplier = parseInt(document.getElementById(`max-multiplier-${bundleId}`).value);
+        // Populate quantity select field
+        for (let i = minBundles; i <= maxBundles; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = i;
+            // Disable if wallet balance is insufficient
+            option.disabled = walletBalance < (bundlePrice * i);
+            quantitySelect.appendChild(option);
+        }
 
-            // Get min and max bundles per user
-            const minBundles = parseInt(document.getElementById(`min-bundles-${bundleId}`).value);
-            const maxBundles = parseInt(document.getElementById(`max-bundles-${bundleId}`).value);
+        quantitySelect.addEventListener('change', function () {
+            const quantity = parseInt(this.value) || 0;
+            const totalAmount = bundlePrice * quantity;
 
-            // Clear the select field before populating it
-            quantitySelect.innerHTML = '';  // This clears any previously added options
+            // Debugging Logs
+            console.log("Total Amount:", totalAmount);
+            console.log("Wallet Balance:", walletBalance);
 
-            // Add an empty option at the top to prevent pre-selection
-            const defaultOption = document.createElement('option');
-            defaultOption.value = ''; // No value means no option is selected by default
-            defaultOption.textContent = 'Select Quantity';
-            defaultOption.disabled = true;  // Disable this option so it's not selectable again
-            defaultOption.selected = true;  // This ensures it's the initially selected option
-            quantitySelect.appendChild(defaultOption);
-
-            // Dynamically populate quantity select field with valid options
-            for (let i = minBundles; i <= maxBundles; i++) {
-                const option = document.createElement('option');
-                option.value = i;
-                option.textContent = i;
-                quantitySelect.appendChild(option);
+            if (!quantity) {
+                totalAmountDisplay.textContent = '';
+                potentialWinDisplay.textContent = '';
+                insufficientFundsWarning.classList.add('d-none');
+                proceedButton.disabled = true;
+                return;
             }
 
-            // Update total amount and potential win on quantity change
-            quantitySelect.addEventListener('change', function () {
-                const quantity = parseInt(this.value) || 0;
-                const totalAmount = bundlePrice * quantity;
-                const potentialMinWin = totalAmount * minMultiplier; // Minimum potential win
-                const potentialMaxWin = totalAmount * maxMultiplier; // Maximum potential win
+            const potentialMinWin = totalAmount * minMultiplier;
+            const potentialMaxWin = totalAmount * maxMultiplier;
 
-                // Format the total amount and potential win range with currency and commas
-                const formattedTotalAmount = `₦${totalAmount.toLocaleString('en-US')}`;
-                const formattedPotentialWin = `₦${potentialMinWin.toLocaleString('en-US')} - ₦${potentialMaxWin.toLocaleString('en-US')}`;
+            totalAmountDisplay.textContent = `₦${totalAmount.toLocaleString('en-US')}`;
+            potentialWinDisplay.textContent = `₦${potentialMinWin.toLocaleString('en-US')} - ₦${potentialMaxWin.toLocaleString('en-US')}`;
 
-                // Display the formatted values
-                totalAmountDisplay.textContent = formattedTotalAmount;
-                potentialWinDisplay.textContent = formattedPotentialWin;
-
-                // Enable proceed button when a quantity is selected
-                proceedButton.disabled = this.value === '';
-            });
-
-            // Clear form fields and reset button state when modal is closed
-            modal.addEventListener('hidden.bs.modal', function () {
-                quantitySelect.value = '';  // Reset the select input
-                totalAmountDisplay.textContent = '';  // Clear the total amount
-                potentialWinDisplay.textContent = '';  // Clear the potential win display
-                proceedButton.disabled = true;  // Reset the proceed button to disabled
-            });
+            // Show warning if insufficient balance
+            if (totalAmount > walletBalance) {
+                insufficientFundsWarning.classList.remove('d-none');
+                proceedButton.disabled = true;
+            } else {
+                insufficientFundsWarning.classList.add('d-none');
+                proceedButton.disabled = false;
+            }
         });
     });
 </script>

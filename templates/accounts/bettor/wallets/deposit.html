@@ -1,0 +1,40 @@
+{% extends "accounts/base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Wallet Deposit{% endblock title %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-6 col-md-6 col-12 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Top-up Wallet</h5>
+                <p class="mb-0">Please enter the amount you wish to deposit into your wallet.</p>
+            </div>
+            <div class="card-body">
+                <form id="deposit-form" method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-12">
+                            {{ form.amount.label_tag }}
+                            <div class="input-group">
+                                <span class="input-group-text">₦</span>
+                                {% render_field form.amount id="amount" %}
+                                <span class="input-group-text">.00</span>
+                            </div>
+                            <div class="form-text">Minimum amount: <span class="text-dark">₦1,000.00</span></div>
+                        </div>
+                        <div class="col-12">
+                            {{ form.description.label_tag }}
+                            {% render_field form.description id="description" %}
+                        </div>
+                    </div>
+                    <div class="my-3">
+                        <button class="btn btn-success" type="submit">Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -10,7 +10,11 @@ SECRET_KEY = config("SECRET_KEY")
 
 DEBUG = config("DEBUG", cast=bool, default=True)
 
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv(), default=["localhost"])
+ALLOWED_HOSTS = config(
+    "ALLOWED_HOSTS",
+    cast=Csv(),
+    default=["localhost", "*.ngrok-free.app"],
+)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -23,6 +27,7 @@ INSTALLED_APPS = [
     "django.contrib.humanize",
     "apps.accounts.apps.AccountsConfig",
     "apps.core.apps.CoreConfig",
+    "apps.wallets.apps.WalletsConfig",
     "widget_tweaks",
     "paystack.frameworks.django",
 ]
@@ -116,6 +121,9 @@ MAILJET_API_KEY = config("MJ_APIKEY_PUBLIC")
 MAILJET_SECRET_KEY = config("MJ_APIKEY_PRIVATE")
 MAILJET_SENDER_NAME = config("MAILJET_SENDER_NAME")
 
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -125,12 +133,17 @@ LOGGING = {
         },
     },
     "loggers": {
-        "apps.accounts.utils": {
+        "django": {
+            "handlers": ["console"],
+            "level": "ERROR",
+        },
+        "apps.accounts": {
             "handlers": ["console"],
             "level": "INFO",
         },
     },
 }
+
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",

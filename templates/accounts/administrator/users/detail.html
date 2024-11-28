@@ -46,7 +46,7 @@
                         </li>
                         <li class="mb-3">
                             <span class="fw-medium me-2">Joined:</span>
-                            <span>{{ profile.user.account_activated_at }}</span>
+                            <span>{{ profile.user.date_joined }}</span>
                         </li>
                     </ul>
                     <div class="d-flex justify-content-center pt-3">
@@ -59,6 +59,16 @@
                         {% endif %}
                     </div>
                 </div>
+            </div>
+        </div>
+        <!-- Assign group -->
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="mb-3 fa-solid fa-object-group fa-2x text-primary"></i>
+                <h5>Assign Group</h5>
+                <p>Add this user to a group where they can purchase a bundle.</p>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#assignGroup">Assign</button>
             </div>
         </div>
     </div>
@@ -112,6 +122,8 @@
     </div>
 
 </div>
+
+{% include "accounts/administrator/users/modals/assign_group.html" %}
 
 <!-- Suspend Account Modal -->
 <div class="modal fade" id="banAccountModal" tabindex="-1" aria-labelledby="banAccountModalLabel" aria-hidden="true">
