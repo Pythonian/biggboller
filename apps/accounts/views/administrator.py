@@ -71,7 +71,7 @@ def admin_dashboard(request):
     latest_deposits = (
         Deposit.objects.filter(status=Deposit.Status.APPROVED)
         .select_related("user__profile")
-        .values("user__last_name", "user__first_name", "paystack_id", "amount")
+        .values("user__last_name", "user__first_name", "amount")
         .order_by("-created")[:5]
     )
 
