@@ -291,6 +291,9 @@ def bettor_bundles_purchase(request, id):
                 deposit.status = Deposit.Status.APPROVED
                 deposit.save()
 
+                # Calculate the potential win after purchase
+                potential_win = deposit.potential_win
+
                 # Add user as a participant
                 bundle.participants.add(request.user)
 

@@ -35,8 +35,7 @@ class BundleCreateForm(forms.ModelForm):
         fields = [
             "name",
             "price",
-            "minimum_win_multiplier",
-            "maximum_win_multiplier",
+            "winning_percentage",
             "min_bundles_per_user",
             "max_bundles_per_user",
         ]
@@ -53,55 +52,37 @@ class BundleCreateForm(forms.ModelForm):
                     "placeholder": _("Enter bundle price"),
                 }
             ),
-            "minimum_win_multiplier": forms.NumberInput(
+            "winning_percentage": forms.NumberInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": _("Example: 2"),
-                }
-            ),
-            "maximum_win_multiplier": forms.NumberInput(
-                attrs={
-                    "class": "form-control",
-                    "placeholder": _("Example: 5"),
+                    "placeholder": _("Enter percentage between 1 - 100"),
                 }
             ),
             "min_bundles_per_user": forms.NumberInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": _("Example: 3"),
+                    "placeholder": _("Example: 2"),
                 }
             ),
             "max_bundles_per_user": forms.NumberInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": _("Example: 8"),
+                    "placeholder": _("Example: 5"),
                 }
             ),
         }
         labels = {
             "name": _("Bundle Name"),
             "price": _("Bundle Price"),
-            "minimum_win_multiplier": _("Minimum Win Multiplier"),
-            "maximum_win_multiplier": _("Maximum Win Multiplier"),
+            "winning_percentage": _("Winning Percentage"),
             "min_bundles_per_user": _("Minimum Bundles per User"),
             "max_bundles_per_user": _("Maximum Bundles per User"),
         }
 
     def clean(self):
         cleaned_data = super().clean()
-        min_multiplier = cleaned_data.get("minimum_win_multiplier")
-        max_multiplier = cleaned_data.get("maximum_win_multiplier")
         min_bundles = cleaned_data.get("min_bundles_per_user")
         max_bundles = cleaned_data.get("max_bundles_per_user")
-
-        if min_multiplier and max_multiplier:
-            if max_multiplier <= min_multiplier:
-                self.add_error(
-                    "maximum_win_multiplier",
-                    _(
-                        "Maximum win multiplier must be greater than the minimum win multiplier."
-                    ),
-                )
 
         if min_bundles and max_bundles:
             if min_bundles > max_bundles:

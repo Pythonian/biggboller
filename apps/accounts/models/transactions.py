@@ -64,18 +64,12 @@ class Deposit(models.Model):
         return f"{self.user} - {self.bundle.name} - {self.amount}"
 
     @property
-    def potential_min_win(self):
+    def potential_win(self):
         """
-        Calculate the minimum potential win dynamically.
+        Calculate the user's potential win based on the amount they
+        paid and the bundle's winning percentage.
         """
-        return self.amount * self.bundle.minimum_win_multiplier
-
-    @property
-    def potential_max_win(self):
-        """
-        Calculate the maximum potential win dynamically.
-        """
-        return self.amount * self.bundle.maximum_win_multiplier
+        return self.amount * (self.bundle.winning_percentage / 100)
 
     @property
     def is_purchase_complete(self):

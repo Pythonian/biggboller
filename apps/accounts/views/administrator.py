@@ -375,39 +375,46 @@ def admin_bundles_detail(request, id):
             bundle.status = new_status
             bundle.save()
 
-            # TODO: An email should be sent to the Bettor participant
-            # when a Bundle status has been marked Lost or Won by the admin
-
-            # Check if the new status is "Won" and create Payouts
+            # Check if the new status is "Won" and credit the users' wallets
             if new_status == Bundle.Status.WON:
-                for participant in bundle.participants.all():
-                    # Get the participant's deposit with an approved status
-                    deposit = Deposit.objects.filter(
-                        user=participant,
-                        bundle=bundle,
-                        status=Deposit.Status.APPROVED,
-                    ).first()
+                # Iterate over participants and calculate their potential win
+                for deposit in bundle.deposits.filter(status=Deposit.Status.APPROVED):
+                    potential_win_amount = deposit.potential_win
 
-                    if deposit:
-                        # Use payout_amount if available, else default to 0
-                        payout_amount = (
-                            deposit.payout_amount if deposit.payout_amount else 0
+                    try:
+                        # Credit the user's wallet with the potential win amount
+                        wallet = deposit.user.wallet
+                        wallet.update_balance(
+                            potential_win_amount,
+                            transaction_type="Winning",
+                            transaction_id=str(deposit.id),
                         )
-                        payout, created = Payout.objects.get_or_create(
-                            user=participant,
+
+                        # Create a payout record
+                        Payout.objects.get_or_create(
+                            user=deposit.user,
                             bundle=bundle,
                             defaults={
-                                "amount": payout_amount,
+                                "amount": potential_win_amount,
                                 "status": Payout.Status.PENDING,
                             },
                         )
-                        # if created:
-                        #     create_action(
-                        #         participant,
-                        #         "New Payout Initiated",
-                        #         f"A payout amount of #{payout_amount} has been initiated.",
-                        #         payout,
-                        #     )
+
+                        # Send notification to the user
+                        send_email_thread(
+                            subject=f"Congratulations! You've won in bundle {bundle.name}",
+                            text_content="Your winnings have been credited to your wallet.",
+                            html_content="<p>Your winnings have been credited to your wallet.</p>",
+                            recipient_email=deposit.user.email,
+                            recipient_name=deposit.user.get_full_name(),
+                        )
+                    except Exception as e:
+                        logger.error(f"Error processing payout for {deposit.user}: {e}")
+                        messages.error(
+                            request,
+                            f"An error occurred while processing winnings for {deposit.user}.",
+                        )
+                        continue
 
             messages.success(request, "Bundle status updated successfully.")
             return redirect(bundle)

@@ -25,8 +25,7 @@ class BundleAdmin(admin.ModelAdmin):
     list_display = (
         "name",
         "price",
-        "potential_min_win",
-        "potential_max_win",
+        "winning_percentage",
         "created_at",
         "updated_at",
     )

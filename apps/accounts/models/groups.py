@@ -1,7 +1,7 @@
 import uuid
 
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -135,15 +135,14 @@ class Bundle(models.Model):
         verbose_name=_("Bundle Price"),
         help_text=_("Enter the price for one bundle."),
     )
-    minimum_win_multiplier = models.PositiveSmallIntegerField(
-        verbose_name=_("Minimum Win Multiplier"),
-        help_text=_("Minimum multiplier value to calculate minimum potential wins."),
-        validators=[MinValueValidator(1)],
-    )
-    maximum_win_multiplier = models.PositiveSmallIntegerField(
-        verbose_name=_("Maximum Win Multiplier"),
-        help_text=_("Maximum multiplier value to calculate maximum potential wins."),
-        validators=[MinValueValidator(1)],
+    winning_percentage = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        verbose_name=_("Winning Percentage"),
+        help_text=_(
+            "Enter the percentage of the bundle price that will be returned as winnings. E.g., 20 for 20%."
+        ),
+        validators=[MinValueValidator(1), MaxValueValidator(100)],
     )
     min_bundles_per_user = models.PositiveIntegerField(
         verbose_name=_("Minimum Bundles per User"),
@@ -201,15 +200,6 @@ class Bundle(models.Model):
         return self.participants.count()
 
     def clean(self):
-        if self.maximum_win_multiplier <= self.minimum_win_multiplier:
-            raise ValidationError(
-                {
-                    "maximum_win_multiplier": _(
-                        "Maximum win multiplier must be greater than the minimum win multiplier."
-                    )
-                }
-            )
-
         if self.min_bundles_per_user >= self.max_bundles_per_user:
             raise ValidationError(
                 {
@@ -218,17 +208,3 @@ class Bundle(models.Model):
                     )
                 }
             )
-
-    @property
-    def potential_min_win(self):
-        """
-        Calculate the minimum potential win dynamically.
-        """
-        return self.price * self.minimum_win_multiplier * self.min_bundles_per_user
-
-    @property
-    def potential_max_win(self):
-        """
-        Calculate the maximum potential win dynamically.
-        """
-        return self.price * self.maximum_win_multiplier * self.max_bundles_per_user
