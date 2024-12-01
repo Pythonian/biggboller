@@ -1,0 +1,69 @@
+{% extends "accounts/base.html" %}
+{% load widget_tweaks humanize %}
+
+{% block title %}Wallet Withdrawal{% endblock title %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-6 col-md-6 col-12 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Withdraw Funds</h5>
+                <p class="mb-0">Please enter the amount you wish to withdraw from your wallet.</p>
+            </div>
+            <div class="card-body">
+                <form id="withdrawal-form" method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-12">
+                            {{ form.amount.label_tag }}
+                            <div class="input-group">
+                                <span class="input-group-text">₦</span>
+                                {% render_field form.amount %}
+                                <span class="input-group-text">.00</span>
+                            </div>
+                            <div class="form-text">
+                                Wallet Balance: <span class="text-dark"
+                                    id="wallet-balance">₦{{ wallet_balance|floatformat:0|intcomma }}</span>
+                            </div>
+                            <div id="amount-error" class="text-danger" style="display: none;">
+                                The entered amount exceeds your wallet balance.
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            {{ form.description.label_tag }}
+                            {% render_field form.description %}
+                        </div>
+                    </div>
+                    <div class="my-3">
+                        <button id="proceed-button" class="btn btn-success" type="submit">Initiate Withdrawal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const amountInput = document.querySelector("#id_amount");
+        const proceedButton = document.querySelector("#proceed-button");
+        const walletBalance = parseFloat({{ wallet_balance }});
+    const amountError = document.querySelector("#amount-error");
+
+    function validateAmount() {
+        const enteredAmount = parseFloat(amountInput.value) || 0;
+        if (enteredAmount > walletBalance) {
+            amountError.style.display = "block";
+            proceedButton.disabled = true;
+        } else {
+            amountError.style.display = "none";
+            proceedButton.disabled = false;
+        }
+    }
+
+    // Add event listeners to validate input
+    amountInput.addEventListener("input", validateAmount);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}All Withdrawals{% endblock title %}
+
+{% block content %}
+
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="All Withdrawals" %}
+
+<div class="row mb-4">
+    <!-- Total withdrawals -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="primary" label_color="primary" icon_class="fa-solid fa-naira-sign" count=total_withdrawals title="Total withdrawals" %}
+
+    <!-- Pending withdrawals -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="info" label_color="info" icon_class="fa-solid fa-hourglass-half" count=pending_withdrawals title="Pending withdrawals" %}
+
+    <!-- Approved withdrawals -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" count=approved_withdrawals title="Approved withdrawals" %}
+
+    <!-- Cancelled withdrawals -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-times" count=cancelled_withdrawals title="Cancelled withdrawals" %}
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="All Withdrawals List" %}
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        {% include 'accounts/administrator/withdrawals/partials/_table_head.html' %}
+                    </thead>
+                    <tbody>
+                        {% for withdrawal in withdrawals %}
+                        {% include "accounts/administrator/withdrawals/partials/_withdrawal_item.html" %}
+                        {% include "accounts/administrator/withdrawals/modals/update_withdrawal.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=withdrawals %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

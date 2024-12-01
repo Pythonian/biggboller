@@ -1,0 +1,11 @@
+Hi {{ user.first_name }},
+
+We are pleased to inform you that your withdrawal request of ₦{{ withdrawal.amount }} has been approved.
+                
+Your requested amount will be processed and credited to your preferred account shortly.
+                
+Thank you for using {{ site_name }}.
+                
+Best regards,
+
+{{ site_name }} Team

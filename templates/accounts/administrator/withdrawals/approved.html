@@ -1,0 +1,40 @@
+{% extends "accounts/base.html" %}
+
+{% block title %}Approved withdrawals{% endblock title %}
+
+{% block content %}
+
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="Approved withdrawals" %}
+
+<div class="row mb-4">
+    <!-- Approved withdrawals -->
+    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" count=approved_withdrawals title="Approved withdrawals" %}
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Approved withdrawals List" %}
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        {% include 'accounts/administrator/withdrawals/partials/_table_head.html' %}
+                    </thead>
+                    <tbody>
+                        {% for withdrawal in withdrawals %}
+                        {% include "accounts/administrator/withdrawals/partials/_withdrawal_item.html" %}
+                        {% include "accounts/administrator/withdrawals/modals/update_withdrawal.html" %}
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=withdrawals %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

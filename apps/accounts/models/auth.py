@@ -23,9 +23,9 @@ class Profile(models.Model):
         max_length=11,
     )
     payout_information = models.TextField(
-        _("Payout Information"),
+        _("Bank Account Information"),
         blank=True,
-        help_text=_("Bank account information for Payouts"),
+        help_text=_("Bank account information for Withdrawals"),
     )
     is_banned = models.BooleanField(default=False)
     account_activated_at = models.DateTimeField(

@@ -1,0 +1,11 @@
+Hi {{ user.first_name }},
+
+We regret to inform you that your withdrawal request of ₦{{ withdrawal.amount }} has been rejected.
+
+{{ withdrawal.note }}
+                
+If you have any questions or concerns, please contact our support team.
+                
+Best regards,
+
+{{ site_name }} Team

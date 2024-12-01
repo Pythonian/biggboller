@@ -1,0 +1,13 @@
+Hello {{ user.get_full_name }},
+
+Your wallet deposit of {{ deposit.amount|floatformat:2 }} has been successfully processed.
+
+Transaction Details:
+- Amount: {{ deposit.amount|floatformat:2 }}
+- Date: {{ deposit.paid_at|date:"F j, Y, g:i a" }}
+- Transaction ID: {{ deposit.id }}
+
+Thank you for using {{ site_name }}.
+
+Best regards,
+{{ site_name }} Team

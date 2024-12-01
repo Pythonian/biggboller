@@ -1,0 +1,78 @@
+{% load widget_tweaks %}
+<div class="modal fade" id="updateWithdrawal{{ withdrawal.id }}" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'administrator:process_withdrawal' withdrawal.id %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="withdrawal_id" value="{{ withdrawal.id }}">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fa-solid fa-circle-info me-1"></i> Withdrawal Request
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <h6>Bank Account Information</h6>
+                        <div class="mb-2 col-12">
+                            {{ withdrawal.user.profile.payout_information|linebreaks }}
+                        </div>
+                        <hr>
+                        <h6>Withdrawal Note</h6>
+                        <textarea name="note" id="id_note" cols="20" rows="4" class="form-control"
+                            {% if not withdrawal.status == "P" %}disabled{% endif %}>{{ withdrawal.note|default_if_none:'' }}</textarea>
+                        <hr>
+                        <h6>Withdrawal Status</h6>
+                        <div class="row">
+                            <div class="col">
+                                <div class="mb-3">
+                                    <div class="form-check custom-option custom-option-icon">
+                                        <label class="form-check-label custom-option-content"
+                                            for="approveWithdrawal{{ withdrawal.id }}">
+                                            <span class="custom-option-body">
+                                                <i class="fa-solid fa-check-circle mb-2"></i>
+                                                <span class="custom-option-title">Approve</span>
+                                                <small>Approve this withdrawal request.</small>
+                                            </span>
+                                            <input name="action" class="form-check-input" type="radio" value="approve"
+                                                id="approveWithdrawal{{ withdrawal.id }}"
+                                                {% if withdrawal.status == "A" %}checked{% endif %}
+                                                {% if not withdrawal.status == "P" %}disabled{% endif %} />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="mb-3">
+                                    <div class="form-check custom-option custom-option-icon">
+                                        <label class="form-check-label custom-option-content"
+                                            for="cancelWithdrawal{{ withdrawal.id }}">
+                                            <span class="custom-option-body">
+                                                <i class="fa-solid fa-ban mb-2"></i>
+                                                <span class="custom-option-title">Cancel</span>
+                                                <small>Cancel this withdrawal request.</small>
+                                            </span>
+                                            <input name="action" class="form-check-input" type="radio" value="cancel"
+                                                id="cancelWithdrawal{{ withdrawal.id }}"
+                                                {% if withdrawal.status == "C" %}checked{% endif %}
+                                                {% if not withdrawal.status == "P" %}disabled{% endif %} />
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-times-circle me-2"></i> Close
+                    </button>
+                    <button type="submit" class="btn btn-primary"
+                        {% if not withdrawal.status == "P" %}disabled{% endif %}>
+                        <i class="fa-solid fa-save me-2"></i> Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

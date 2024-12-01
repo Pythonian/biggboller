@@ -81,17 +81,17 @@
                             {% endif %}
                         </div>
                         <div class="col-md-12">
-                            <label for="{{ profile_form.payout_information.id_for_label }}" class="form-label">Payout
-                                Information</label>
+                            <label for="{{ profile_form.payout_information.id_for_label }}" class="form-label">Bank
+                                Account Information</label>
                             {% if profile_form.payout_information.errors %}
-                            {% render_field profile_form.payout_information class="form-control is-invalid" placeholder="Enter your payout information" %}
+                            {% render_field profile_form.payout_information class="form-control is-invalid" placeholder="Enter your bank account information" %}
                             {% for error in profile_form.payout_information.errors %}
                             <div class="invalid-feedback">
                                 {{ error }}
                             </div>
                             {% endfor %}
                             {% else %}
-                            {% render_field profile_form.payout_information class="form-control" placeholder="Enter your payout information" %}
+                            {% render_field profile_form.payout_information class="form-control" placeholder="Enter your bank account information" %}
                             {% endif %}
                         </div>
                     </div>

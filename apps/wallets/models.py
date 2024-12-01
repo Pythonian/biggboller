@@ -168,10 +168,14 @@ class Deposit(models.Model):
         help_text="Status of the deposit transaction.",
     )
     gateway_response = models.CharField(
-        max_length=255, blank=True, help_text="Response from the payment gateway."
+        max_length=255,
+        blank=True,
+        help_text="Response from the payment gateway.",
     )
     channel = models.CharField(
-        max_length=50, blank=True, help_text="Payment channel used, e.g., 'card'."
+        max_length=50,
+        blank=True,
+        help_text="Payment channel used, e.g., 'card'.",
     )
     ip_address = models.GenericIPAddressField(
         blank=True,
@@ -179,10 +183,14 @@ class Deposit(models.Model):
         help_text="IP address of the customer at the time of transaction.",
     )
     paid_at = models.DateTimeField(
-        blank=True, null=True, help_text="Timestamp when payment was completed."
+        blank=True,
+        null=True,
+        help_text="Timestamp when payment was completed.",
     )
     authorization_code = models.CharField(
-        max_length=100, blank=True, help_text="Authorization code for the payment."
+        max_length=100,
+        blank=True,
+        help_text="Authorization code for the payment.",
     )
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -194,42 +202,67 @@ class Deposit(models.Model):
         return f"Deposit {self.paystack_id} - {self.amount} for Wallet {self.wallet.id}"
 
 
-# class Withdrawal(models.Model):
-#     """
-#     Tracks each withdrawal request made by a user from their wallet balance.
-#     """
+class Withdrawal(models.Model):
+    """
+    Tracks each withdrawal request made by a user from their wallet balance.
+    """
 
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-#     wallet = models.ForeignKey(
-#         "Wallet", on_delete=models.CASCADE, related_name="withdrawals"
-#     )
-#     amount = models.DecimalField(
-#         max_digits=12, decimal_places=2, help_text="Requested withdrawal amount."
-#     )
-#     status = models.CharField(
-#         max_length=10,
-#         choices=[
-#             ("PENDING", "Pending"),
-#             ("APPROVED", "Approved"),
-#             ("REJECTED", "Rejected"),
-#         ],
-#         default="PENDING",
-#         help_text="Status of the withdrawal request.",
-#     )
-#     note = models.TextField(
-#         blank=True,
-#         null=True,
-#         help_text="Withdrawal Note.",
-#     )
-#     created_at = models.DateTimeField(auto_now_add=True)
-#     processed_at = models.DateTimeField(
-#         blank=True,
-#         null=True,
-#         help_text="Date when the withdrawal was processed.",
-#     )
+    class Status(models.TextChoices):
+        PENDING = "P", _("Pending")
+        APPROVED = "A", _("Approved")
+        DECLINED = "D", _("Declined")
+        CANCELLED = "C", _("Cancelled")
 
-#     def __str__(self):
-#         return f"Withdrawal Request {self.id} - {self.amount} for Wallet {self.wallet.unique_id}"
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+    )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="withdrawals",
+        on_delete=models.CASCADE,
+    )
+    wallet = models.ForeignKey(
+        "Wallet",
+        related_name="withdrawals",
+        on_delete=models.CASCADE,
+    )
+    amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        help_text="Requested withdrawal amount.",
+    )
+    description = models.TextField(
+        _("Description"),
+        max_length=300,
+        help_text="Withdrawal description.",
+    )
+    note = models.TextField(
+        _("Feedback Note"),
+        blank=True,
+        null=True,
+        help_text="Withdrawal note from Administrator.",
+    )
+    status = models.CharField(
+        max_length=10,
+        choices=Status.choices,
+        default=Status.PENDING,
+        help_text="Status of the withdrawal request.",
+    )
+    processed_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text="Date when the withdrawal was processed.",
+    )
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created"]
+
+    def __str__(self):
+        return f"Withdrawal {self.id} - {self.status}"
 
 
 # class Purchase(models.Model):

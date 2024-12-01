@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Wallet, Deposit, AuditLog
+from .models import Wallet, Deposit, AuditLog, Withdrawal
 
 
 @admin.register(Wallet)
@@ -33,4 +33,15 @@ class AuditLogAdmin(admin.ModelAdmin):
         "balance_before",
         "balance_after",
         "timestamp",
+    ]
+
+
+@admin.register(Withdrawal)
+class WithdrawalAdmin(admin.ModelAdmin):
+    list_display = [
+        "user",
+        "amount",
+        "status",
+        "processed_at",
+        "created",
     ]

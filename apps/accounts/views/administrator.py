@@ -1,12 +1,18 @@
+import logging
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+
+# from django.urls import reverse
 from django.utils.html import strip_tags
 from django.db import models, transaction
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_POST
+from django.utils.timezone import now
 
 from apps.accounts.models import (
     Group,
@@ -26,6 +32,9 @@ from apps.accounts.forms import (
 )
 from apps.accounts.utils import create_action, send_email_thread
 from apps.core.utils import mk_paginator
+from apps.wallets.models import Withdrawal
+
+logger = logging.getLogger(__name__)
 
 PAGINATION_COUNT = 20
 
@@ -944,6 +953,230 @@ def admin_deposits_cancelled(request):
     context = {
         "deposits": deposits,
         "cancelled_deposits": cancelled_deposits,
+    }
+
+    return render(request, template, context)
+
+
+###############
+# WITHDRAWALS
+###############
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_withdrawals_all(request):
+    """
+    View all withdrawal requests, regardless of their status.
+    """
+    withdrawals = Withdrawal.objects.all().select_related("user", "wallet")
+
+    # Calculate statistics
+    total_withdrawals = withdrawals.count()
+    pending_withdrawals = withdrawals.filter(status=Withdrawal.Status.PENDING).count()
+    approved_withdrawals = withdrawals.filter(status=Withdrawal.Status.APPROVED).count()
+    cancelled_withdrawals = withdrawals.filter(
+        status=Withdrawal.Status.CANCELLED
+    ).count()
+
+    withdrawals = mk_paginator(request, withdrawals, PAGINATION_COUNT)
+
+    template = "accounts/administrator/withdrawals/all.html"
+    context = {
+        "withdrawals": withdrawals,
+        "total_withdrawals": total_withdrawals,
+        "pending_withdrawals": pending_withdrawals,
+        "approved_withdrawals": approved_withdrawals,
+        "cancelled_withdrawals": cancelled_withdrawals,
+    }
+
+    return render(request, template, context)
+
+
+def send_withdrawal_email(request, withdrawal, status):
+    """
+    Sends email notification to the user based on withdrawal status.
+    """
+    user = withdrawal.user
+    current_site = get_current_site(request)
+    protocol = "https" if request.is_secure() else "http"
+
+    if status == "approved":
+        subject = render_to_string(
+            "accounts/administrator/withdrawals/emails/approved_subject.txt",
+            {"site_name": current_site.name},
+        ).strip()
+        html_message = render_to_string(
+            "accounts/administrator/withdrawals/emails/approved_email.html",
+            {
+                "user": user,
+                "withdrawal": withdrawal,
+                "domain": current_site.domain,
+                "protocol": protocol,
+                "site_name": current_site.name,
+            },
+        )
+        text_message = render_to_string(
+            "accounts/administrator/withdrawals/emails/approved_email.txt",
+            {
+                "user": user,
+                "withdrawal": withdrawal,
+                "domain": current_site.domain,
+                "protocol": protocol,
+                "site_name": current_site.name,
+            },
+        ).strip()
+    elif status == "cancelled":
+        subject = render_to_string(
+            "accounts/administrator/withdrawals/emails/rejected_subject.txt",
+            {"site_name": current_site.name},
+        ).strip()
+        html_message = render_to_string(
+            "accounts/administrator/withdrawals/emails/rejected_email.html",
+            {
+                "user": user,
+                "withdrawal": withdrawal,
+                "domain": current_site.domain,
+                "protocol": protocol,
+                "site_name": current_site.name,
+            },
+        )
+        text_message = render_to_string(
+            "accounts/administrator/withdrawals/emails/rejected_email.txt",
+            {
+                "user": user,
+                "withdrawal": withdrawal,
+                "domain": current_site.domain,
+                "protocol": protocol,
+                "site_name": current_site.name,
+            },
+        ).strip()
+    else:
+        return  # Invalid status, do not send email
+
+    send_email_thread(
+        subject=subject,
+        text_content=text_message,
+        html_content=html_message,
+        recipient_email=user.email,
+        recipient_name=user.get_full_name(),
+    )
+
+
+@login_required
+@user_passes_test(is_admin)
+@require_POST
+def admin_process_withdrawal(request, withdrawal_id):
+    """
+    Handles the approval or cancellation of a withdrawal request.
+    """
+    if request.method != "POST":
+        messages.error(request, "Invalid request method.")
+        return redirect("administrator:withdrawals_all")
+
+    action = request.POST.get("action")
+    note = request.POST.get("note", "")
+
+    withdrawal = get_object_or_404(
+        Withdrawal, id=withdrawal_id, status=Withdrawal.Status.PENDING
+    )
+
+    try:
+        with transaction.atomic():
+            if action == "approve":
+                # Approve withdrawal
+                withdrawal.status = Withdrawal.Status.APPROVED
+                withdrawal.note = note
+                withdrawal.processed_at = now()
+
+                # Deduct wallet balance
+                wallet = withdrawal.wallet
+                if wallet.balance < withdrawal.amount:
+                    raise ValueError("Insufficient wallet balance for approval.")
+                wallet.balance -= withdrawal.amount
+                wallet.save()
+
+                messages.success(request, "Withdrawal approved successfully.")
+                send_withdrawal_email(request, withdrawal, "approved")
+
+            elif action == "cancel":
+                # Cancel withdrawal
+                withdrawal.status = Withdrawal.Status.CANCELLED
+                withdrawal.note = note
+                withdrawal.processed_at = now()
+
+                messages.success(request, "Withdrawal cancelled successfully.")
+                send_withdrawal_email(request, withdrawal, "cancelled")
+
+            else:
+                messages.error(request, "Invalid action specified.")
+                return redirect("administrator:withdrawals_all")
+
+            withdrawal.save()
+
+        return redirect("administrator:withdrawals_all")
+
+    except ValueError as e:
+        messages.error(request, str(e))
+    except Exception as e:
+        logger.error(
+            f"Error processing withdrawal {withdrawal_id}: {str(e)}",
+            exc_info=True,
+        )
+        messages.error(
+            request,
+            "An error occurred while processing the withdrawal.",
+        )
+
+    return redirect("administrator:withdrawals_all")
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_withdrawals_pending(request):
+    """
+    View only pending withdrawal requests.
+    """
+    withdrawals = Withdrawal.objects.filter(status=Withdrawal.Status.PENDING)
+
+    template = "accounts/administrator/withdrawals/pending.html"
+    context = {
+        "withdrawals": withdrawals,
+        "pending_withdrawals": withdrawals.count(),
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_withdrawals_approved(request):
+    """
+    View only approved withdrawal requests.
+    """
+    withdrawals = Withdrawal.objects.filter(status=Withdrawal.Status.APPROVED)
+
+    template = "accounts/administrator/withdrawals/approved.html"
+    context = {
+        "withdrawals": withdrawals,
+        "approved_withdrawals": withdrawals.count(),
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_withdrawals_cancelled(request):
+    """
+    View only cancelled withdrawal requests.
+    """
+    withdrawals = Withdrawal.objects.filter(status=Withdrawal.Status.CANCELLED)
+
+    template = "accounts/administrator/withdrawals/cancelled.html"
+    context = {
+        "withdrawals": withdrawals,
+        "cancelled_withdrawals": withdrawals.count(),
     }
 
     return render(request, template, context)

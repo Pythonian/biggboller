@@ -1,0 +1,21 @@
+{% load humanize %}
+
+<tr>
+    <td>{{ withdrawal.user.get_full_name }} <br> {{ withdrawal.user.email }}</td>
+    <td>₦{{ withdrawal.amount|floatformat:0|intcomma }}</td>
+    <td>{{ withdrawal.created|date:"jS M, Y" }}</td>
+    <td>{{ withdrawal.processed_at|date:"jS M, Y"|default:"N/A" }}</td>
+    <td><span
+            class="badge rounded bg-label-{% if withdrawal.status == withdrawal.Status.PENDING %}primary{% elif withdrawal.status == withdrawal.Status.APPROVED %}success{% else %}danger{% endif %}">{{ withdrawal.get_status_display }}</span>
+    </td>
+    <td>
+        <div class="d-flex">
+            <div class="avatar me-2">
+                <a href="#" class="avatar-initial rounded bg-label-primary" data-bs-toggle="modal"
+                    data-bs-target="#updateWithdrawal{{withdrawal.id}}" title="Update Withdrawal">
+                    <i class="fa-solid fa-circle-info"></i>
+                </a>
+            </div>
+        </div>
+    </td>
+</tr>

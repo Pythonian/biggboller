@@ -601,7 +601,7 @@ def bettor_deposits_cancelled(request):
 
 
 ##############
-# PAYOUTS
+# WITHDRAWALS
 ##############
 
 

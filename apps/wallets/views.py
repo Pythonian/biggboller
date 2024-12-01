@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from django.utils.crypto import get_random_string
@@ -7,8 +8,8 @@ from django.template.loader import render_to_string
 
 from apps.accounts.utils import send_email_thread
 
-from .forms import DepositForm
-from .models import Deposit
+from .forms import DepositForm, WithdrawalForm
+from .models import Deposit, Withdrawal
 from .utils import verify_paystack_transaction
 
 
@@ -104,23 +105,46 @@ def wallet_invoice(request):
         transaction_id=deposit.id,
     )
 
-    # Send confirmation email
-    subject = "Bigg-Boller Wallet Deposit Confirmation"
-    html_content = render_to_string(
-        "wallets/deposit_confirmation_email.html",
-        {"user": request.user, "deposit": deposit},
+    messages.success(request, "Your deposit was successful!")
+
+    # Sending confirmation email
+    current_site = get_current_site(request)
+    protocol = "https" if request.is_secure() else "http"
+
+    subject = render_to_string(
+        "wallets/emails/deposit_subject.txt",
+        {"site_name": current_site.name},
+    ).strip()
+
+    text_message = render_to_string(
+        "wallets/emails/deposit_email.txt",
+        {
+            "user": request.user,
+            "deposit": deposit,
+            "domain": current_site.domain,
+            "protocol": protocol,
+            "site_name": current_site.name,
+        },
+    ).strip()
+
+    html_message = render_to_string(
+        "wallets/emails/deposit_email.html",
+        {
+            "user": request.user,
+            "deposit": deposit,
+            "domain": current_site.domain,
+            "protocol": protocol,
+            "site_name": current_site.name,
+        },
     )
-    text_content = f"Hi {request.user.first_name},\n\nYour wallet deposit of ₦{deposit.amount} was successful. Your wallet balance has been updated."
 
     send_email_thread(
-        subject=subject,
-        text_content=text_content,
-        html_content=html_content,
-        recipient_email=request.user.email,
-        recipient_name=request.user.get_full_name(),
+        subject,
+        text_message,
+        html_message,
+        request.user.email,
+        request.user.get_full_name(),
     )
-
-    messages.success(request, "Your deposit was successful!")
 
     template = "accounts/bettor/wallets/invoice.html"
     context = {"deposit": deposit}
@@ -130,7 +154,51 @@ def wallet_invoice(request):
 
 @login_required
 def wallet_withdrawal(request):
-    pass
+    """Handles wallet withdrawal requests."""
+    wallet_balance = request.user.wallet.balance
+
+    if not hasattr(request.user, "wallet"):
+        messages.error(request, "You need a wallet before making a withdrawal.")
+        return redirect("bettor:dashboard")
+
+    if request.method == "POST":
+        form = WithdrawalForm(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data["amount"]
+            description = form.cleaned_data.get("description", "")
+
+            # Check wallet balance
+            if amount > request.user.wallet.balance:
+                messages.error(
+                    request,
+                    "Insufficient balance for this withdrawal request. Please try again.",
+                )
+                return redirect("bettor:dashboard")
+
+            # Create withdrawal record
+            _ = Withdrawal.objects.create(
+                user=request.user,
+                wallet=request.user.wallet,
+                amount=amount,
+                description=description,
+                status=Withdrawal.Status.PENDING,
+            )
+
+            messages.success(
+                request,
+                "Your withdrawal request has been submitted and is pending admin review.",
+            )
+            return redirect("bettor:dashboard")
+    else:
+        form = WithdrawalForm()
+
+    template = "accounts/bettor/wallets/withdrawal.html"
+    context = {
+        "form": form,
+        "wallet_balance": wallet_balance,
+    }
+
+    return render(request, template, context)
 
 
 @login_required

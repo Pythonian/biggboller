@@ -36,6 +36,11 @@ from apps.accounts.views.administrator import (
     admin_payouts_approved,
     admin_payouts_pending,
     admin_payouts_cancelled,
+    admin_withdrawals_all,
+    admin_withdrawals_approved,
+    admin_withdrawals_pending,
+    admin_withdrawals_cancelled,
+    admin_process_withdrawal,
 )
 from apps.accounts.views.bettor import (
     bettor_dashboard,
@@ -99,6 +104,11 @@ __all__ = [
     "admin_payouts_approved",
     "admin_payouts_pending",
     "admin_payouts_cancelled",
+    "admin_withdrawals_all",
+    "admin_withdrawals_approved",
+    "admin_withdrawals_pending",
+    "admin_withdrawals_cancelled",
+    "admin_process_withdrawal",
     # Bettor
     "bettor_dashboard",
     "bettor_bundles_all",
