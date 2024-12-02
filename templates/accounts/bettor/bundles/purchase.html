@@ -25,7 +25,7 @@
                     </li>
                 </ul>
                 <div class="my-3">
-                    <form method="post" action="{% url 'bettor:bundles_purchase' bundle.id %}">
+                    <form method="post" action="{% url 'bettor:bundles_purchase' bundle.bundle_id %}">
                         {% csrf_token %}
                         <input type="hidden" name="quantity" value="{{ quantity }}">
                         <button class="btn btn-success w-100" type="submit">

@@ -1,0 +1,9 @@
+Hi {{ user.first_name }},
+
+Congratulations! Your account has been successfully activated at {{ site_name }}.
+
+You can now log in if you have not already, and check out the groups you have been assigned too and start purchasing your stakes.
+
+Best regards,  
+
+The {{ site_name }} Team

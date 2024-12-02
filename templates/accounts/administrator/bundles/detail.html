@@ -68,14 +68,12 @@
                             <i class="fa-solid fa-trophy"></i>
                         </span>
                     </div>
-                    <h6 class="ms-1 mb-0">₦{{ bundle.potential_min_win|floatformat:0|intcomma }} -
-                        ₦{{ bundle.potential_max_win|floatformat:0|intcomma }}</h6>
+                    <h4 class="ms-1 mb-0">{{ bundle.winning_percentage|floatformat:0 }}%</h4>
                 </div>
-                <p class="mb-1">Potential Wins</p>
+                <p class="mb-1">Winnings Percentage</p>
                 <p class="mb-0">
-                    <span class="fw-medium me-1">x{{ bundle.minimum_win_multiplier }} -
-                        x{{ bundle.maximum_win_multiplier }}</span>
-                    <small class="text-muted">Win multipliers</small>
+                    <span class="fw-medium me-1">x {{ bundle.participants_count }}</span>
+                    <small class="text-muted">Participant{{ bundle.participants_count|pluralize }} </small>
                 </p>
             </div>
         </div>
@@ -114,9 +112,9 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Stake</th>
-                                <th>Potential Returns</th>
+                                <th>Potential Win</th>
                                 <th>Date Purchased</th>
-                                <th>Reference ID</th>
+                                <!-- <th>Reference ID</th> -->
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -129,10 +127,9 @@
                                 ₦{{ deposit.amount|floatformat:0|intcomma }} <br>
                                 (x{{ deposit.quantity }}) bundles
                             </td>
-                            <td>₦{{ deposit.potential_min_win|floatformat:0|intcomma }} -
-                                ₦{{ deposit.potential_max_win|floatformat:0|intcomma }}</td>
+                            <td>₦{{ deposit.payout_amount|floatformat:0|intcomma }}</td>
                             <td>{{ deposit.created|date:"M d, Y" }}</td>
-                            <td>{{ deposit.paystack_id }}</td>
+                            <!-- <td>{{ deposit.paystack_id }}</td> -->
                             <td>
                                 <span class="badge bg-success">{{ deposit.get_status_display }}</span>
                             </td>

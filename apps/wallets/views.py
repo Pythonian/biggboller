@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.crypto import get_random_string
 from django.template.loader import render_to_string
 
-from apps.accounts.utils import send_email_thread
+from apps.accounts.utils import send_email_thread, create_action
 
 from .forms import DepositForm, WithdrawalForm
 from .models import Deposit, Withdrawal
@@ -28,7 +28,7 @@ def wallet_deposit(request):
             paystack_ref = get_random_string(length=12).upper()
 
             # Create the deposit record
-            deposit = Deposit.objects.create(
+            _ = Deposit.objects.create(
                 user=request.user,
                 wallet=request.user.wallet,
                 amount=amount,
@@ -38,12 +38,17 @@ def wallet_deposit(request):
             )
 
             # Save deposit ID in session and redirect to confirmation
-            request.session["transaction_id"] = str(deposit.id)
+            request.session["transaction_id"] = paystack_ref
             return redirect("wallet:confirmation")
     else:
         form = DepositForm()
 
-    return render(request, "accounts/bettor/wallets/deposit.html", {"form": form})
+    template = "accounts/bettor/wallets/deposit.html"
+    context = {
+        "form": form,
+    }
+
+    return render(request, template, context)
 
 
 @login_required
@@ -55,15 +60,20 @@ def wallet_deposit_confirmation(request):
         messages.error(request, "No deposit transaction found.")
         return redirect("wallet:deposit")
 
-    deposit = get_object_or_404(Deposit, id=transaction_id, user=request.user)
+    deposit = get_object_or_404(
+        Deposit,
+        paystack_id=transaction_id,
+        user=request.user,
+    )
 
+    template = "accounts/bettor/wallets/deposit_confirmation.html"
     context = {
         "deposit": deposit,
         "paystack_key": settings.PAYSTACK_PUBLIC_KEY,
         "email": request.user.email,
         "amount": int(deposit.amount * 100),
     }
-    return render(request, "accounts/bettor/wallets/deposit_confirmation.html", context)
+    return render(request, template, context)
 
 
 @login_required
@@ -146,8 +156,17 @@ def wallet_invoice(request):
         request.user.get_full_name(),
     )
 
+    create_action(
+        request.user,
+        "Wallet Top-up",
+        f"has made a wallet deposit of #{deposit.amount}.",
+        target=request.user.wallet,
+    )
+
     template = "accounts/bettor/wallets/invoice.html"
-    context = {"deposit": deposit}
+    context = {
+        "deposit": deposit,
+    }
 
     return render(request, template, context)
 
@@ -188,6 +207,14 @@ def wallet_withdrawal(request):
                 request,
                 "Your withdrawal request has been submitted and is pending admin review.",
             )
+
+            create_action(
+                request.user,
+                "Wallet Withdrawal",
+                f"has made a wallet withdrawal request of #{amount}.",
+                target=request.user.wallet,
+            )
+
             return redirect("bettor:dashboard")
     else:
         form = WithdrawalForm()

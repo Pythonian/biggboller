@@ -326,7 +326,45 @@ def account_activate(request, uidb64, token):
             request,
             "Your account has been successully activated.",
         )
-        # TODO: Send an email to a bettor when an Account has been activated successfully
+
+        # Send the email
+        current_site = get_current_site(request)
+        protocol = "https" if request.is_secure() else "http"
+
+        subject = render_to_string(
+            "registration/account_activation_success_subject.txt",
+            {"site_name": current_site.name},
+        ).strip()
+
+        text_message = render_to_string(
+            "registration/account_activation_success_email.txt",
+            {
+                "user": user,
+                "domain": current_site.domain,
+                "protocol": protocol,
+                "site_name": current_site.name,
+            },
+        ).strip()
+
+        html_message = render_to_string(
+            "registration/account_activation_success_email.html",
+            {
+                "user": user,
+                "domain": current_site.domain,
+                "protocol": protocol,
+                "site_name": current_site.name,
+            },
+        )
+
+        # Send email
+        send_email_thread(
+            subject,
+            text_message,
+            html_message,
+            user.email,
+            user.get_full_name(),
+        )
+
         create_action(
             user,
             "Account Email Activated",

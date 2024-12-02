@@ -1,0 +1,9 @@
+Hi {{ user.first_name }},
+
+You have been assigned to the group "{{ group }}" on {{ site_name }}.
+
+Please go ahead and check out the group and purchase its bundle.
+
+Best regards,  
+
+The {{ site_name }} Team

@@ -9,6 +9,7 @@ from django.contrib.sites.shortcuts import get_current_site
 # from django.urls import reverse
 from django.utils.html import strip_tags
 from django.db import models, transaction
+from django.utils.crypto import get_random_string
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_POST
@@ -132,9 +133,12 @@ def admin_dashboard(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_users_login_history(request):
-    login_records = LoginHistory.objects.select_related("user").filter(
-        user__is_staff=False
-    )
+    if request.user.is_staff:
+        login_records = LoginHistory.objects.select_related("user")
+    else:
+        login_records = LoginHistory.objects.select_related("user").filter(
+            user__is_staff=False
+        )
 
     login_records = mk_paginator(request, login_records, PAGINATION_COUNT)
 
@@ -199,13 +203,23 @@ def admin_groups_new(request):
 
                 messages.success(
                     request,
-                    f'Group "{group.name}" and its Bundle "{bundle.name}" have been created successfully.',
+                    "New Group successfully created.",
+                )
+
+                create_action(
+                    request.user,
+                    "New Group Creation",
+                    f"created a new group: {group.name}",
+                    target=group,
                 )
                 return redirect(group)
             except Exception as e:
+                logger.error(
+                    f"An error occurred while creating the Group and Bundle: {str(e)}"
+                )
                 messages.error(
                     request,
-                    f"An error occurred while creating the Group and Bundle: {str(e)}",
+                    "An error occurred while creating the Group and Bundle. Try again!",
                 )
         else:
             messages.error(
@@ -259,8 +273,8 @@ def admin_groups_closed(request):
 
 @login_required
 @user_passes_test(is_admin)
-def admin_groups_detail(request, id):
-    group = get_object_or_404(Group, id=id)
+def admin_groups_detail(request, group_id):
+    group = get_object_or_404(Group, group_id=group_id)
     members = group.bettors.all()
 
     if request.method == "POST":
@@ -270,6 +284,12 @@ def admin_groups_detail(request, id):
             messages.success(
                 request,
                 "This group has been updated successfully.",
+            )
+            create_action(
+                request.user,
+                "Group Update",
+                f"updated the group: {group.name}",
+                target=group,
             )
             return redirect(group)
     else:
@@ -366,8 +386,8 @@ def admin_bundles_lost(request):
 
 @login_required
 @user_passes_test(is_admin)
-def admin_bundles_detail(request, id):
-    bundle = get_object_or_404(Bundle, id=id)
+def admin_bundles_detail(request, bundle_id):
+    bundle = get_object_or_404(Bundle, bundle_id=bundle_id)
 
     if request.method == "POST":
         new_status = request.POST.get("status")
@@ -379,18 +399,19 @@ def admin_bundles_detail(request, id):
             if new_status == Bundle.Status.WON:
                 # Iterate over participants and calculate their potential win
                 for deposit in bundle.deposits.filter(status=Deposit.Status.APPROVED):
-                    potential_win_amount = deposit.potential_win
+                    potential_win_amount = deposit.payout_amount
 
                     try:
                         # Credit the user's wallet with the potential win amount
                         wallet = deposit.user.wallet
+                        transaction_id = get_random_string(length=12).upper()
                         wallet.update_balance(
                             potential_win_amount,
-                            transaction_type="Winning",
-                            transaction_id=str(deposit.id),
+                            transaction_type="Bundle Payout",
+                            transaction_id=transaction_id,
                         )
 
-                        # Create a payout record
+                        # TODO: This is no longer needed
                         Payout.objects.get_or_create(
                             user=deposit.user,
                             bundle=bundle,
@@ -400,13 +421,34 @@ def admin_bundles_detail(request, id):
                             },
                         )
 
-                        # Send notification to the user
+                        # Send confirmation email
+                        email_context = {
+                            "user": deposit.user,
+                            "bundle": bundle,
+                            "amount": potential_win_amount,
+                        }
+                        subject = "Congratulations! Bundle Winning Payout"
+                        html_content = render_to_string(
+                            "accounts/bettor/bundles/email/payout.html",
+                            email_context,
+                        )
+                        text_content = render_to_string(
+                            "accounts/bettor/bundles/email/payout.txt",
+                            email_context,
+                        )
                         send_email_thread(
-                            subject=f"Congratulations! You've won in bundle {bundle.name}",
-                            text_content="Your winnings have been credited to your wallet.",
-                            html_content="<p>Your winnings have been credited to your wallet.</p>",
+                            subject=subject,
+                            text_content=text_content,
+                            html_content=html_content,
                             recipient_email=deposit.user.email,
                             recipient_name=deposit.user.get_full_name(),
+                        )
+
+                        create_action(
+                            request.user,
+                            "Bundle Winning Payout",
+                            f"{deposit.user} has been paid their bundle wins.",
+                            target=request.user.profile,
                         )
                     except Exception as e:
                         logger.error(f"Error processing payout for {deposit.user}: {e}")
@@ -592,6 +634,7 @@ def admin_users_detail(request, username):
         "user": profile.user,
         "actions": actions,
         "groups": eligible_groups,
+        "user_groups": user_groups,
     }
 
     return render(request, template, context)
@@ -609,7 +652,7 @@ def admin_users_assign_group(request, username):
         return redirect("administrator:users_all")
 
     if request.method == "POST":
-        group_id = request.POST.get("group")  # Get group ID from the request
+        group_id = request.POST.get("group")
         if not group_id:
             # If no group is selected, show an error and redirect
             messages.error(request, "Please select a group.")
@@ -617,7 +660,7 @@ def admin_users_assign_group(request, username):
 
         try:
             # Check if the group exists
-            group = Group.objects.get(id=group_id)
+            group = Group.objects.get(group_id=group_id)
             if group not in user.bet_groups.all():
                 # Add the user to the group if they are not already a member
                 user.bet_groups.add(group)
@@ -625,6 +668,53 @@ def admin_users_assign_group(request, username):
                     request,
                     f"{user.username} has been successfully added to the group '{group.name}'.",
                 )
+                # Send email notification
+                current_site = get_current_site(request)
+                protocol = "https" if request.is_secure() else "http"
+
+                subject = render_to_string(
+                    "accounts/administrator/users/emails/group_assignment_subject.txt",
+                    {"site_name": current_site.name},
+                ).strip()
+
+                text_message = render_to_string(
+                    "accounts/administrator/users/emails/group_assignment_email.txt",
+                    {
+                        "user": user,
+                        "group": group.name,
+                        "domain": current_site.domain,
+                        "protocol": protocol,
+                        "site_name": current_site.name,
+                    },
+                ).strip()
+
+                html_message = render_to_string(
+                    "accounts/administrator/users/emails/group_assignment_email.html",
+                    {
+                        "user": user,
+                        "group": group.name,
+                        "domain": current_site.domain,
+                        "protocol": protocol,
+                        "site_name": current_site.name,
+                    },
+                )
+
+                # Send email asynchronously
+                send_email_thread(
+                    subject,
+                    text_message,
+                    html_message,
+                    user.email,
+                    user.get_full_name(),
+                )
+
+                create_action(
+                    request.user,
+                    "Group Assignment",
+                    f"{user.username} has been assigned to the group: {group.name}",
+                    target=user.profile,
+                )
+
             else:
                 # Notify if the user is already in the group
                 messages.warning(

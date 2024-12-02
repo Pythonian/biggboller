@@ -1,6 +1,5 @@
 import uuid
 
-from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.urls import reverse
@@ -26,10 +25,10 @@ class Group(models.Model):
         RUNNING = "R", _("Running")
         CLOSED = "C", _("Closed")
 
-    id = models.UUIDField(
-        primary_key=True,
+    group_id = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
+        unique=True,
     )
     name = models.CharField(
         max_length=255,
@@ -83,7 +82,10 @@ class Group(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("administrator:groups_detail", args=[self.id])
+        return reverse(
+            "administrator:groups_detail",
+            args=[self.group_id],
+        )
 
 
 class BundleManager(models.Manager):
@@ -111,10 +113,10 @@ class Bundle(models.Model):
         WON = "W", _("Won")
         LOST = "L", _("Lost")
 
-    id = models.UUIDField(
-        primary_key=True,
+    bundle_id = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
+        unique=True,
     )
     group = models.OneToOneField(
         Group,
@@ -190,7 +192,10 @@ class Bundle(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse("administrator:bundles_detail", args=[self.id])
+        return reverse(
+            "administrator:bundles_detail",
+            args=[self.bundle_id],
+        )
 
     @property
     def participants_count(self):
@@ -198,13 +203,3 @@ class Bundle(models.Model):
         Return the number of participants who have purchased this bundle.
         """
         return self.participants.count()
-
-    def clean(self):
-        if self.min_bundles_per_user >= self.max_bundles_per_user:
-            raise ValidationError(
-                {
-                    "min_bundles_per_user": _(
-                        "Minimum bundles per user cannot exceed the maximum bundles per user."
-                    )
-                }
-            )

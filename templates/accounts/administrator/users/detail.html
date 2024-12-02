@@ -61,15 +61,45 @@
                 </div>
             </div>
         </div>
+
         <!-- Assign group -->
         <div class="card">
+            {% if user_groups %}
+            <div class="card-header">
+                <h5 class="card-title m-0 me-2">User's Groups</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    {% for group in user_groups %}
+                    <li class="d-flex mb-4 pb-1">
+                        <div class="avatar flex-shrink-0 me-3">
+                            <span class="avatar-initial rounded bg-label-primary"><i
+                                    class="fa-solid fa-{{ forloop.counter }}"></i></span>
+                        </div>
+                        <div class="row w-100 align-items-center">
+                            <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
+                                <h6 class="mb-0 lh-sm">{{ group.name }}</h6>
+                            </div>
+                            <div class="col-sm-4 col-lg-12 col-xxl-4 text-sm-end text-lg-start text-xxl-end">
+                                <div class="badge bg-label-primary">{{ group.get_status_display }}</div>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#assignGroup">Assign to a Group</button>
+            </div>
+            {% else %}
             <div class="card-body text-center">
                 <i class="mb-3 fa-solid fa-object-group fa-2x text-primary"></i>
                 <h5>Assign Group</h5>
+
                 <p>Add this user to a group where they can purchase a bundle.</p>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                     data-bs-target="#assignGroup">Assign</button>
             </div>
+            {% endif %}
         </div>
     </div>
     <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">

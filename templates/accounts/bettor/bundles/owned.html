@@ -36,15 +36,13 @@
                             <td>{{ deposit.bundle.name }}</td>
                             <td>₦{{ deposit.bundle.price|floatformat:0|intcomma }}</td>
                             <td>{{ deposit.quantity }}</td>
-                            <td>{{ deposit.amount|floatformat:0|intcomma }}</td>
-                            <td>₦{{ deposit.potential_min_win|floatformat:0|intcomma }} -
-                                ₦{{ deposit.potential_max_win|floatformat:0|intcomma }}
-                            </td>
+                            <td>₦{{ deposit.amount|floatformat:0|intcomma }}</td>
+                            <td>₦{{ deposit.payout_amount|floatformat:0|intcomma }}</td>
                             <td>{{ deposit.get_status_display }}</td>
                             <td>
                                 <div class="d-flex">
                                     <div class="avatar me-2">
-                                        <a href="{% url 'bettor:bundles_detail' deposit.bundle.id %}"
+                                        <a href="{% url 'bettor:bundles_detail' deposit.bundle.bundle_id %}"
                                             class="avatar-initial rounded bg-label-primary" data-bs-toggle="tooltip"
                                             data-bs-offset="0,8" data-bs-placement="top"
                                             data-bs-custom-class="tooltip-primary" title="View Bundle">

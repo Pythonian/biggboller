@@ -15,7 +15,7 @@
                         <select class="form-select" id="id_group_assign" name="group">
                             <option value="" selected disabled>Select a group</option>
                             {% for group in groups %}
-                            <option value="{{ group.id }}">{{ group.name }}</option>
+                            <option value="{{ group.group_id }}">{{ group.name }}</option>
                             {% endfor %}
                         </select>
                     </div>

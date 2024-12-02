@@ -1,0 +1,13 @@
+{% load widget_tweaks %}
+
+<label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+{% if field.errors %}
+{% render_field field class="form-control is-invalid" %}
+{% for error in field.errors %}
+<div class="invalid-feedback">
+    <i class="fa-solid fa-exclamation-triangle me-1"></i> {{ error }}
+</div>
+{% endfor %}
+{% else %}
+{% render_field field class="form-control" %}
+{% endif %}

@@ -29,17 +29,17 @@ app_name = "bettor"
 urlpatterns = [
     path("dashboard/", bettor_dashboard, name="dashboard"),
     path(
-        "bundles/<uuid:id>/",
+        "bundles/<uuid:bundle_id>/",
         bettor_bundles_detail,
         name="bundles_detail",
     ),
     path(
-        "bundles/purchase/<uuid:id>/",
+        "bundles/purchase/<uuid:bundle_id>/",
         bettor_bundles_purchase,
         name="bundles_purchase",
     ),
     path(
-        "bundles/purchase/<uuid:id>/successful/",
+        "bundles/purchase/<uuid:deposit_id>/successful/",
         bettor_purchase_successful,
         name="purchase_successful",
     ),

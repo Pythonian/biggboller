@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Assignment | Bigg-Boller</title>
+    <style type="text/css">
+        body {
+            font-family: 'Public Sans', Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 14px -4px rgba(0, 0, 0, 0.27);
+            border-radius: 8px;
+        }
+
+        .header,
+        .footer {
+            background-color: #282834;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .content {
+            padding: 30px;
+            text-align: left;
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .content h3 {
+            color: #0DA487;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .content p {
+            margin: 15px 0;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #0DA487;
+            color: #ffffff;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 6px;
+            text-decoration: none;
+            margin: 20px 0;
+        }
+
+        .footer a {
+            color: #ffffff;
+            text-decoration: underline;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+
+        .footer h5 {
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 15px;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="container" style="width: 100%; margin: 0 auto; border-spacing: 0; padding: 0;">
+        <tr>
+            <td class="header">
+                <h1><a href="https://www.bigg-boller.com/"
+                        style="color: #0DA487; text-decoration: none;">Bigg-Boller</a></h1>
+            </td>
+        </tr>
+        <tr>
+            <td class="content">
+                <h3>Hi {{ user.first_name }},</h3>
+                <p>
+                    You have been assigned to the group "<strong>{{ group }}</strong>" on {{ site_name }}.
+                </p>
+                <p>
+                    Please go ahead and check out the group and purchase its bundle.
+                </p>
+                <p>Best regards,<br>The {{ site_name }} Team</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="footer">
+                <a href="https://www.bigg-boller.com/contact/">Contact Us</a> |
+                <a href="https://www.bigg-boller.com/terms/">Terms of Service</a> |
+                <a href="https://www.bigg-boller.com/privacy/">Privacy Policy</a>
+                <h5>&copy; 2024 Bigg-Boller. All Rights Reserved.</h5>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>
+
+<body>
+    <div class="container">
+
+    </div>
+</body>
+
+</html>

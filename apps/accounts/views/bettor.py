@@ -212,12 +212,17 @@ def bettor_bundles_all(request):
 
 
 @login_required
-def bettor_bundles_detail(request, id):
-    bundle = get_object_or_404(Bundle, id=id)
+def bettor_bundles_detail(request, bundle_id):
+    bundle = get_object_or_404(Bundle, bundle_id=bundle_id)
     wallet = get_object_or_404(Wallet, user=request.user)
 
-    # Default quantity for confirmation
-    quantity = 1
+    # Check if the user has already purchased this bundle
+    purchased_bundle = Deposit.objects.filter(
+        user=request.user,
+        bundle=bundle,
+        status=Deposit.Status.APPROVED,
+    ).exists()
+
     if request.method == "POST":
         form = BundlePurchaseForm(request.POST, bundle=bundle)
         if form.is_valid():
@@ -229,7 +234,7 @@ def bettor_bundles_detail(request, id):
                 "quantity": quantity,
                 "total_amount": str(total_amount),
             }
-            return redirect("bettor:bundles_purchase", id=bundle.id)
+            return redirect("bettor:bundles_purchase", bundle_id=bundle.bundle_id)
         else:
             messages.error(
                 request, "An error occurred while submitting the form. Try again."
@@ -242,21 +247,22 @@ def bettor_bundles_detail(request, id):
         "bundle": bundle,
         "form": form,
         "wallet_balance": wallet.balance,
+        "purchased_bundle": purchased_bundle,
     }
 
     return render(request, template, context)
 
 
 @login_required
-def bettor_bundles_purchase(request, id):
-    bundle = get_object_or_404(Bundle, id=id)
+def bettor_bundles_purchase(request, bundle_id):
+    bundle = get_object_or_404(Bundle, bundle_id=bundle_id)
     wallet = get_object_or_404(Wallet, user=request.user)
 
     # Retrieve purchase details from session
     purchase_details = request.session.get("purchase_details")
     if not purchase_details:
         messages.error(request, "No purchase details found. Please start over.")
-        return redirect("bettor:bundles_detail", id=bundle.id)
+        return redirect("bettor:bundles_detail", bundle_id=bundle.bundle_id)
 
     quantity = purchase_details["quantity"]
     total_amount = Decimal(purchase_details["total_amount"])
@@ -268,7 +274,7 @@ def bettor_bundles_purchase(request, id):
                 request,
                 "Insufficient wallet balance. Please deposit funds to proceed.",
             )
-            return redirect("bettor:bundles_detail", id=bundle.id)
+            return redirect("bettor:bundles_detail", bundle_id=bundle_id)
 
         try:
             with transaction.atomic():
@@ -276,23 +282,28 @@ def bettor_bundles_purchase(request, id):
                 wallet.balance -= total_amount
                 wallet.save()
 
+                # Calculate the potential win (payout amount)
+                payout_amount = total_amount * (bundle.winning_percentage / 100)
+
                 # Create or update a pending deposit
                 deposit, created = Deposit.objects.get_or_create(
                     user=request.user,
                     bundle=bundle,
                     status=Deposit.Status.PENDING,
-                    defaults={"quantity": quantity, "amount": total_amount},
+                    defaults={
+                        "quantity": quantity,
+                        "amount": total_amount,
+                        "payout_amount": payout_amount,
+                    },
                 )
                 if not created:
                     deposit.quantity = quantity
                     deposit.amount = total_amount
+                    deposit.payout_amount = payout_amount
 
                 # Approve the deposit
                 deposit.status = Deposit.Status.APPROVED
                 deposit.save()
-
-                # Calculate the potential win after purchase
-                potential_win = deposit.potential_win
 
                 # Add user as a participant
                 bundle.participants.add(request.user)
@@ -321,34 +332,42 @@ def bettor_bundles_purchase(request, id):
                     recipient_name=request.user.get_full_name(),
                 )
 
+                create_action(
+                    request.user,
+                    "Bundle Purchase",
+                    f"purchased the bundle {bundle.name} for #{total_amount}.",
+                    target=request.user.profile,
+                )
+
+            # TODO: change to deposit_id in the Deposit model
             return redirect("bettor:purchase_successful", id=deposit.id)
 
         except Exception as e:
-            # Log the error
             logger.error(f"Error during transaction: {str(e)}", exc_info=True)
-
             messages.error(
                 request,
                 "An error occurred while processing your transaction. Try again",
             )
 
-            return redirect("bettor:bundles_detail", id=bundle.id)
+            return redirect("bettor:bundles_detail", bundle_id=bundle_id)
 
-    return render(
-        request,
-        "accounts/bettor/bundles/purchase.html",
-        {
-            "bundle": bundle,
-            "quantity": quantity,
-            "total_amount": total_amount,
-        },
-    )
+    template = "accounts/bettor/bundles/purchase.html"
+    context = {
+        "bundle": bundle,
+        "quantity": quantity,
+        "total_amount": total_amount,
+    }
+
+    return render(request, template, context)
 
 
 @login_required
-def bettor_purchase_successful(request, id):
+def bettor_purchase_successful(request, deposit_id):
     deposit = get_object_or_404(
-        Deposit, id=id, user=request.user, status=Deposit.Status.APPROVED
+        Deposit,
+        id=deposit_id,
+        user=request.user,
+        status=Deposit.Status.APPROVED,
     )
 
     return render(

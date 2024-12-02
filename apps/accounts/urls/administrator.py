@@ -265,7 +265,7 @@ urlpatterns = [
                     name="groups_new",
                 ),
                 path(
-                    "<uuid:id>/",
+                    "<uuid:group_id>/",
                     admin_groups_detail,
                     name="groups_detail",
                 ),
@@ -298,7 +298,7 @@ urlpatterns = [
                     name="bundles_won",
                 ),
                 path(
-                    "<uuid:id>/",
+                    "<uuid:bundle_id>/",
                     admin_bundles_detail,
                     name="bundles_detail",
                 ),

@@ -1,0 +1,1 @@
+New Group Assigned on {{ site_name }}

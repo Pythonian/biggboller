@@ -3,7 +3,7 @@
     <td>{{ bundle.name }}</td>
     <td>{{ bundle.group.name }}</td>
     <td>₦{{ bundle.price|floatformat:0|intcomma }}</td>
-    <td>₦{{ bundle.potential_min_win|floatformat:0|intcomma }} - ₦{{ bundle.potential_max_win|floatformat:0|intcomma }}
+    <td>{{ bundle.winning_percentage|floatformat:0 }}%
     </td>
     <td>{{ bundle.participants_count }}</td>
     <td>

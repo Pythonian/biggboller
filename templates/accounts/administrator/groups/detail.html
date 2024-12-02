@@ -114,15 +114,12 @@
                             <i class="fa-solid fa-trophy"></i>
                         </span>
                     </div>
-                    <h6 class="ms-1 mb-0">₦{{ group.bundle.potential_min_win|floatformat:0|intcomma }} -
-                        ₦{{ group.bundle.potential_max_win|floatformat:0|intcomma }}
-                    </h6>
+                    <h4 class="ms-1 mb-0">{{ group.bundle.winning_percentage|floatformat:0 }}%</h4>
                 </div>
-                <p class="mb-1">Potential Winnings</p>
+                <p class="mb-1">Winnings Percentage</p>
                 <p class="mb-0">
-                    <span class="fw-medium me-1">x{{ group.bundle.minimum_win_multiplier }} -
-                        x{{ group.bundle.maximum_win_multiplier }}</span>
-                    <small class="text-muted">Win multipliers</small>
+                    <span class="fw-medium me-1">x {{ group.bundle.participants_count }}</span>
+                    <small class="text-muted">Participant{{ group.bundle.participants_count|pluralize }} </small>
                 </p>
             </div>
         </div>

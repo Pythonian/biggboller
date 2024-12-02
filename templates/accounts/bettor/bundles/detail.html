@@ -61,14 +61,12 @@
                             <i class="fa-solid fa-trophy"></i>
                         </span>
                     </div>
-                    <h6 class="ms-1 mb-0">₦{{ bundle.potential_min_win|floatformat:0|intcomma }} -
-                        ₦{{ bundle.potential_max_win|floatformat:0|intcomma }}</h6>
+                    <h4 class="ms-1 mb-0">{{ bundle.winning_percentage|floatformat:0 }}%</h4>
                 </div>
-                <p class="mb-1">Potential Wins</p>
+                <p class="mb-1">Winnings Percentage</p>
                 <p class="mb-0">
-                    <span class="fw-medium me-1">x{{ bundle.minimum_win_multiplier }} -
-                        x{{ bundle.maximum_win_multiplier }}</span>
-                    <small class="text-muted">Win multipliers</small>
+                    <span class="fw-medium me-1">x {{ bundle.participants_count }}</span>
+                    <small class="text-muted">Participant{{ bundle.participants_count|pluralize }} </small>
                 </p>
             </div>
         </div>
@@ -95,6 +93,7 @@
     </div>
 </div>
 
+{% if not purchased_bundle %}
 <!-- Wallet Balance Display -->
 <div class="mb-2">
     <label for="wallet-balance" class="form-label">Wallet Balance:</label>
@@ -108,7 +107,6 @@
     Insufficient wallet balance to purchase this quantity.
 </div>
 
-{% if not purchased_bundle %}
 <div class="card">
     <div class="card-body">
         <form action="" method="post">
@@ -116,8 +114,7 @@
             <div class="row g-2">
                 <!-- Hidden fields for price, multipliers, and bundles per user -->
                 <input type="hidden" id="bundle-price" value="{{ bundle.price }}">
-                <input type="hidden" id="min-multiplier" value="{{ bundle.minimum_win_multiplier }}">
-                <input type="hidden" id="max-multiplier" value="{{ bundle.maximum_win_multiplier }}">
+                <input type="hidden" id="winning-percentage" value="{{ bundle.winning_percentage }}">
                 <input type="hidden" id="min-bundles" value="{{ bundle.min_bundles_per_user }}">
                 <input type="hidden" id="max-bundles" value="{{ bundle.max_bundles_per_user }}">
 
@@ -145,6 +142,10 @@
         </form>
     </div>
 </div>
+{% else %}
+<div class="alert alert-info">
+    <i class="fa-solid fa-info-circle me-2"></i> You have already purchased this bundle.
+</div>
 {% endif %}
 
 <script>
@@ -160,8 +161,7 @@
         // Get bundle data from hidden inputs
         const walletBalance = parseFloat(walletBalanceDisplay.textContent.replace(/[₦,]/g, ''));
         const bundlePrice = parseFloat(document.getElementById('bundle-price').value);
-        const minMultiplier = parseInt(document.getElementById('min-multiplier').value);
-        const maxMultiplier = parseInt(document.getElementById('max-multiplier').value);
+        const winningPercentage = parseFloat(document.getElementById('winning-percentage').value);
         const minBundles = parseInt(document.getElementById('min-bundles').value);
         const maxBundles = parseInt(document.getElementById('max-bundles').value);
 
@@ -173,23 +173,20 @@
         defaultOption.selected = true;  // This ensures it's the initially selected option
         quantitySelect.appendChild(defaultOption);
 
-        // Populate quantity select field
+        // Populate quantity select field with only affordable quantities
         for (let i = minBundles; i <= maxBundles; i++) {
-            const option = document.createElement('option');
-            option.value = i;
-            option.textContent = i;
-            // Disable if wallet balance is insufficient
-            option.disabled = walletBalance < (bundlePrice * i);
-            quantitySelect.appendChild(option);
+            const totalCost = bundlePrice * i;
+            if (totalCost <= walletBalance) { // Only include quantities the user can afford
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                quantitySelect.appendChild(option);
+            }
         }
 
         quantitySelect.addEventListener('change', function () {
             const quantity = parseInt(this.value) || 0;
             const totalAmount = bundlePrice * quantity;
-
-            // Debugging Logs
-            console.log("Total Amount:", totalAmount);
-            console.log("Wallet Balance:", walletBalance);
 
             if (!quantity) {
                 totalAmountDisplay.textContent = '';
@@ -199,11 +196,11 @@
                 return;
             }
 
-            const potentialMinWin = totalAmount * minMultiplier;
-            const potentialMaxWin = totalAmount * maxMultiplier;
+            // Calculate potential win using the winning percentage
+            const potentialWin = totalAmount * (winningPercentage / 100);
 
             totalAmountDisplay.textContent = `₦${totalAmount.toLocaleString('en-US')}`;
-            potentialWinDisplay.textContent = `₦${potentialMinWin.toLocaleString('en-US')} - ₦${potentialMaxWin.toLocaleString('en-US')}`;
+            potentialWinDisplay.textContent = `₦${potentialWin.toLocaleString('en-US')}`;
 
             // Show warning if insufficient balance
             if (totalAmount > walletBalance) {

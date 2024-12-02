@@ -12,7 +12,7 @@ class GroupCreateForm(forms.ModelForm):
             "name": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": _("Enter group name"),
+                    "placeholder": _("Enter a unique group name"),
                 }
             ),
             "description": forms.Textarea(
@@ -24,8 +24,8 @@ class GroupCreateForm(forms.ModelForm):
             ),
         }
         labels = {
-            "name": _("Group Name"),
-            "description": _("Description"),
+            "name": _("Group Name:"),
+            "description": _("Description:"),
         }
 
 
@@ -43,7 +43,7 @@ class BundleCreateForm(forms.ModelForm):
             "name": forms.TextInput(
                 attrs={
                     "class": "form-control",
-                    "placeholder": _("Enter bundle name"),
+                    "placeholder": _("Enter a unique bundle name"),
                 }
             ),
             "price": forms.NumberInput(
@@ -72,11 +72,11 @@ class BundleCreateForm(forms.ModelForm):
             ),
         }
         labels = {
-            "name": _("Bundle Name"),
-            "price": _("Bundle Price"),
-            "winning_percentage": _("Winning Percentage"),
-            "min_bundles_per_user": _("Minimum Bundles per User"),
-            "max_bundles_per_user": _("Maximum Bundles per User"),
+            "name": _("Bundle Name:"),
+            "price": _("Bundle Price:"),
+            "winning_percentage": _("Winning Percentage:"),
+            "min_bundles_per_user": _("Minimum Bundles per User:"),
+            "max_bundles_per_user": _("Maximum Bundles per User:"),
         }
 
     def clean(self):
@@ -84,14 +84,18 @@ class BundleCreateForm(forms.ModelForm):
         min_bundles = cleaned_data.get("min_bundles_per_user")
         max_bundles = cleaned_data.get("max_bundles_per_user")
 
-        if min_bundles and max_bundles:
-            if min_bundles > max_bundles:
-                self.add_error(
-                    "min_bundles_per_user",
-                    _(
-                        "Minimum bundles per user cannot exceed the maximum bundles per user."
-                    ),
-                )
+        # Ensure both fields are provided
+        if min_bundles is None or max_bundles is None:
+            raise forms.ValidationError(
+                _("Both minimum and maximum bundles per user are required.")
+            )
+        if min_bundles > max_bundles:
+            self.add_error(
+                "min_bundles_per_user",
+                _(
+                    "Minimum bundles per user cannot exceed the maximum bundles per user."
+                ),
+            )
 
 
 class GroupUpdateForm(forms.ModelForm):
