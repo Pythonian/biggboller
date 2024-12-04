@@ -1,5 +1,5 @@
 {% extends "accounts/base.html" %}
-{% load widget_tweaks form_tags %}
+{% load form_tags %}
 
 {% block title %}Create New Group and Bundle{% endblock %}
 
@@ -18,27 +18,27 @@
                     <div class="row g-2">
                         <h6>Group Information</h6>
                         <div class="mb-2 col-12">
-                            {% render_field group_form.name %}
+                            {% render_form_field group_form.name %}
                         </div>
                         <div class="mb-2 col-12">
-                            {% render_field group_form.description %}
+                            {% render_form_field group_form.description %}
                         </div>
 
                         <h6 class="mt-3">Bundle Information</h6>
                         <div class="mb-2 col-12">
-                            {% render_field bundle_form.name %}
+                            {% render_form_field bundle_form.name %}
                         </div>
                         <div class="mb-2 col-md-6">
-                            {% render_field bundle_form.price %}
+                            {% render_form_field bundle_form.price %}
                         </div>
                         <div class="mb-2 col-md-6">
-                            {% render_field bundle_form.winning_percentage %}
+                            {% render_form_field bundle_form.winning_percentage %}
                         </div>
                         <div class="mb-2 col-md-6">
-                            {% render_field bundle_form.min_bundles_per_user %}
+                            {% render_form_field bundle_form.min_bundles_per_user %}
                         </div>
                         <div class="mb-2 col-md-6">
-                            {% render_field bundle_form.max_bundles_per_user %}
+                            {% render_form_field bundle_form.max_bundles_per_user %}
                         </div>
                     </div>
                     <div class="my-3 d-flex justify-content-between">

@@ -159,7 +159,6 @@ class Deposit(models.Model):
     )
     description = models.CharField(
         max_length=255,
-        blank=True,
     )
     status = models.CharField(
         max_length=1,

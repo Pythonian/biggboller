@@ -411,13 +411,12 @@ def admin_bundles_detail(request, bundle_id):
                             transaction_id=transaction_id,
                         )
 
-                        # TODO: This is no longer needed
                         Payout.objects.get_or_create(
                             user=deposit.user,
                             bundle=bundle,
                             defaults={
                                 "amount": potential_win_amount,
-                                "status": Payout.Status.PENDING,
+                                "status": Payout.Status.APPROVED,
                             },
                         )
 

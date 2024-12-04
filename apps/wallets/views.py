@@ -40,12 +40,18 @@ def wallet_deposit(request):
             # Save deposit ID in session and redirect to confirmation
             request.session["transaction_id"] = paystack_ref
             return redirect("wallet:confirmation")
+        else:
+            messages.warning(
+                request,
+                "An error occured during form submission.",
+            )
     else:
         form = DepositForm()
 
     template = "accounts/bettor/wallets/deposit.html"
     context = {
         "form": form,
+        "wallet_balance": request.user.wallet.balance,
     }
 
     return render(request, template, context)

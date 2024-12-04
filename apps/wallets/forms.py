@@ -7,14 +7,22 @@ class DepositForm(forms.ModelForm):
     amount = forms.DecimalField(
         required=True,
         widget=forms.NumberInput(
-            attrs={"class": "form-control", "placeholder": "Enter amount to deposit"}
+            attrs={
+                "class": "form-control",
+                "placeholder": "Enter amount to deposit",
+                "rows": 4,
+            }
         ),
     )
     description = forms.CharField(
         max_length=255,
-        required=False,
+        required=True,
         widget=forms.Textarea(
-            attrs={"class": "form-control", "placeholder": "Optional description"}
+            attrs={
+                "class": "form-control",
+                "placeholder": "Deposit description",
+                "rows": 4,
+            }
         ),
     )
 
@@ -25,7 +33,7 @@ class DepositForm(forms.ModelForm):
     def clean_amount(self):
         amount = self.cleaned_data.get("amount")
         if amount < Decimal("1000.00"):
-            raise forms.ValidationError("Minimum deposit amount is 1000 Naira.")
+            raise forms.ValidationError("Minimum deposit amount is ₦1,000.")
         return amount
 
 
@@ -46,6 +54,7 @@ class WithdrawalForm(forms.ModelForm):
             attrs={
                 "class": "form-control",
                 "placeholder": "Withdrawal description",
+                "rows": 4,
             }
         ),
     )
