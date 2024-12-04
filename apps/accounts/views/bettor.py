@@ -340,7 +340,7 @@ def bettor_bundles_purchase(request, bundle_id):
                 )
 
             # TODO: change to deposit_id in the Deposit model
-            return redirect("bettor:purchase_successful", id=deposit.id)
+            return redirect("bettor:purchase_successful", deposit_id=deposit.id)
 
         except Exception as e:
             logger.error(f"Error during transaction: {str(e)}", exc_info=True)

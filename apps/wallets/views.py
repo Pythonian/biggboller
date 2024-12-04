@@ -95,7 +95,7 @@ def wallet_invoice(request):
 
     if deposit.status == Deposit.Status.COMPLETED:
         messages.warning(request, "Your wallet deposit has already been processed.")
-        return redirect("bettor:dashboard")
+        return redirect("wallet:invoice")
 
     # Verify the Paystack transaction
     verified, transaction_data = verify_paystack_transaction(reference)

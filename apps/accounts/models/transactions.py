@@ -46,6 +46,11 @@ class Deposit(models.Model):
         null=True,
         verbose_name=_("Payout Amount"),
     )
+    # transaction_id = models.CharField(
+    #     max_length=100,
+    #     unique=True,
+    #     help_text="Unique ID of the related transaction (Deposit, Purchase, etc.)",
+    # )
     status = models.CharField(
         max_length=1,
         choices=Status.choices,

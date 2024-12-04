@@ -8,64 +8,66 @@
 <div class="row justify-content-center">
     <div class="col-md-6 col-xl-4 mb-4">
         <div class="card h-100">
-            <div class="card-header d-flex align-items-center justify-content-between">
-                <div class="card-title mb-0 h5">
-                    Deposit Receipt
-                </div>
+            <div class="card-header text-center bg-light">
+                <h5 class="mb-0">Deposit Receipt</h5>
                 <span
-                    class="badge bg-label{% if deposit.status == 'C' %}success{% elif deposit.status == 'P' %}warning{% else %}danger{% endif %} small">{{ deposit.get_status_display }}</span>
+                    class="badge bg-label{% if deposit.status == 'C' %}success{% elif deposit.status == 'P' %}warning{% else %}danger{% endif %} fs-6 mt-2">
+                    {{ deposit.get_status_display }}
+                </span>
             </div>
             <div class="card-body">
-                <p>
-                    Hey <span class="text-primary">{{ deposit.user.get_full_name }}</span>,
-                    your wallet balance has been credited.
-                </p>
-
-
-                <div class="mt-4">
-                    <div class="text-center">
-                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center text-white">
-                            <i class="fa-solid fa-thumbs-up text-success fa-2x"></i>
-                        </div>
+                <div class="text-center mb-4">
+                    <div class="rounded-circle bg-success d-inline-flex align-items-center justify-content-center p-4">
+                        <i class="fa-solid fa-thumbs-up text-white fa-2x"></i>
                     </div>
-                    <h5 class="text-center mt-2 text-success">Top-up Successful</h5>
+                    <h5 class="mt-3 text-success">Top-up Successful</h5>
                 </div>
 
-                <ul class="bg-transparent border-top-0 border-bottom-0 bg-white d-block p-0 m-0 lh-sm my-3">
-                    <li
-                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
-                        <p class="p-0 m-0 text-muted fs-6">Date</p>
-                        <span>{{ deposit.updated|date:"d M Y, h:i A"|default:"N/A" }}</span>
+                <p class="text-muted text-center">
+                    Hey <span class="text-primary">{{ deposit.user.get_full_name }}</span>, your wallet has been
+                    credited successfully. Below are the transaction details:
+                </p>
+
+                <ul class="bg-transparent list-group border-top-0 border-bottom-0 bg-white d-block p-0 m-0 lh-sm my-3">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Date</span>
+                        <strong>{{ deposit.updated|date:"d M Y, h:i A"|default:"N/A" }}</strong>
                     </li>
-                    <li
-                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
-                        <p class="p-0 m-0 text-muted fs-6">Amount</p>
-                        <span>₦{{ deposit.amount|floatformat:0|intcomma }}</span>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Amount</span>
+                        <strong>₦{{ deposit.amount|floatformat:0|intcomma }}</strong>
                     </li>
-                    <li
-                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
-                        <p class="p-0 m-0 text-muted fs-6">Payment Method</p>
-                        <span>{{ deposit.channel|default:"N/A" }}</span>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Payment Method</span>
+                        <strong>{{ deposit.channel|default:"N/A" }}</strong>
                     </li>
-                    <li
-                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
-                        <p class="p-0 m-0 text-muted fs-6">Ref ID</p>
-                        <span>{{ deposit.paystack_id }}</span>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Reference ID</span>
+                        <strong>{{ deposit.paystack_id }}</strong>
                     </li>
-                    <li
-                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
-                        <p class="p-0 m-0 text-muted fs-6">To</p>
-                        <span>{{ deposit.wallet.user.get_full_name }}</span>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">To</span>
+                        <strong>{{ deposit.wallet.user.get_full_name }}</strong>
                     </li>
-                    <li
-                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base pt-3">
-                        <p class="p-0 m-0 text-muted fs-6">Description</p>
-                        <span>{{ deposit.description|default:"N/A" }}</span>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Description</span>
+                        <strong>{{ deposit.description|default:"N/A" }}</strong>
                     </li>
                 </ul>
+
+                <div class="text-center mt-4">
+                    <button class="btn btn-success btn-lg" onclick="window.print()">
+                        <i class="fa-solid fa-print me-1"></i> Print Receipt
+                    </button>
+                </div>
             </div>
             <div class="card-footer text-center">
-                <a href="{% url 'bettor:dashboard' %}">Return to My Dashboard</a>
+                <a href="{% url 'bettor:dashboard' %}" class="btn btn-link text-muted">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Return to My Dashboard
+                </a>
+                <a href="{% url 'wallet:deposit' %}" class="btn btn-primary">
+                    <i class="fa-solid fa-wallet me-1"></i> Deposit Again
+                </a>
             </div>
         </div>
     </div>

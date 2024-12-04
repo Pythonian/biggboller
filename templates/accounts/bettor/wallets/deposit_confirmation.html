@@ -1,20 +1,67 @@
 {% extends "accounts/base.html" %}
 {% load humanize %}
 
-{% block title %}Confirm Wallet Deposit{% endblock %}
+{% block title %}Confirm Wallet Deposit{% endblock title %}
 
 {% block content %}
+<style>
+    .pin-input {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #ced4da;
+        box-shadow: none;
+    }
+
+    .pin-input:focus {
+        border-color: #198754;
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+    }
+</style>
 <div class="row">
-    <div class="col-xl-6 col-md-6 col-12 mx-auto">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Confirm Your Deposit</h5>
+    <div class="col-xl-4 col-md-6 col-12 mx-md-auto">
+        <div class="card h-100">
+            <div class="card-header text-center">
+                <h5 class="card-title m-0">Confirm Wallet Deposit</h5>
             </div>
             <div class="card-body">
-                <p><strong>Amount:</strong> ₦{{ deposit.amount|floatformat:0|intcomma }}</p>
-                <p><strong>Description:</strong> {{ deposit.description }}</p>
-                <button class="btn btn-success" type="button" onclick="payWithPaystack()">Pay
-                    Now</button>
+                <p class="text-muted text-center mb-4">You're just one step away from completing your wallet deposit.
+                    Review the details below and click "Pay Now" to proceed to Paystack.</p>
+                <div class="d-flex border-primary p-2 px-3 border rounded mb-4">
+                    <div class="w-100">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-primary">Deposit Amount:</span>
+                            <h4 class="mb-0">₦{{ deposit.amount|floatformat:0|intcomma }}</h4>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-primary">Description:</span>
+                            <p class="mb-0 text-end">{{ deposit.description }}</p>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-primary">Reference:</span>
+                            <p class="mb-0 text-end">{{ deposit.paystack_id }}</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="alert alert-warning text-center fw-bold">
+                    Enter your 4-digit transaction PIN below to proceed.
+                </p>
+                <form id="transaction-pin-form">
+                    <div class="d-flex justify-content-center gap-2 mb-4">
+                        <input type="text" maxlength="1"
+                            class="pin-input rounded-3 border border-secondary shadow-none form-control text-center"
+                            required>
+                        <input type="text" maxlength="1" class="pin-input form-control text-center" required>
+                        <input type="text" maxlength="1" class="pin-input form-control text-center" required>
+                        <input type="text" maxlength="1" class="pin-input form-control text-center" required>
+                    </div>
+                </form>
+                <div class="d-grid gap-2 mt-4">
+                    <button class="btn btn-success btn-lg" type="button" onclick="payWithPaystack()">Pay Now</button>
+                    <a class="btn btn-secondary" href="{% url 'wallet:deposit' %}">Go Back</a>
+                </div>
             </div>
         </div>
     </div>
