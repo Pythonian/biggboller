@@ -10,7 +10,11 @@ app_name = "wallet"
 
 urlpatterns = [
     path("deposit/", wallet_deposit, name="deposit"),
-    path("deposit/confirm/", wallet_deposit_confirmation, name="confirmation"),
+    path(
+        "deposit/confirm/<str:reference>/",
+        wallet_deposit_confirmation,
+        name="confirmation",
+    ),
     path("deposit/invoice/", wallet_invoice, name="invoice"),
     path("withdrawal/", wallet_withdrawal, name="withdrawal"),
 ]

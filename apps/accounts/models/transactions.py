@@ -19,6 +19,11 @@ class Deposit(models.Model):
         default=uuid.uuid4,
         editable=False,
     )
+    # deposit_id = models.UUIDField(
+    #     default=uuid.uuid4,
+    #     editable=False,
+    #     unique=True,
+    # )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -47,7 +52,7 @@ class Deposit(models.Model):
         verbose_name=_("Payout Amount"),
     )
     # transaction_id = models.CharField(
-    #     max_length=100,
+    #     max_length=20,
     #     unique=True,
     #     help_text="Unique ID of the related transaction (Deposit, Purchase, etc.)",
     # )

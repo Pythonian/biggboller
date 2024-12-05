@@ -120,3 +120,7 @@ class ResendActivationEmailForm(forms.Form):
         required=True,
         help_text="Enter your email address.",
     )
+
+
+class OnboardingRequestForm(forms.Form):
+    pass

@@ -1,31 +1,35 @@
 from django import forms
+from django.utils.translation import gettext_lazy as _
 from decimal import Decimal
 from .models import Deposit, Withdrawal
 
 
-class DepositForm(forms.ModelForm):
-    amount = forms.DecimalField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={
-                "class": "form-control",
-                "placeholder": "Enter amount to deposit",
-                "rows": 4,
-            }
-        ),
-    )
-    description = forms.CharField(
-        max_length=255,
-        required=True,
-        widget=forms.Textarea(
-            attrs={
-                "class": "form-control",
-                "placeholder": "Deposit description",
-                "rows": 4,
-            }
-        ),
-    )
+class TransactionForm(forms.ModelForm):
+    def add_widget_attrs(self, field_name, attrs):
+        """Add custom attributes to a form field's widget."""
+        field = self.fields[field_name]
+        field.widget.attrs.update(attrs)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.add_widget_attrs(
+            "amount",
+            {
+                "class": "form-control",
+                "placeholder": "Enter amount",
+            },
+        )
+        self.add_widget_attrs(
+            "description",
+            {
+                "class": "form-control",
+                "placeholder": "Enter description",
+                "rows": 4,
+            },
+        )
+
+
+class DepositForm(TransactionForm):
     class Meta:
         model = Deposit
         fields = ["amount", "description"]
@@ -37,28 +41,27 @@ class DepositForm(forms.ModelForm):
         return amount
 
 
-class WithdrawalForm(forms.ModelForm):
-    amount = forms.DecimalField(
-        required=True,
-        widget=forms.NumberInput(
-            attrs={
-                "class": "form-control",
-                "placeholder": "Enter amount to withdraw",
-            }
-        ),
-    )
-    description = forms.CharField(
-        max_length=300,
-        required=True,
-        widget=forms.Textarea(
-            attrs={
-                "class": "form-control",
-                "placeholder": "Withdrawal description",
-                "rows": 4,
-            }
-        ),
-    )
+class WithdrawalForm(TransactionForm):
+    """
+    Form to handle withdrawal requests with enhanced validation.
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.wallet_balance = kwargs.pop("wallet_balance", None)
+        super().__init__(*args, **kwargs)
 
     class Meta:
         model = Withdrawal
         fields = ["amount", "description"]
+
+    def clean_amount(self):
+        amount = self.cleaned_data.get("amount")
+        if amount <= 0:
+            raise forms.ValidationError(
+                _("Withdrawal amount must be greater than zero.")
+            )
+        if self.wallet_balance is not None and amount > self.wallet_balance:
+            raise forms.ValidationError(
+                _("Withdrawal amount exceeds your wallet balance.")
+            )
+        return amount

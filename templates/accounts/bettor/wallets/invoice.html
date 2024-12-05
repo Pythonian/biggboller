@@ -10,10 +10,6 @@
         <div class="card h-100">
             <div class="card-header text-center bg-light">
                 <h5 class="mb-0">Deposit Receipt</h5>
-                <span
-                    class="badge bg-label{% if deposit.status == 'C' %}success{% elif deposit.status == 'P' %}warning{% else %}danger{% endif %} fs-6 mt-2">
-                    {{ deposit.get_status_display }}
-                </span>
             </div>
             <div class="card-body">
                 <div class="text-center mb-4">
@@ -43,7 +39,7 @@
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
                         <span class="text-muted">Reference ID</span>
-                        <strong>{{ deposit.paystack_id }}</strong>
+                        <strong>{{ deposit.reference }}</strong>
                     </li>
                     <li class="list-group-item d-flex justify-content-between">
                         <span class="text-muted">To</span>
@@ -56,17 +52,14 @@
                 </ul>
 
                 <div class="text-center mt-4">
-                    <button class="btn btn-success btn-lg" onclick="window.print()">
-                        <i class="fa-solid fa-print me-1"></i> Print Receipt
-                    </button>
+                    <a href="{% url 'wallet:deposit' %}" class="btn btn-success btn-lg">
+                        <i class="fa-solid fa-wallet me-1"></i> Deposit Again
+                    </a>
                 </div>
             </div>
             <div class="card-footer text-center">
-                <a href="{% url 'bettor:dashboard' %}" class="btn btn-link text-muted">
+                <a href="{% url 'bettor:dashboard' %}" class="btn btn-primary">
                     <i class="fa-solid fa-arrow-left me-1"></i> Return to My Dashboard
-                </a>
-                <a href="{% url 'wallet:deposit' %}" class="btn btn-primary">
-                    <i class="fa-solid fa-wallet me-1"></i> Deposit Again
                 </a>
             </div>
         </div>

@@ -1,0 +1,11 @@
+Dear {{ user.get_full_name }},
+
+We have received your withdrawal request:
+
+Amount: ₦{{ amount }}
+Description: {{ description }}
+Reference: {{ reference }}
+
+Your request is currently pending review. You will be notified once it is processed.
+
+Thank you for using our service!

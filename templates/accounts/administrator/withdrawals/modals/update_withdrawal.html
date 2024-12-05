@@ -1,10 +1,10 @@
 {% load widget_tweaks %}
-<div class="modal fade" id="updateWithdrawal{{ withdrawal.id }}" tabindex="-1">
+<div class="modal fade" id="updateWithdrawal{{ withdrawal.withdrawal_id }}" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form action="{% url 'administrator:process_withdrawal' withdrawal.id %}" method="post">
+            <form action="{% url 'administrator:process_withdrawal' withdrawal.withdrawal_id %}" method="post">
                 {% csrf_token %}
-                <input type="hidden" name="withdrawal_id" value="{{ withdrawal.id }}">
+                <input type="hidden" name="withdrawal_id" value="{{ withdrawal.withdrawal_id }}">
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fa-solid fa-circle-info me-1"></i> Withdrawal Request

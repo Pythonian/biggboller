@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdrawal Request Submitted | Bigg-Boller</title>
+
+    <style type="text/css">
+        body {
+            font-family: 'Public Sans', Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            box-shadow: 0px 0px 14px -4px rgba(0, 0, 0, 0.27);
+            border-radius: 8px;
+        }
+
+        .header,
+        .footer {
+            background-color: #282834;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .content {
+            padding: 30px;
+            text-align: left;
+            color: #555;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .content h3 {
+            color: #0DA487;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .content p {
+            margin: 15px 0;
+        }
+
+        .footer a {
+            color: #ffffff;
+            text-decoration: underline;
+            margin: 0 10px;
+            font-size: 14px;
+        }
+
+        .footer h5 {
+            font-size: 12px;
+            color: #ccc;
+            margin-top: 15px;
+            letter-spacing: 1px;
+        }
+
+        .details ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 15px 0;
+        }
+
+        .details ul li {
+            margin: 5px 0;
+        }
+
+        .details ul li strong {
+            color: #0DA487;
+        }
+    </style>
+</head>
+
+<body>
+    <table class="container" style="width: 100%; margin: 0 auto; border-spacing: 0; padding: 0;">
+        <tr>
+            <td class="header">
+                <h1><a href="https://www.bigg-boller.com/"
+                        style="color: #0DA487; text-decoration: none;">Bigg-Boller</a></h1>
+            </td>
+        </tr>
+        <tr>
+            <td class="content">
+                <h3>Withdrawal Request Submitted</h3>
+                <p>Hi {{ user.get_full_name }},</p>
+                <p>We have received your withdrawal request with the following details:</p>
+                <div class="details">
+                    <ul>
+                        <li><strong>Amount:</strong> ₦{{ amount }}</li>
+                        <li><strong>Description:</strong> {{ description }}</li>
+                        <li><strong>Reference:</strong> {{ reference }}</li>
+                    </ul>
+                </div>
+                <p>Your request is currently pending review. You will be notified once it is processed.</p>
+                <p>Thank you for using {{ site_name }}.</p>
+                <p>Best regards,<br>{{ site_name }} Team</p>
+            </td>
+        </tr>
+        <tr>
+            <td class="footer">
+                <a href="https://www.bigg-boller.com/contact/">Contact Us</a> |
+                <a href="https://www.bigg-boller.com/terms/">Terms of Service</a> |
+                <a href="https://www.bigg-boller.com/privacy/">Privacy Policy</a>
+                <h5>&copy; 2024 Bigg-Boller. All Rights Reserved.</h5>
+            </td>
+        </tr>
+    </table>
+</body>
+
+</html>

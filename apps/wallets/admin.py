@@ -17,7 +17,7 @@ class WalletAdmin(admin.ModelAdmin):
 class DepositAdmin(admin.ModelAdmin):
     list_display = [
         "user",
-        "paystack_id",
+        "reference",
         "amount",
         "status",
         "gateway_response",
@@ -32,7 +32,6 @@ class AuditLogAdmin(admin.ModelAdmin):
         "wallet__user",
         "balance_before",
         "balance_after",
-        "timestamp",
     ]
 
 

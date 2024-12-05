@@ -47,6 +47,7 @@
                         </div>
                         <div class="col-12">
                             {% render_form_field form.description %}
+                            <span class="small" id="remainingCharacters"></span>
                         </div>
                     </div>
                     <div class="d-grid gap-2 text-center mt-3">
@@ -60,3 +61,33 @@
     </div>
 </div>
 {% endblock %}
+
+{% block paystack %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const limit = 50;
+        const descriptionInput = document.getElementById("id_description");
+        const remainingCharactersElement = document.getElementById("remainingCharacters");
+
+        const updateRemainingCharacters = () => {
+            const start = descriptionInput.value.length;
+            const remaining = limit - start;
+
+            let color = "gray";
+            if (start > limit) {
+                return false;
+            } else if (start >= 40) {
+                color = "red";
+            }
+
+            remainingCharactersElement.textContent = `Characters remaining: ${remaining}`;
+            remainingCharactersElement.style.color = color;
+        };
+
+        if (descriptionInput) {
+            descriptionInput.addEventListener("keyup", updateRemainingCharacters);
+        }
+    });
+
+</script>
+{% endblock paystack %}
