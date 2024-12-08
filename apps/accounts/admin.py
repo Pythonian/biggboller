@@ -1,37 +1,37 @@
 from django.contrib import admin
 from apps.accounts.models import (
     Action,
-    Bundle,
-    Group,
+    # Bundle,
+    # Group,
     Ticket,
     Reply,
     Profile,
-    Deposit,
-    Payout,
+    # Deposit,
+    # Payout,
     LoginHistory,
 )
 
 
-@admin.register(Group)
-class GroupAdmin(admin.ModelAdmin):
-    list_display = ("name", "status", "created_at", "updated_at")
-    search_fields = ("name",)
-    list_filter = ("status",)
-    ordering = ("-created_at",)
+# @admin.register(Group)
+# class GroupAdmin(admin.ModelAdmin):
+#     list_display = ("name", "status", "created_at", "updated_at")
+#     search_fields = ("name",)
+#     list_filter = ("status",)
+#     ordering = ("-created_at",)
 
 
-@admin.register(Bundle)
-class BundleAdmin(admin.ModelAdmin):
-    list_display = (
-        "name",
-        "price",
-        "winning_percentage",
-        "created_at",
-        "updated_at",
-    )
-    search_fields = ("group__name",)
-    list_filter = ("group__status",)
-    ordering = ("-created_at",)
+# @admin.register(Bundle)
+# class BundleAdmin(admin.ModelAdmin):
+#     list_display = (
+#         "name",
+#         "price",
+#         "winning_percentage",
+#         "created_at",
+#         "updated_at",
+#     )
+#     search_fields = ("group__name",)
+#     list_filter = ("group__status",)
+#     ordering = ("-created_at",)
 
 
 class TicketReplyAdmin(admin.StackedInline):
@@ -61,14 +61,14 @@ class ActionAdmin(admin.ModelAdmin):
     search_fields = ["verb"]
 
 
-@admin.register(Deposit)
-class DepositAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(Deposit)
+# class DepositAdmin(admin.ModelAdmin):
+#     pass
 
 
-@admin.register(Payout)
-class PayoutAdmin(admin.ModelAdmin):
-    pass
+# @admin.register(Payout)
+# class PayoutAdmin(admin.ModelAdmin):
+#     pass
 
 
 @admin.register(LoginHistory)

@@ -3,14 +3,13 @@ from django.urls import include, path
 from apps.accounts.views import (
     bettor_dashboard,
     bettor_bundles_all,
-    bettor_profile,
     bettor_settings,
     bettor_tickets_closed,
     bettor_tickets_all,
     bettor_tickets_detail,
     bettor_tickets_answered,
     bettor_tickets_pending,
-    bettor_bundles_purchase,
+    # bettor_bundles_purchase,
     bettor_bundles_owned,
     bettor_bundles_detail,
     bettor_purchase_successful,
@@ -29,23 +28,22 @@ app_name = "bettor"
 urlpatterns = [
     path("dashboard/", bettor_dashboard, name="dashboard"),
     path(
-        "bundles/<uuid:bundle_id>/",
+        "bundles/purchase/<uuid:bundle_id>/",
         bettor_bundles_detail,
         name="bundles_detail",
     ),
+    # path(
+    #     "bundles/pur/<uuid:bundle_id>/",
+    #     bettor_bundles_purchase,
+    #     name="bundles_purchase",
+    # ),
     path(
-        "bundles/purchase/<uuid:bundle_id>/",
-        bettor_bundles_purchase,
-        name="bundles_purchase",
-    ),
-    path(
-        "bundles/purchase/<uuid:deposit_id>/successful/",
+        "bundles/purchase/<uuid:purchase_id>/successful/",
         bettor_purchase_successful,
         name="purchase_successful",
     ),
     path("bundles/owned/", bettor_bundles_owned, name="bundles_owned"),
     path("bundles/", bettor_bundles_all, name="bundles_all"),
-    path("profile/", bettor_profile, name="profile"),
     path("settings/", bettor_settings, name="settings"),
     # Tickets
     path(

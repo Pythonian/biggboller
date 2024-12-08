@@ -1,35 +1,34 @@
 {% extends "accounts/base.html" %}
 
-{% block title %}Running Groups{% endblock title %}
+{% block title %}Closed Groups{% endblock title %}
 
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center py-3">
     <h4>
-        <span class="text-muted fw-light">Groups /</span> Running Groups
+        <span class="text-muted fw-light">Groups /</span> Closed Groups
     </h4>
-    <a href="{% url 'administrator:groups_new' %}" class="btn btn-outline-primary">
+    <a href="{% url 'groups:groups_new' %}" class="btn btn-outline-primary">
         <i class="fa-solid fa-plus me-2"></i> Create New
     </a>
 </div>
 
 <div class="row mb-4">
-    {% include 'accounts/administrator/partials/_stats_card.html' with count=running_groups label="Running Groups" icon_class="fa-solid fa-check-circle" color_class="success" %}
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=closed_groups label="Closed Groups" icon_class="fa-solid fa-times-circle" color_class="danger" %}
 </div>
 
 <div class="row">
     <div class="col-12">
         <div class="card">
-            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Running Groups List" %}
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Closed Groups List" %}
             <div class="table-responsive">
                 <table class="table table-lg">
                     <thead>
-                        {% include 'accounts/administrator/groups/partials/_table_head.html' %}
+                        {% include 'groups/partials/_table_head.html' %}
                     </thead>
                     <tbody>
                         {% for group in groups %}
-                        {% include "accounts/administrator/groups/partials/_group_item.html" %}
-                        {% include "accounts/administrator/groups/modals/update_group.html" %}
+                        {% include "groups/partials/_group_item.html" %}
                         {% empty %}
                         <tr>
                             <td colspan="7" class="text-center">No record yet.</td>

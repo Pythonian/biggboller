@@ -26,6 +26,13 @@ urlpatterns = [
         ),
     ),
     path(
+        "administrator/manage/",
+        include(
+            "apps.groups.urls",
+            namespace="groups",
+        ),
+    ),
+    path(
         "auth/",
         include(
             "apps.accounts.urls.auth",

@@ -1,147 +1,94 @@
 {% extends "accounts/base.html" %}
-{% load humanize widget_tweaks %}
+{% load humanize widget_tweaks form_tags %}
 
 {% block title %}{{ bundle.name }}{% endblock title %}
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center py-3">
-    <h4>
-        <span class="text-muted fw-light">Bundle /</span> {{ bundle.name }}
-    </h4>
-</div>
-
-<div class="row mb-4">
-    <div class="col-sm-6 col-lg-3 mb-4">
-        <div class="card card-border-shadow-primary h-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center mb-2 pb-1">
-                    <div class="avatar me-2">
-                        <span class="avatar-initial rounded bg-label-primary">
-                            <i class="fa-solid fa-object-group"></i>
-                        </span>
-                    </div>
-                    <h4 class="ms-1 mb-0">{{ bundle.group.name }}</h4>
-                </div>
-                <p class="mb-1">Bundle group</p>
-                <p class="mb-0">
-                    <span
-                        class="fw-medium me-1 {% if bundle.group.status == 'R' %}text-success{% else %}text-danger{% endif %}">{{ bundle.group.get_status_display }}</span>
-                    <small class="text-muted">Group status</small>
-                </p>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-lg-3 mb-4">
-        <div class="card card-border-shadow-info h-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center mb-2 pb-1">
-                    <div class="avatar me-2">
-                        <span class="avatar-initial rounded bg-label-info">
-                            <i class="fa-solid fa-naira-sign"></i>
-                        </span>
-                    </div>
-                    <h4 class="ms-1 mb-0">{{ bundle.price|floatformat:0|intcomma }}</h4>
-                </div>
-                <p class="mb-1">Bundle price</p>
-                <p class="mb-0">
-                    <span class="fw-medium me-1">{{ bundle.min_bundles_per_user }} -
-                        {{ bundle.max_bundles_per_user }}</span>
-                    <small class="text-muted">Bundles per user</small>
-                </p>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-lg-3 mb-4">
-        <div class="card card-border-shadow-success h-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center mb-2 pb-1">
-                    <div class="avatar me-2">
-                        <span class="avatar-initial rounded bg-label-success">
-                            <i class="fa-solid fa-trophy"></i>
-                        </span>
-                    </div>
-                    <h4 class="ms-1 mb-0">{{ bundle.winning_percentage|floatformat:0 }}%</h4>
-                </div>
-                <p class="mb-1">Winnings Percentage</p>
-                <p class="mb-0">
-                    <span class="fw-medium me-1">x {{ bundle.participants_count }}</span>
-                    <small class="text-muted">Participant{{ bundle.participants_count|pluralize }} </small>
-                </p>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-lg-3 mb-4">
-        <div class="card card-border-shadow-warning h-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center mb-2 pb-1">
-                    <div class="avatar me-2">
-                        <span class="avatar-initial rounded bg-label-warning">
-                            <i
-                                class="fa-solid fa-{% if bundle.status == 'P' %}hourglass-half{% elif bundle.status == 'W' %}check-circle{% else %}ban{% endif %}"></i>
-                        </span>
-                    </div>
-                    <h4 class="ms-1 mb-0">{{ bundle.get_status_display }}</h4>
-                </div>
-                <p class="mb-1">Bundle status</p>
-                <p class="mb-0">
-                    <span class="fw-medium me-1">{{ bundle.updated_at|date:"F j, Y" }}</span>
-                    <small class="text-muted">Last updated</small>
-                </p>
-            </div>
-        </div>
-    </div>
-</div>
-
 {% if not purchased_bundle %}
-<!-- Wallet Balance Display -->
-<div class="mb-2">
-    <label for="wallet-balance" class="form-label">Wallet Balance:</label>
-    <span id="wallet-balance" class="fw-bold fs-5 d-block text-info">
-        ₦{{ wallet_balance|floatformat:0|intcomma }}
-    </span>
-</div>
+<div class="row">
+    <div class="col-xl-4 col-md-6 col-12 mx-md-auto">
+        <div class="card h-100">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="mb-1">Purchase Bundle</h5>
+                        <small class="badge bg-label-primary">{{ bundle.name }}</small>
+                    </div>
 
-<!-- Warning Message -->
-<div id="insufficient-funds-warning" class="text-danger fw-bold d-none">
-    Insufficient wallet balance to purchase this quantity.
-</div>
-
-<div class="card">
-    <div class="card-body">
-        <form action="" method="post">
-            {% csrf_token %}
-            <div class="row g-2">
-                <!-- Hidden fields for price, multipliers, and bundles per user -->
-                <input type="hidden" id="bundle-price" value="{{ bundle.price }}">
-                <input type="hidden" id="winning-percentage" value="{{ bundle.winning_percentage }}">
-                <input type="hidden" id="min-bundles" value="{{ bundle.min_bundles_per_user }}">
-                <input type="hidden" id="max-bundles" value="{{ bundle.max_bundles_per_user }}">
-
-                <div class="mb-2 col-12">
-                    <label for="quantity" class="form-label">Quantity:</label>
-                    <select name="quantity" id="quantity" class="form-control"></select>
-                </div>
-
-                <!-- Display total amount and potential win -->
-                <div class="mb-2 col-md-6">
-                    <label for="total-amount-display">Total Amount:</label>
-                    <span id="total-amount-display" class="fw-bold fs-5 d-block text-success"></span>
-                </div>
-                <div class="mb-2 col-md-6">
-                    <label for="potential-win-display">Potential Returns:</label>
-                    <span id="potential-win-display" class="fw-bold fs-5 d-block text-primary"></span>
+                    <div class="d-flex justify-content-center">
+                        <sup class="h5 pricing-currency mt-3 mb-0 me-1 text-primary">₦</sup>
+                        <h3 class="mb-0 text-primary">{{ bundle.price|floatformat:0|intcomma }}</h3>
+                        <sub class="fs-6 mt-auto mb-3">/bundle</sub>
+                    </div>
                 </div>
             </div>
+            <div class="card-body">
+                <div class="d-flex border-primary p-2 px-3 border rounded mb-4">
+                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                        <div class="me-2">
+                            <p class="mb-0 text-primary">Wallet Balance</p>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <sup class="mt-3 mb-0 me-1">₦</sup>
+                            <h3 class="mb-0" id="wallet-balance">{{ wallet_balance|floatformat:0|intcomma }}</h3>
+                        </div>
+                    </div>
+                </div>
+                {% if not has_sufficient_funds %}
+                <div class="alert alert-danger">
+                    <i class="fa-solid fa-exclamation-circle me-2"></i>
+                    Insufficient wallet balance to purchase this bundle. Please top up your wallet to proceed.
+                </div>
+                <div class="text-center mt-4">
+                    <a href="{% url 'wallet:deposit' %}" class="btn btn-success btn-lg">
+                        <i class="fa-solid fa-wallet me-1"></i> Top-up Wallet
+                    </a>
+                </div>
+                {% else %}
+                <p class="mb-4">Please select the quantity of bundles you want to purchase.</p>
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <!-- Hidden fields for price, multipliers, and bundles per user -->
+                        <input type="hidden" id="bundle-price" value="{{ bundle.price }}">
+                        <input type="hidden" id="winning-percentage" value="{{ bundle.winning_percentage }}">
+                        <input type="hidden" id="min-bundles" value="{{ bundle.min_bundles_per_user }}">
+                        <input type="hidden" id="max-bundles" value="{{ bundle.max_bundles_per_user }}">
 
-            <div class="text-end">
-                <button type="submit" class="btn btn-success" id="proceed-button" disabled>
-                    <i class="fa-solid fa-check-circle me-2"></i> Proceed
-                </button>
+                        <div class="mb-2 col-12">
+                            <div class="d-flex justify-content-between">
+                                <label for="quantity" class="form-label">Quantity:</label>
+                                <span class="small fw-bold">
+                                    {{ bundle.winning_percentage|floatformat:0 }}% Returns
+                                </span>
+                            </div>
+                            <select name="quantity" id="quantity" class="form-control"></select>
+                        </div>
+                        <!-- Display total amount and potential win -->
+                        <div class="mb-2 col-md-6">
+                            <label for="total-amount-display">Total Stake:</label>
+                            <span id="total-amount-display" class="fw-bold fs-5 d-block text-success"></span>
+                        </div>
+                        <div class="mb-2 col-md-6">
+                            <label for="potential-win-display">Potential Returns:</label>
+                            <span id="potential-win-display" class="fw-bold fs-5 d-block text-primary"></span>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 text-center mt-3">
+                        <button type="submit" class="btn btn-success" id="proceed-button" disabled>
+                            <i class="fa-solid fa-check-circle me-2"></i> Confirm Purchase
+                        </button>
+                        <a class="btn btn-secondary" href="{% url 'bettor:dashboard' %}">Back to
+                            Dashboard</a>
+                    </div>
+                </form>
+                {% endif %}
             </div>
-        </form>
+        </div>
     </div>
 </div>
+
 {% else %}
 <div class="alert alert-info">
     <i class="fa-solid fa-info-circle me-2"></i> You have already purchased this bundle.
@@ -156,7 +103,6 @@
         const potentialWinDisplay = document.getElementById('potential-win-display');
         const proceedButton = document.getElementById('proceed-button');
         const walletBalanceDisplay = document.getElementById('wallet-balance');
-        const insufficientFundsWarning = document.getElementById('insufficient-funds-warning');
 
         // Get bundle data from hidden inputs
         const walletBalance = parseFloat(walletBalanceDisplay.textContent.replace(/[₦,]/g, ''));
@@ -191,7 +137,6 @@
             if (!quantity) {
                 totalAmountDisplay.textContent = '';
                 potentialWinDisplay.textContent = '';
-                insufficientFundsWarning.classList.add('d-none');
                 proceedButton.disabled = true;
                 return;
             }
@@ -204,10 +149,8 @@
 
             // Show warning if insufficient balance
             if (totalAmount > walletBalance) {
-                insufficientFundsWarning.classList.remove('d-none');
                 proceedButton.disabled = true;
             } else {
-                insufficientFundsWarning.classList.add('d-none');
                 proceedButton.disabled = false;
             }
         });

@@ -1,10 +1,9 @@
 from celery import shared_task
-from django.conf import settings
 from django.shortcuts import get_object_or_404
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
-from apps.accounts.models import Deposit
+from apps.groups.models import Purchase
 from apps.accounts.utils import send_email_thread
 
 
@@ -62,18 +61,18 @@ def send_success_email(email, amount, balance):
 #     return mail_sent
 
 
-def payment_successful_email(deposit_id):
-    deposit = get_object_or_404(Deposit, id=deposit_id)
+def payment_successful_email(purchase_id):
+    purchase = get_object_or_404(Purchase, purchase_id=purchase_id)
 
     # Prepare the email content
     subject = "Your Bundle Purchase Has Been Completed"
     text_content = render_to_string(
         "accounts/bettor/bundles/email/acknowledgment.txt",
-        {"deposit": deposit},
+        {"purchase": purchase},
     )
     html_content = render_to_string(
         "accounts/bettor/bundles/email/acknowledgment.html",
-        {"deposit": deposit},
+        {"purchase": purchase},
     )
 
     # Send the email asynchronously using threading
@@ -81,8 +80,8 @@ def payment_successful_email(deposit_id):
         subject=subject,
         text_content=text_content,
         html_content=html_content,
-        recipient_email=deposit.user.email,
-        recipient_name=deposit.user.get_full_name(),
+        recipient_email=purchase.user.email,
+        recipient_name=purchase.user.get_full_name(),
     )
 
 

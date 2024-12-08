@@ -9,60 +9,52 @@
 </div>
 
 <div class="row mb-4">
-    {% include 'accounts/administrator/partials/_stats_card.html' with count=total_bundles label="My Bundles" icon_class="fa-solid fa-layer-group" color_class="primary" %}
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=total_purchases label="My Bundles" icon_class="fa-solid fa-layer-group" color_class="primary" %}
 </div>
 
 <div class="row">
-    <div class="col-12">
-        <div class="card">
-            {% include 'accounts/bettor/partials/_card_header.html' with card_header="My Bundles List" %}
+    {% for purchase in purchases %}
+    <div class="col-xl-4 col-sm-6 col-12">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="mb-1">{{ purchase.bundle.name }}</h5>
+                        <small
+                            class="badge bg-label-{% if purchase.bundle.status == 'P' %}primary{% elif purchase.bundle.status == 'W' %}success{% else %}danger{% endif %}"
+                            style="font-size: 10px;">{{ purchase.bundle.get_status_display }}</small>
+                    </div>
 
-            <div class="table-responsive">
-                <table class="table table-lg">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Unit Cost</th>
-                            <th>Quantity</th>
-                            <th>Total Amount</th>
-                            <th>Potential Win</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for deposit in bundles %}
-                        <tr>
-                            <td>{{ deposit.bundle.name }}</td>
-                            <td>₦{{ deposit.bundle.price|floatformat:0|intcomma }}</td>
-                            <td>{{ deposit.quantity }}</td>
-                            <td>₦{{ deposit.amount|floatformat:0|intcomma }}</td>
-                            <td>₦{{ deposit.payout_amount|floatformat:0|intcomma }}</td>
-                            <td>{{ deposit.get_status_display }}</td>
-                            <td>
-                                <div class="d-flex">
-                                    <div class="avatar me-2">
-                                        <a href="{% url 'bettor:bundles_detail' deposit.bundle.bundle_id %}"
-                                            class="avatar-initial rounded bg-label-primary" data-bs-toggle="tooltip"
-                                            data-bs-offset="0,8" data-bs-placement="top"
-                                            data-bs-custom-class="tooltip-primary" title="View Bundle">
-                                            <i class="fa-solid fa-eye"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center">No record yet.</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                    <div class="d-flex justify-content-center">
+                        <sup class="h5 pricing-currency mt-3 mb-0 me-1 text-primary">₦</sup>
+                        <h3 class="mb-0 text-primary">{{ purchase.bundle.price|floatformat:2|intcomma }}</h3>
+                        <sub class="fs-6 mt-auto mb-3">/bundle</sub>
+                    </div>
+                </div>
+                <ul class="g-2 my-4 list-unstyled">
+                    <li class="mb-2"> <i class="fa-solid fa-naira-sign text-primary me-2"></i>
+                        Total Amount: <strong>₦{{ purchase.amount|floatformat:2|intcomma }}</strong>
+                    </li>
+                    <li class="mb-2"><i class="fa-solid fa-star text-primary me-2"></i>
+                        Quantity: <strong>x{{ purchase.quantity }}</strong>
+                    </li>
+                    <li class="mb-2"><i class="fa-solid fa-trophy text-primary me-2"></i>
+                        Potential Returns: <strong>₦{{ purchase.payout_amount|floatformat:2|intcomma }}</strong>
+                    </li>
+                    <li><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>
+                        Purchased On: <strong>{{ purchase.updated|date:"F j, Y" }}</strong>
+                    </li>
+                </ul>
+                <div class="d-grid w-100 mt-4 pt-2">
+                    <a href="{{ purchase.get_absolute_url }}" class="btn btn-success">View Receipt</a>
+                </div>
             </div>
-            {% include "accounts/administrator/partials/_pagination.html" with page_obj=bundles %}
         </div>
     </div>
+    {% empty %}
+    <p>No Bundles Available</p>
+    {% endfor %}
+    {% include "accounts/administrator/partials/_pagination.html" with page_obj=bundles %}
 </div>
 
 {% endblock content %}

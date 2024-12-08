@@ -36,7 +36,7 @@
                     </div>
                 </div>
                 <span>Total Stakes</span>
-                <h3 class="card-title text-nowrap mt-2 mb-0">₦ {{ total_deposits|floatformat:0|intcomma }}</h3>
+                <h3 class="card-title text-nowrap mt-2 mb-0">₦ {{ total_purchases|floatformat:0|intcomma }}</h3>
             </div>
         </div>
     </div>
@@ -68,7 +68,7 @@
                     </div>
                     <h4 class="ms-1 mb-0">{{ total_groups }}</h4>
                 </div>
-                <p class="mb-1"><a href="{% url 'administrator:groups_all' %}" class="stretched-link">Total
+                <p class="mb-1"><a href="{% url 'groups:groups_all' %}" class="stretched-link">Total
                         Group{{ total_groups|pluralize }}</a></p>
                 <p class="mb-0">
                     <span class="fw-medium me-1">{{ running_groups }}</span>
@@ -88,8 +88,7 @@
                     </div>
                     <h4 class="ms-1 mb-0">{{ total_bundles }}</h4>
                 </div>
-                <p class="mb-1"><a href="{% url 'administrator:bundles_all' %}"
-                        class="stretched-link text-success">Total
+                <p class="mb-1"><a href="{% url 'groups:bundles_all' %}" class="stretched-link text-success">Total
                         Bundle{{ total_bundles|pluralize }}</a></p>
                 <p class="mb-0">
                     <span class="fw-medium me-1">{{ pending_bundles }}</span>
@@ -175,8 +174,8 @@
     <!--/ Bundle Performance -->
     {% endif %}
 
-    {% if latest_deposits %}
-    <!-- Deposits -->
+    {% if latest_purchases %}
+    <!-- Purchases -->
     <div class="col-md-6 col-lg-4 mb-4">
         <div class="card h-100">
             <div class="card-header">
@@ -184,21 +183,21 @@
             </div>
             <div class="card-body">
                 <ul class="p-0 m-0">
-                    {% for deposit in latest_deposits %}
+                    {% for purchase in latest_purchases %}
                     <li class="d-flex mb-4 pb-1">
                         <div class="avatar flex-shrink-0 me-3">
                             <span class="avatar-initial rounded-circle bg-label-success">
-                                {{ deposit.user__first_name|make_list|first|title }}
+                                {{ purchase.user__first_name|make_list|first|title }}
                             </span>
                         </div>
                         <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                             <div class="me-2">
-                                <small class="text-muted d-block mb-1">{{ deposit.user__first_name }}
-                                    {{ deposit.user__last_name }}</small>
-                                <h6 class="mb-0">{{ deposit.paystack_id }}</h6>
+                                <small class="text-muted d-block mb-1">{{ purchase.user__first_name }}
+                                    {{ purchase.user__last_name }}</small>
+                                <h6 class="mb-0">{{ purchase.reference }}</h6>
                             </div>
                             <div class="user-progress d-flex align-items-center gap-1">
-                                <h6 class="mb-0">₦{{ deposit.amount|floatformat:0|intcomma }}</h6>
+                                <h6 class="mb-0">₦{{ purchase.amount|floatformat:0|intcomma }}</h6>
                             </div>
                         </div>
                     </li>

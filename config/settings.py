@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "apps.accounts.apps.AccountsConfig",
     "apps.core.apps.CoreConfig",
     "apps.wallets.apps.WalletsConfig",
+    "apps.groups.apps.GroupsConfig",
     "widget_tweaks",
     "paystack.frameworks.django",
 ]

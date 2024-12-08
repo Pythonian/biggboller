@@ -91,6 +91,24 @@
     <script>
         const toastElList = document.querySelectorAll('.toast')
         const toastList = [...toastElList].map(toastEl => new bootstrap.Toast(toastEl, option))
+
+        // Disable the submit button if no changes has been made to the form input
+        const form = document.querySelectorAll("input, textarea");
+        for (const data of form) {
+            data.saved = data.value;
+        }
+        (btnEnabled = function () {
+            var btn = true;
+            for (const data of form) {
+                if (data.saved !== data.value) {
+                    btn = false;
+                    break;
+                }
+            }
+            $("#updateProfile").prop("disabled", btn);
+        })();
+        document.oninput = btnEnabled // Call
+
     </script>
 
 

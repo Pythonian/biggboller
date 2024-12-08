@@ -1,0 +1,108 @@
+{% extends "accounts/base.html" %}
+{% load humanize %}
+
+{% block title %}{{ bundle.name }} | Bundle{% endblock title %}
+
+{% block content %}
+
+<div class="py-3">
+    <h4><span class="text-muted fw-light">Bundle /</span> {{ bundle.name }}</h4>
+</div>
+
+<div class="row">
+    <div class="col-xl-4 col-lg-5 col-md-5">
+        <!-- Bundle Card -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="mb-1">{{ bundle.name }}</h5>
+                        <small
+                            class="badge bg-label-{% if bundle.status == 'P' %}primary{% elif bundle.status == 'W' %}success{% else %}danger{% endif %}"
+                            style="font-size: 10px;">{{ bundle.get_status_display }}</small>
+                    </div>
+
+                    <div class="d-flex justify-content-center">
+                        <sup class="h5 pricing-currency mt-3 mb-0 me-1 text-primary">₦</sup>
+                        <h3 class="mb-0 text-primary">{{ bundle.price|floatformat:0|intcomma }}</h3>
+                        <sub class="fs-6 mt-auto mb-3">/bundle</sub>
+                    </div>
+                </div>
+                <ul class="g-2 my-4 list-unstyled">
+                    <li class="mb-2"> <i class="fa-solid fa-star text-primary me-2"></i>
+                        {{ bundle.min_bundles_per_user }} -
+                        {{ bundle.max_bundles_per_user }} Bundles per user
+                    </li>
+                    <li class="mb-2"><i class="fa-solid fa-users text-primary me-2"></i>
+                        x{{ bundle.participants_count }}
+                        Participant{{ bundle.participants_count|pluralize }}
+                    </li>
+                    <li class="mb-2"><i class="fa-solid fa-trophy text-primary me-2"></i>
+                        {{ bundle.winning_percentage|floatformat:0 }}% Winnings Rate
+                    </li>
+                    <li><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>
+                        {{ bundle.updated|date:"F j, Y" }}
+                    </li>
+                </ul>
+                {% if not bundle.group.status == 'C' %}
+                {% if bundle.status == 'P' %}
+                <div class="d-grid gap-2 w-100 mt-4 pt-2">
+                    <a href="javascript:;" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#updateBundleStatus"><i class="fa-solid fa-pen me-2"></i> Update Bundle</a>
+                    <a href="{{ bundle.group.get_absolute_url }}" class="btn btn-secondary"><i
+                            class="fa-solid fa-object-group me-2"></i> View Group</a>
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-8 col-lg-7 col-md-7">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    {% include 'accounts/administrator/partials/_card_header.html' with card_header="Bundle Participants List" %}
+
+                    <div class="table-responsive">
+                        <table class="table table-lg">
+                            <thead>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Stake</th>
+                                        <th>Potential Win</th>
+                                        <th>Date Purchased</th>
+                                        <th>Reference ID</th>
+                                    </tr>
+                                </thead>
+                            </thead>
+                            <tbody>
+                                {% for purchase in approved_purchases %}
+                                <tr>
+                                    <td>{{ purchase.user.get_full_name }}</td>
+                                    <td>
+                                        ₦{{ purchase.amount|floatformat:2|intcomma }}
+                                    </td>
+                                    <td>₦{{ purchase.payout_amount|floatformat:2|intcomma }}</td>
+                                    <td>{{ purchase.created|date:"M d, Y" }}</td>
+                                    <td>{{ purchase.reference }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No record yet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% include "accounts/administrator/partials/_pagination.html" with page_obj=bundles %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "bundles/modals/update_bundle_status.html" %}
+
+{% endblock content %}

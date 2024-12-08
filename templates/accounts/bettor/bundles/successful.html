@@ -12,71 +12,58 @@
                     Purchase Receipt
                 </div>
                 <span class="badge bg-label-success small">
-                    {{ deposit.get_status_display }}
+                    {{ purchase.get_status_display }}
                 </span>
             </div>
             <div class="card-body">
                 <p>
                     Thank you,
-                    <span class="text-primary">{{ deposit.user.get_full_name }}</span>.
+                    <span class="text-primary">{{ purchase.user.get_full_name }}</span>.
                     Your bundle purchase is successful.
                 </p>
-
-
-                <div class="mt-4">
-                    <div class="text-center">
-                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center text-white">
-                            <i class="fa-solid fa-thumbs-up text-success fa-2x"></i>
-                        </div>
-                    </div>
-                    <h5 class="text-center mt-2 text-success">Transaction Successful</h5>
-                </div>
 
                 <ul class="bg-transparent border-top-0 border-bottom-0 bg-white d-block p-0 m-0 lh-sm my-3">
                     <li
                         class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
                         <p class="p-0 m-0 text-muted fs-6">Date</p>
-                        <span>{{ deposit.created }}</span>
+                        <span class="fw-bold">{{ purchase.created }}</span>
                     </li>
                     <li
                         class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
                         <p class="p-0 m-0 text-muted fs-6">Bundle</p>
-                        <span>{{ deposit.bundle.name }}</span>
+                        <span class="fw-bold">{{ purchase.bundle.name }}</span>
                     </li>
                     <li
                         class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
                         <p class="p-0 m-0 text-muted fs-6">Price</p>
-                        <span>₦{{ deposit.bundle.price|floatformat:0|intcomma }}</span>
+                        <span class="fw-bold">₦{{ purchase.bundle.price|floatformat:2|intcomma }}</span>
                     </li>
                     <li
                         class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
                         <p class="p-0 m-0 text-muted fs-6">Stake</p>
-                        <span>₦{{ deposit.amount|floatformat:0|intcomma }}</span>
+                        <span class="fw-bold">₦{{ purchase.amount|floatformat:2|intcomma }}</span>
                     </li>
                     <li
                         class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
                         <p class="p-0 m-0 text-muted fs-6">Quantity</p>
-                        <span>{{ deposit.quantity }} bundles</span>
+                        <span class="fw-bold">{{ purchase.quantity }} bundles</span>
                     </li>
                     <li
                         class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
-                        <p class="p-0 m-0 text-muted fs-6">Ref ID</p>
-                        <span>{{ deposit.id }}</span>
-                    </li>
-                    <li
-                        class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
-                        <p class="p-0 m-0 text-muted fs-6">Potential Wins</p>
-                        <span>₦{{ deposit.amount|floatformat:0|intcomma }}</span>
+                        <p class="p-0 m-0 text-muted fs-6">Reference</p>
+                        <span class="fw-bold">{{ purchase.reference }}</span>
                     </li>
                     <li
                         class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base pt-3">
-                        <p class="p-0 m-0 text-muted fs-6">Description</p>
-                        <span>For the weekend flex</span>
+                        <p class="p-0 m-0 text-muted fs-6">Potential Return</p>
+                        <span class="fw-bold">₦{{ purchase.amount|floatformat:2|intcomma }}</span>
                     </li>
                 </ul>
             </div>
             <div class="card-footer text-center">
-                <a href="{% url 'bettor:bundles_owned' %}">Return to My Bundles</a>
+                <a href="{% url 'bettor:bundles_owned' %}" class="btn btn-primary btn-lg">
+                    <i class="fa-solid fa-layer-group me-1"></i> Return to My Bundles
+                </a>
             </div>
         </div>
     </div>

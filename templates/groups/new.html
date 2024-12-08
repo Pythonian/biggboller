@@ -17,27 +17,28 @@
 
                     <div class="row g-2">
                         <h6>Group Information</h6>
-                        <div class="mb-2 col-12">
+                        <div class="col-12">
                             {% render_form_field group_form.name %}
                         </div>
-                        <div class="mb-2 col-12">
+                        <div class="col-12">
                             {% render_form_field group_form.description %}
+                            <span class="small" id="remainingCharacters"></span>
                         </div>
 
-                        <h6 class="mt-3">Bundle Information</h6>
-                        <div class="mb-2 col-12">
+                        <h6 class="mt-4 mb-1">Bundle Information</h6>
+                        <div class="col-12">
                             {% render_form_field bundle_form.name %}
                         </div>
-                        <div class="mb-2 col-md-6">
+                        <div class="col-md-6">
                             {% render_form_field bundle_form.price %}
                         </div>
-                        <div class="mb-2 col-md-6">
+                        <div class="col-md-6">
                             {% render_form_field bundle_form.winning_percentage %}
                         </div>
-                        <div class="mb-2 col-md-6">
+                        <div class="col-md-6">
                             {% render_form_field bundle_form.min_bundles_per_user %}
                         </div>
-                        <div class="mb-2 col-md-6">
+                        <div class="col-md-6">
                             {% render_form_field bundle_form.max_bundles_per_user %}
                         </div>
                     </div>
@@ -45,7 +46,7 @@
                         <button class="btn btn-success" type="submit">
                             <i class="fa-solid fa-check-circle me-2"></i> Create Group
                         </button>
-                        <a href="{% url 'administrator:groups_all' %}" class="btn btn-label-secondary">Cancel</a>
+                        <a href="{% url 'groups:groups_all' %}" class="btn btn-label-secondary">Cancel</a>
                     </div>
                 </form>
             </div>
@@ -54,3 +55,33 @@
 </div>
 
 {% endblock content %}
+
+{% block paystack %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const limit = 140;
+        const descriptionInput = document.getElementById("id_group-description");
+        const remainingCharactersElement = document.getElementById("remainingCharacters");
+
+        const updateRemainingCharacters = () => {
+            const start = descriptionInput.value.length;
+            const remaining = limit - start;
+
+            let color = "gray";
+            if (start > limit) {
+                return false;
+            } else if (start >= 130) {
+                color = "red";
+            }
+
+            remainingCharactersElement.textContent = `Characters remaining: ${remaining}`;
+            remainingCharactersElement.style.color = color;
+        };
+
+        if (descriptionInput) {
+            descriptionInput.addEventListener("keyup", updateRemainingCharacters);
+        }
+    });
+
+</script>
+{% endblock %}

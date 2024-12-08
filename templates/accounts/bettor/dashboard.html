@@ -4,7 +4,185 @@
 {% block title %}My Dashboard{% endblock title %}
 
 {% block content %}
+<div class="row">
+    <div class="col-xl-4 col-lg-5 col-md-5 order-1 order-md-0">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class=" d-flex align-items-center flex-column">
+                    <div class="flex-shrink-0 my-4">
+                        <div class="avatar avatar-xl">
+                            <span class="avatar-initial rounded-circle bg-label-primary">
+                                {{ bettor.profile.user.get_full_name|make_list|first|title }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="user-info text-center">
+                        <h4 class="mb-2">{{ bettor.profile.user.get_full_name }}</h4>
+                        <span class="badge bg-label-secondary">Bettor</span>
+                    </div>
+                    <div class="d-flex justify-content-around flex-wrap mt-4 py-3 gap-5">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar">
+                                <div class="avatar-initial rounded bg-label-primary"><i
+                                        class='fa-solid fa-naira-sign'></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">{{ total_purchases|floatformat:0|intcomma }}</h5>
+                                <span>Stakes</span>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="avatar">
+                                <div class="avatar-initial rounded bg-label-primary"><i
+                                        class='fa-solid fa-naira-sign'></i>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 class="mb-0">{{ total_payouts|floatformat:0|intcomma }}</h5>
+                                <span>Payouts</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="info-container">
+                    <small class="d-block pt-4 border-top fw-normal text-uppercase text-muted my-3">DETAILS</small>
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Username:</span>
+                            <span>{{ bettor.username }}</span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Email:</span>
+                            <span>{{ bettor.email }}</span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Status:</span>
+                            <span
+                                class="badge bg-label-{% if bettor.profile.is_banned %}danger{% else %}{% if bettor.profile.email_confirmed %}success{% else %}info{% endif %}{% endif %}">
+                                {% if bettor.profile.is_banned %}Banned{% elif bettor.profile.email_confirmed %}Active{% else %}Unverified{% endif %}
+                            </span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Contact:</span>
+                            <span>{{ bettor.profile.phone_number }}</span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="fw-medium me-2">Joined:</span>
+                            <span>{{ bettor.date_joined }}</span>
+                        </li>
+                    </ul>
+                    <div class="d-flex justify-content-center pt-3">
+                        <a href="{% url 'bettor:settings' %}" class="btn btn-primary me-3">Edit Account</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="d-flex align-items-end row">
+                        <div class="col-sm-7">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">Welcome, {{ request.user.first_name }}!
+                                </h5>
+                                <p class="mb-4">Check your dashboard for some new updates today.</p>
+                                <a href="{% url 'wallet:deposit' %}" class="btn btn-success">
+                                    <i class="fa-solid fa-wallet me-2"></i> Top-up
+                                </a>
+                                <a href="{% url 'wallet:withdrawal' %}" class="btn btn-primary">
+                                    <i class="fa-solid fa-money-bill-transfer me-2"></i> Withdraw
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-sm-5 text-center text-primary">
+                            <div class="card-body pb-0 px-0 px-md-4">
+                                <i class="fas fa-user fa-10x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row text-nowrap">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="card-icon">
+                                <div class="avatar">
+                                    <div class="avatar-initial rounded bg-label-primary"><i
+                                            class='fa-solid fa-naira-sign'></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <a href="{# url 'bettor:transaction_history' #}" class="text-primary">Transaction
+                                    History</a>
+                            </div>
+                        </div>
+
+                        <div class="card-info">
+                            <h4 class="card-title mb-3">Wallet Balance</h4>
+                            <div class="d-flex align-items-end mb-1 gap-1">
+                                <h4 class="text-primary mb-1">₦ {{ wallet_balance|floatformat:0|intcomma }}</h4>
+                            </div>
+                            <p class=" mb-0">{{ total_pending_withdrawals }} <span class="text-muted">Pending
+                                    Withdrawals</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="card-icon">
+                                <div class="avatar">
+                                    <div class="avatar-initial rounded bg-label-success"><i
+                                            class='fa-solid fa-layer-group'></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <a href="{% url 'bettor:bundles_owned' %}" class="text-primary">Bundles Owned</a>
+                            </div>
+                        </div>
+                        <div class="card-info">
+                            <h4 class="card-title mb-3">Bundles Purchased</h4>
+                            <div class="d-flex align-items-end mb-1 gap-1">
+                                <h4 class="text-primary mb-1">₦ {{ total_purchases|floatformat:2|intcomma }}</h4>
+                            </div>
+                            <p class=" mb-0">{{ pending_bundles }} <span class="text-muted">Pending
+                                    Bundle{{ pending_bundles|pluralize }}</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title m-0 me-2">My Activity Timeline</h5>
+            </div>
+            <div class="card-body">
+                <ul class="timeline">
+                    {% for action in actions %}
+                    {% include "accounts/partials/_timeline_item.html" %}
+                    {% endfor %}
+                    <li class="timeline-end-indicator">
+                        <i class="fas fa-check-circle"></i>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
 <div class="d-flex justify-content-between align-items-center py-3">
     <h4>Dashboard</h4>
     <div>
@@ -178,5 +356,3 @@
         </div>
     </div>
 </div>
-
-{% endblock content %}

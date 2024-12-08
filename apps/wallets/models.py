@@ -1,7 +1,6 @@
 from decimal import Decimal
 import uuid
 from django.conf import settings
-from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.db.models import F
 from django.utils.translation import gettext_lazy as _
@@ -189,6 +188,8 @@ class Deposit(TimeStampedModel):
     description = models.CharField(
         _("Description"),
         max_length=50,
+        blank=True,
+        default="",
         validators=[MinLengthValidator(5), MaxLengthValidator(50)],
         help_text=_("Description of the Wallet Deposit"),
     )

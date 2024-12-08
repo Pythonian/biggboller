@@ -8,6 +8,7 @@ from django.contrib.auth import logout
 from apps.accounts.forms import BundlePurchaseForm
 from django.template.loader import render_to_string
 from django.db.models import Sum
+from django.utils.crypto import get_random_string
 
 from apps.accounts.forms import (
     UserUpdateForm,
@@ -16,16 +17,17 @@ from apps.accounts.forms import (
     TicketReplyForm,
 )
 from apps.accounts.models import (
-    Bundle,
-    Deposit,
+    # Bundle,
+    # Group,
+    # Deposit,
     Action,
     Ticket,
-    Group,
-    Payout,
+    # Payout,
 )
+from apps.groups.models import Bundle, Group, Purchase, Payout
 from apps.accounts.utils import create_action, send_email_thread
 from apps.core.utils import mk_paginator
-from apps.wallets.models import Wallet
+from apps.wallets.models import Wallet, Withdrawal
 import logging
 
 logger = logging.getLogger(__name__)
@@ -35,25 +37,34 @@ PAGINATION_COUNT = 10
 @login_required
 def bettor_dashboard(request):
     bundles = (
-        Deposit.objects.filter(user=request.user)
+        Payout.objects.filter(user=request.user)
         .select_related("bundle", "bundle__group")
         .order_by("-created")
     )
+    pending_bundles = Bundle.objects.filter(
+        participants=request.user,
+        status=Bundle.Status.PENDING,
+    ).count()
     total_bundles = bundles.count()
     actions = Action.objects.filter(user=request.user)
     total_tickets = Ticket.objects.filter(user=request.user).count()
 
-    # Calculate the total of all approved deposits
-    total_deposits = Deposit.objects.filter(
+    total_pending_withdrawals = Withdrawal.objects.filter(
         user=request.user,
-        status=Deposit.Status.APPROVED,
-    ).aggregate(total_amount=Sum("amount")).get("total_amount") or Decimal(0.00)
+        status=Withdrawal.Status.PENDING,
+    ).count()
 
-    # Calculate the total of all approved payouts
+    # Calculate the total of all bundle purchases
+    total_purchases = Purchase.objects.filter(
+        user=request.user,
+        status=Purchase.Status.APPROVED,
+    ).aggregate(total_amount=Sum("amount")).get("total_amount") or Decimal("0.00")
+
+    # Calculate the total of all winning payouts
     total_payouts = Payout.objects.filter(
         user=request.user,
         status=Payout.Status.APPROVED,
-    ).aggregate(total_amount=Sum("amount")).get("total_amount") or Decimal(0.00)
+    ).aggregate(total_amount=Sum("amount")).get("total_amount") or Decimal("0.00")
 
     # Calculate the total of all approved/sent withdrawals
 
@@ -63,23 +74,12 @@ def bettor_dashboard(request):
         "total_bundles": total_bundles,
         "actions": actions,
         "total_tickets": total_tickets,
-        "total_deposits": total_deposits,
+        "total_purchases": total_purchases,
         "total_payouts": total_payouts,
         "wallet_balance": request.user.wallet.balance,
-    }
-
-    return render(request, template, context)
-
-
-@login_required
-def bettor_profile(request):
-    bettor = request.user
-    actions = Action.objects.filter(user=bettor)
-
-    template = "accounts/bettor/profile.html"
-    context = {
-        "bettor": bettor,
-        "actions": actions,
+        "bettor": request.user,
+        "total_pending_withdrawals": total_pending_withdrawals,
+        "pending_bundles": pending_bundles,
     }
 
     return render(request, template, context)
@@ -110,7 +110,7 @@ def bettor_settings(request):
                 "updated their profile information successfully.",
                 user.profile,
             )
-            return redirect("bettor:profile")
+            return redirect("bettor:settings")
     else:
         user_form = UserUpdateForm(instance=user)
         profile_form = ProfileUpdateForm(instance=profile)
@@ -155,23 +155,17 @@ def bettor_deactivate(request):
 
 @login_required
 def bettor_bundles_owned(request):
-    assigned_groups = request.user.bet_groups.all()
-    bundles = (
-        Deposit.objects.filter(
-            user=request.user,
-            bundle__group__in=assigned_groups,
-        )
-        .select_related("bundle", "bundle__group")
-        .order_by("-created")
+    purchases = Purchase.objects.filter(
+        user=request.user,
+        status=Purchase.Status.APPROVED,
     )
-    total_bundles = bundles.count()
-
-    bundles = mk_paginator(request, bundles, PAGINATION_COUNT)
+    total_purchases = purchases.count()
+    purchases = mk_paginator(request, purchases, PAGINATION_COUNT)
 
     template = "accounts/bettor/bundles/owned.html"
     context = {
-        "bundles": bundles,
-        "total_bundles": total_bundles,
+        "purchases": purchases,
+        "total_purchases": total_purchases,
     }
 
     return render(request, template, context)
@@ -189,12 +183,12 @@ def bettor_bundles_all(request):
         group__status=Group.Status.RUNNING,
     )
 
-    # Get bundles where the user has an approved deposit
-    approved_bundles = Deposit.objects.filter(
-        user=request.user, status=Deposit.Status.APPROVED
+    # Get bundles where the user has an approved purchase
+    approved_bundles = Purchase.objects.filter(
+        user=request.user, status=Purchase.Status.APPROVED
     ).values_list("bundle_id", flat=True)
 
-    # Exclude bundles the user already has an approved deposit for
+    # Exclude bundles the user already has an approved purchase for
     bundles = bundles.exclude(id__in=approved_bundles)
 
     pending_bundles = bundles.count()
@@ -211,17 +205,68 @@ def bettor_bundles_all(request):
     return render(request, template, context)
 
 
+# @login_required
+# def bettor_bundles_detail(request, bundle_id):
+#     bundle = get_object_or_404(Bundle, bundle_id=bundle_id)
+#     wallet = get_object_or_404(Wallet, user=request.user)
+
+#     # Check if the user has already purchased this bundle
+#     purchased_bundle = Purchase.objects.filter(
+#         user=request.user,
+#         bundle=bundle,
+#         status=Purchase.Status.APPROVED,
+#     ).exists()
+
+#     # Calculate the minimum required balance
+#     min_required_balance = Decimal(bundle.price) * Decimal(bundle.min_bundles_per_user)
+#     has_sufficient_funds = wallet.balance >= min_required_balance
+
+#     if request.method == "POST":
+#         form = BundlePurchaseForm(request.POST, bundle=bundle)
+#         if form.is_valid():
+#             quantity = int(form.cleaned_data["quantity"])
+#             total_amount = Decimal(bundle.price) * Decimal(quantity)
+
+#             # Store quantity in session for later use
+#             request.session["purchase_details"] = {
+#                 "quantity": quantity,
+#                 "total_amount": str(total_amount),
+#             }
+#             return redirect("bettor:bundles_purchase", bundle_id=bundle.bundle_id)
+#         else:
+#             messages.error(
+#                 request, "An error occurred while submitting the form. Try again."
+#             )
+#     else:
+#         form = BundlePurchaseForm(bundle=bundle)
+
+#     template = "accounts/bettor/bundles/detail.html"
+#     context = {
+#         "bundle": bundle,
+#         "form": form,
+#         "wallet_balance": wallet.balance,
+#         "purchased_bundle": purchased_bundle,
+#         "has_sufficient_funds": has_sufficient_funds,
+#     }
+
+#     return render(request, template, context)
+
+
 @login_required
 def bettor_bundles_detail(request, bundle_id):
     bundle = get_object_or_404(Bundle, bundle_id=bundle_id)
     wallet = get_object_or_404(Wallet, user=request.user)
 
     # Check if the user has already purchased this bundle
-    purchased_bundle = Deposit.objects.filter(
+    purchased_bundle = Purchase.objects.filter(
         user=request.user,
         bundle=bundle,
-        status=Deposit.Status.APPROVED,
+        status=Purchase.Status.APPROVED,
     ).exists()
+
+    # Calculate the minimum required balance
+    min_required_balance = Decimal(bundle.price) * Decimal(bundle.min_bundles_per_user)
+    has_sufficient_funds = wallet.balance >= min_required_balance
 
     if request.method == "POST":
         form = BundlePurchaseForm(request.POST, bundle=bundle)
@@ -229,12 +274,79 @@ def bettor_bundles_detail(request, bundle_id):
             quantity = int(form.cleaned_data["quantity"])
             total_amount = Decimal(bundle.price) * Decimal(quantity)
 
-            # Store quantity in session for later use
-            request.session["purchase_details"] = {
-                "quantity": quantity,
-                "total_amount": str(total_amount),
-            }
-            return redirect("bettor:bundles_purchase", bundle_id=bundle.bundle_id)
+            if wallet.balance < total_amount:
+                messages.error(
+                    request,
+                    "Insufficient wallet balance. Please deposit funds to proceed.",
+                )
+                return redirect("bettor:wallet_deposit")
+
+            try:
+                with transaction.atomic():
+                    # Deduct amount from wallet
+                    wallet.balance -= total_amount
+                    wallet.save()
+
+                    # Calculate the potential win (payout amount)
+                    payout_amount = total_amount * (bundle.winning_percentage / 100)
+
+                    # Create a new purchase
+                    purchase = Purchase.objects.create(
+                        user=request.user,
+                        bundle=bundle,
+                        quantity=quantity,
+                        amount=total_amount,
+                        payout_amount=payout_amount,
+                        status=Purchase.Status.APPROVED,
+                        reference=get_random_string(length=12).upper(),
+                    )
+
+                    # Add user as a participant
+                    bundle.participants.add(request.user)
+
+                    # Send confirmation email
+                    email_context = {
+                        "user": request.user,
+                        "bundle": bundle,
+                        "quantity": quantity,
+                        "total_amount": total_amount,
+                    }
+                    subject = f"Bundle Purchase Confirmation - {bundle.name}"
+                    html_content = render_to_string(
+                        "accounts/bettor/bundles/email/acknowledgment.html",
+                        email_context,
+                    )
+                    text_content = render_to_string(
+                        "accounts/bettor/bundles/email/acknowledgment.txt",
+                        email_context,
+                    )
+                    send_email_thread(
+                        subject=subject,
+                        text_content=text_content,
+                        html_content=html_content,
+                        recipient_email=request.user.email,
+                        recipient_name=request.user.get_full_name(),
+                    )
+
+                    create_action(
+                        request.user,
+                        "Bundle Purchase",
+                        f"purchased the bundle {bundle.name} for ₦{total_amount}.",
+                        target=request.user.profile,
+                    )
+
+                return redirect(
+                    "bettor:purchase_successful",
+                    purchase_id=purchase.purchase_id,
+                )
+
+            except Exception as e:
+                logger.error(f"Error during transaction: {str(e)}", exc_info=True)
+                messages.error(
+                    request,
+                    "An error occurred while processing your transaction. Try again.",
+                )
+
         else:
             messages.error(
                 request, "An error occurred while submitting the form. Try again."
@@ -248,131 +360,25 @@ def bettor_bundles_detail(request, bundle_id):
         "form": form,
         "wallet_balance": wallet.balance,
         "purchased_bundle": purchased_bundle,
+        "has_sufficient_funds": has_sufficient_funds,
     }
 
     return render(request, template, context)
 
 
 @login_required
-def bettor_bundles_purchase(request, bundle_id):
-    bundle = get_object_or_404(Bundle, bundle_id=bundle_id)
-    wallet = get_object_or_404(Wallet, user=request.user)
-
-    # Retrieve purchase details from session
-    purchase_details = request.session.get("purchase_details")
-    if not purchase_details:
-        messages.error(request, "No purchase details found. Please start over.")
-        return redirect("bettor:bundles_detail", bundle_id=bundle.bundle_id)
-
-    quantity = purchase_details["quantity"]
-    total_amount = Decimal(purchase_details["total_amount"])
-
-    if request.method == "POST":
-        # Ensure sufficient wallet balance
-        if wallet.balance < total_amount:
-            messages.error(
-                request,
-                "Insufficient wallet balance. Please deposit funds to proceed.",
-            )
-            return redirect("bettor:bundles_detail", bundle_id=bundle_id)
-
-        try:
-            with transaction.atomic():
-                # Deduct amount from wallet
-                wallet.balance -= total_amount
-                wallet.save()
-
-                # Calculate the potential win (payout amount)
-                payout_amount = total_amount * (bundle.winning_percentage / 100)
-
-                # Create or update a pending deposit
-                deposit, created = Deposit.objects.get_or_create(
-                    user=request.user,
-                    bundle=bundle,
-                    status=Deposit.Status.PENDING,
-                    defaults={
-                        "quantity": quantity,
-                        "amount": total_amount,
-                        "payout_amount": payout_amount,
-                    },
-                )
-                if not created:
-                    deposit.quantity = quantity
-                    deposit.amount = total_amount
-                    deposit.payout_amount = payout_amount
-
-                # Approve the deposit
-                deposit.status = Deposit.Status.APPROVED
-                deposit.save()
-
-                # Add user as a participant
-                bundle.participants.add(request.user)
-
-                # Send confirmation email
-                email_context = {
-                    "user": request.user,
-                    "bundle": bundle,
-                    "quantity": quantity,
-                    "total_amount": total_amount,
-                }
-                subject = f"Bundle Purchase Confirmation - {bundle.name}"
-                html_content = render_to_string(
-                    "accounts/bettor/bundles/email/acknowledgment.html",
-                    email_context,
-                )
-                text_content = render_to_string(
-                    "accounts/bettor/bundles/email/acknowledgment.txt",
-                    email_context,
-                )
-                send_email_thread(
-                    subject=subject,
-                    text_content=text_content,
-                    html_content=html_content,
-                    recipient_email=request.user.email,
-                    recipient_name=request.user.get_full_name(),
-                )
-
-                create_action(
-                    request.user,
-                    "Bundle Purchase",
-                    f"purchased the bundle {bundle.name} for #{total_amount}.",
-                    target=request.user.profile,
-                )
-
-            # TODO: change to deposit_id in the Deposit model
-            return redirect("bettor:purchase_successful", deposit_id=deposit.id)
-
-        except Exception as e:
-            logger.error(f"Error during transaction: {str(e)}", exc_info=True)
-            messages.error(
-                request,
-                "An error occurred while processing your transaction. Try again",
-            )
-
-            return redirect("bettor:bundles_detail", bundle_id=bundle_id)
-
-    template = "accounts/bettor/bundles/purchase.html"
-    context = {
-        "bundle": bundle,
-        "quantity": quantity,
-        "total_amount": total_amount,
-    }
-
-    return render(request, template, context)
-
-
-@login_required
-def bettor_purchase_successful(request, deposit_id):
-    deposit = get_object_or_404(
-        Deposit,
-        id=deposit_id,
+def bettor_purchase_successful(request, purchase_id):
+    purchase = get_object_or_404(
+        Purchase,
+        purchase_id=purchase_id,
         user=request.user,
-        status=Deposit.Status.APPROVED,
+        status=Purchase.Status.APPROVED,
     )
 
-    return render(
-        request, "accounts/bettor/bundles/successful.html", {"deposit": deposit}
-    )
+    template = "accounts/bettor/bundles/successful.html"
+    context = {"purchase": purchase}
+
+    return render(request, template, context)
 
 
 ##############
@@ -629,12 +635,12 @@ def bettor_deposits_cancelled(request):
 
 @login_required
 def bettor_payouts_all(request):
-    payouts = Payout.objects.filter(user=request.user)
+    payouts = Purchase.objects.filter(user=request.user)
 
     # Calculate statistics
     total_payouts = payouts.count()
-    pending_payouts = payouts.filter(status=Payout.Status.PENDING).count()
-    approved_payouts = payouts.filter(status=Payout.Status.APPROVED).count()
+    pending_payouts = payouts.filter(status=Purchase.Status.PENDING).count()
+    approved_payouts = payouts.filter(status=Purchase.Status.APPROVED).count()
 
     payouts = mk_paginator(request, payouts, PAGINATION_COUNT)
 
