@@ -3,16 +3,6 @@ from django.urls import include, path
 from apps.accounts.views import (
     admin_dashboard,
     admin_users_login_history,
-    # admin_groups_all,
-    # admin_groups_detail,
-    # admin_groups_running,
-    # admin_groups_closed,
-    # admin_groups_new,
-    # admin_bundles_pending,
-    # admin_bundles_all,
-    # admin_bundles_lost,
-    # admin_bundles_won,
-    # admin_bundles_detail,
     admin_users_active,
     admin_users_all,
     admin_users_banned,
@@ -29,11 +19,11 @@ from apps.accounts.views import (
     admin_tickets_detail,
     admin_tickets_answered,
     admin_tickets_pending,
-    admin_deposits_cancelled,
-    admin_deposits_all,
-    admin_deposits_approved,
-    admin_deposits_update_payout,
-    admin_deposits_pending,
+    # admin_deposits_cancelled,
+    # admin_deposits_all,
+    # admin_deposits_approved,
+    # admin_deposits_update_payout,
+    # admin_deposits_pending,
     admin_payouts_all,
     admin_payouts_approved,
     admin_payouts_pending,
@@ -55,38 +45,38 @@ urlpatterns = [
     ),
     path("dashboard/", admin_dashboard, name="dashboard"),
     # Deposits
-    path(
-        "deposits/",
-        include(
-            [
-                path(
-                    "cancelled/",
-                    admin_deposits_cancelled,
-                    name="deposits_cancelled",
-                ),
-                path(
-                    "approved/",
-                    admin_deposits_approved,
-                    name="deposits_approved",
-                ),
-                path(
-                    "pending/",
-                    admin_deposits_pending,
-                    name="deposits_pending",
-                ),
-                path(
-                    "update-payout/<uuid:deposit_id>/",
-                    admin_deposits_update_payout,
-                    name="deposits_update_payout",
-                ),
-                path(
-                    "",
-                    admin_deposits_all,
-                    name="deposits_all",
-                ),
-            ]
-        ),
-    ),
+    # path(
+    #     "deposits/",
+    #     include(
+    #         [
+    #             path(
+    #                 "cancelled/",
+    #                 admin_deposits_cancelled,
+    #                 name="deposits_cancelled",
+    #             ),
+    #             path(
+    #                 "approved/",
+    #                 admin_deposits_approved,
+    #                 name="deposits_approved",
+    #             ),
+    #             path(
+    #                 "pending/",
+    #                 admin_deposits_pending,
+    #                 name="deposits_pending",
+    #             ),
+    #             path(
+    #                 "update-payout/<uuid:deposit_id>/",
+    #                 admin_deposits_update_payout,
+    #                 name="deposits_update_payout",
+    #             ),
+    #             path(
+    #                 "",
+    #                 admin_deposits_all,
+    #                 name="deposits_all",
+    #             ),
+    #         ]
+    #     ),
+    # ),
     # Withdrawals
     path(
         "withdrawals/",

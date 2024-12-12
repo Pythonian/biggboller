@@ -19,7 +19,7 @@ class GroupCreateForm(forms.ModelForm):
                 attrs={
                     "class": "form-control",
                     "placeholder": _("Enter group description"),
-                    "rows": 4,
+                    "rows": 2,
                 }
             ),
         }
@@ -106,8 +106,8 @@ class GroupUpdateForm(forms.ModelForm):
             "description": forms.Textarea(
                 attrs={
                     "class": "form-control",
-                    "placeholder": _("Enter new description"),
-                    "rows": 4,
+                    "placeholder": _("Enter description"),
+                    "rows": 2,
                 }
             ),
         }

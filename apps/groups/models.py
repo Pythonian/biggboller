@@ -308,12 +308,11 @@ class Payout(TimeStampedModel):
         default=Status.APPROVED,
         verbose_name=_("Status"),
     )
-    paid_on = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         verbose_name = _("Payout")
         verbose_name_plural = _("Payouts")
-        ordering = ["-paid_on", "-created"]
+        ordering = ["-created"]
 
     def __str__(self):
         return f"Payout: {self.user.username} - Amount: {self.amount}"

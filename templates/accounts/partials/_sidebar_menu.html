@@ -154,6 +154,7 @@
                 <i class='menu-icon fa-solid fa-money-bill-transfer'></i>
                 <div class="text-truncate">Manage Deposits</div>
             </a>
+            {% comment %}
             <ul class="menu-sub">
                 <li
                     class="menu-item {% url 'administrator:deposits_all' as deposits_all_url %}{% if request.get_full_path == deposits_all_url %}active{% endif %}">
@@ -180,6 +181,7 @@
                     </a>
                 </li>
             </ul>
+            {% endcomment %}
         </li>
         <li class="menu-item {% if 'withdrawals' in request.path %}active open{% endif %}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">

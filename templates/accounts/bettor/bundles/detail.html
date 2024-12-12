@@ -142,7 +142,10 @@
             }
 
             // Calculate potential win using the winning percentage
-            const potentialWin = totalAmount * (winningPercentage / 100);
+            // const potentialWin = totalAmount * (winningPercentage / 100);
+
+            const potentialWinInterest = totalAmount * (winningPercentage / 100);
+            const potentialWin = totalAmount + potentialWinInterest
 
             totalAmountDisplay.textContent = `₦${totalAmount.toLocaleString('en-US')}`;
             potentialWinDisplay.textContent = `₦${potentialWin.toLocaleString('en-US')}`;

@@ -1,0 +1,8 @@
+Hi {{ user.first_name }},
+
+We regret to inform you that the "{{ bundle.name }}" bundle you participated in was not successful this time.
+
+While this bundle was lost, we encourage you to try again in future bundles. Remember, persistence is key!
+
+Thank you,  
+The Bigg-Boller Team

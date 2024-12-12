@@ -161,8 +161,3 @@ def wallet_withdrawal(request):
     }
 
     return render(request, template, context)
-
-
-@login_required
-def wallet_transaction(request):
-    pass

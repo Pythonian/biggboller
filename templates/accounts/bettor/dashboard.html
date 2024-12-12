@@ -28,7 +28,7 @@
                                 </div>
                             </div>
                             <div>
-                                <h5 class="mb-0">{{ total_purchases|floatformat:0|intcomma }}</h5>
+                                <h5 class="mb-0">{{ total_purchases|floatformat:2|intcomma }}</h5>
                                 <span>Stakes</span>
                             </div>
                         </div>
@@ -39,7 +39,7 @@
                                 </div>
                             </div>
                             <div>
-                                <h5 class="mb-0">{{ total_payouts|floatformat:0|intcomma }}</h5>
+                                <h5 class="mb-0">{{ total_payouts|floatformat:2|intcomma }}</h5>
                                 <span>Payouts</span>
                             </div>
                         </div>
@@ -128,7 +128,7 @@
                         <div class="card-info">
                             <h4 class="card-title mb-3">Wallet Balance</h4>
                             <div class="d-flex align-items-end mb-1 gap-1">
-                                <h4 class="text-primary mb-1">₦ {{ wallet_balance|floatformat:0|intcomma }}</h4>
+                                <h4 class="text-primary mb-1">₦ {{ wallet_balance|floatformat:2|intcomma }}</h4>
                             </div>
                             <p class=" mb-0">{{ total_pending_withdrawals }} <span class="text-muted">Pending
                                     Withdrawals</span></p>

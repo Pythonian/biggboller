@@ -9,7 +9,7 @@ from django.utils.crypto import get_random_string
 
 from apps.core.utils import mk_paginator, create_action, send_email_thread
 
-from .models import Group, Bundle, Purchase
+from .models import Group, Bundle, Purchase, Payout
 from .forms import GroupCreateForm, GroupUpdateForm, BundleCreateForm
 
 logger = logging.getLogger(__name__)
@@ -288,6 +288,12 @@ def admin_bundles_detail(request, bundle_id):
                             transaction_id=reference,
                         )
 
+                        _ = Payout.objects.create(
+                            user=purchase.user,
+                            bundle=bundle,
+                            amount=potential_win_amount,
+                        )
+
                         # Send confirmation email
                         email_context = {
                             "user": purchase.user,
@@ -315,7 +321,7 @@ def admin_bundles_detail(request, bundle_id):
                             request.user,
                             "Bundle Winning Payout",
                             f"{purchase.user} has been paid their bundle wins.",
-                            target=request.user.profile,
+                            target=purchase.user.profile,
                         )
                     except Exception as e:
                         logger.error(
@@ -324,6 +330,58 @@ def admin_bundles_detail(request, bundle_id):
                         messages.error(
                             request,
                             f"An error occurred while processing winnings for {purchase.user}.",
+                        )
+                        continue
+
+            elif new_status == Bundle.Status.LOST:
+                # Handle bundle lost scenario
+                for purchase in bundle.purchases.filter(
+                    status=Purchase.Status.APPROVED
+                ):
+                    try:
+                        # Create a Payout record (Cancelled)
+                        Payout.objects.create(
+                            user=purchase.user,
+                            bundle=bundle,
+                            amount=0,
+                            status=Payout.Status.CANCELLED,
+                        )
+
+                        # Send losing notification email
+                        email_context = {
+                            "user": purchase.user,
+                            "bundle": bundle,
+                        }
+                        subject = "Bundle Result: Lost"
+                        html_content = render_to_string(
+                            "accounts/bettor/bundles/email/lost.html",
+                            email_context,
+                        )
+                        text_content = render_to_string(
+                            "accounts/bettor/bundles/email/lost.txt",
+                            email_context,
+                        )
+                        send_email_thread(
+                            subject=subject,
+                            text_content=text_content,
+                            html_content=html_content,
+                            recipient_email=purchase.user.email,
+                            recipient_name=purchase.user.get_full_name(),
+                        )
+
+                        create_action(
+                            request.user,
+                            "Bundle Lost Notification",
+                            f"{purchase.user} has been notified of the lost bundle.",
+                            target=purchase.user.profile,
+                        )
+                    except Exception as e:
+                        logger.error(
+                            f"Error processing lost notification for {purchase.user}: {e}"
+                        )
+                        messages.error(
+                            request,
+                            f"An error occurred while notifying {purchase.user} about the lost bundle.",
                         )
                         continue
 
