@@ -1,20 +1,24 @@
 from django.contrib.auth.decorators import login_required
 from decimal import Decimal
+from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import transaction
 from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth import logout
-from apps.accounts.forms import BundlePurchaseForm
 from django.template.loader import render_to_string
 from django.db.models import Sum
 from django.utils.crypto import get_random_string
+from django.contrib.auth.hashers import make_password, check_password
 
 from apps.accounts.forms import (
+    BundlePurchaseForm,
     UserUpdateForm,
     ProfileUpdateForm,
     TicketCreateForm,
     TicketReplyForm,
+    OnboardingForm,
+    UpdateTransactionPINForm,
 )
 from apps.accounts.models import Action, Ticket
 from apps.groups.models import Bundle, Group, Purchase, Payout
@@ -28,18 +32,100 @@ PAGINATION_COUNT = 10
 
 
 @login_required
+def onboarding_form(request):
+    """
+    Handles the mandatory entry of Transaction PIN and Bank Information
+    for new users.
+    """
+    profile = request.user.profile
+
+    if profile.transaction_pin and profile.payout_information:
+        return redirect("bettor:dashboard")
+
+    if request.method == "POST":
+        form = OnboardingForm(request.POST)
+
+        # Validate combined PIN and bank info
+        transaction_pin = request.POST.get("transaction_pin", "")
+        if len(transaction_pin) != 6 or not transaction_pin.isdigit():
+            form.add_error(None, "Invalid PIN. Please enter a 6-digit numeric PIN.")
+
+        if form.is_valid():
+            with transaction.atomic():
+                # Hash and save the transaction PIN
+                profile.transaction_pin = make_password(transaction_pin)
+                # Save bank information
+                profile.payout_information = form.cleaned_data["payout_information"]
+                profile.save()
+
+            messages.success(
+                request,
+                "Your transaction PIN and bank information have been saved.",
+            )
+            return redirect("bettor:dashboard")
+        else:
+            messages.error(
+                request,
+                "There was an error saving your information. Please try again.",
+            )
+    else:
+        form = OnboardingForm()
+
+    template = "accounts/bettor/onboarding_form.html"
+    context = {
+        "form": form,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+def update_transaction_pin(request):
+    profile = request.user.profile
+
+    if request.method == "POST":
+        form = UpdateTransactionPINForm(request.POST)
+        if form.is_valid():
+            old_pin = form.cleaned_data["old_pin"]
+            new_pin = form.cleaned_data["new_pin"]
+            confirm_new_pin = form.cleaned_data["confirm_new_pin"]
+
+            # Validate old PIN
+            if not check_password(old_pin, profile.transaction_pin):
+                form.add_error("old_pin", "The old PIN is incorrect.")
+            elif new_pin != confirm_new_pin:
+                form.add_error(
+                    "confirm_new_pin", "New PIN and confirmation do not match."
+                )
+            else:
+                # Update the transaction PIN
+                profile.transaction_pin = make_password(new_pin)
+                profile.save()
+                messages.success(
+                    request, "Your transaction PIN has been updated successfully."
+                )
+                return redirect(reverse("bettor:dashboard"))
+    else:
+        form = UpdateTransactionPINForm()
+
+    context = {"form": form}
+    return render(request, "accounts/bettor/update_transaction_pin.html", context)
+
+
+@login_required
 def bettor_dashboard(request):
     bundles = (
         Payout.objects.filter(user=request.user)
         .select_related("bundle", "bundle__group")
         .order_by("-created")
     )
+    user_groups = Group.objects.filter(bettors=request.user)
     pending_bundles = Bundle.objects.filter(
         participants=request.user,
         status=Bundle.Status.PENDING,
     ).count()
     total_bundles = bundles.count()
-    actions = Action.objects.filter(user=request.user)
+    actions = Action.objects.filter(user=request.user)[:5]
     total_tickets = Ticket.objects.filter(user=request.user).count()
 
     total_pending_withdrawals = Withdrawal.objects.filter(
@@ -64,6 +150,7 @@ def bettor_dashboard(request):
     template = "accounts/bettor/dashboard.html"
     context = {
         "bundles": bundles,
+        "user_groups": user_groups,
         "total_bundles": total_bundles,
         "actions": actions,
         "total_tickets": total_tickets,
@@ -76,6 +163,11 @@ def bettor_dashboard(request):
     }
 
     return render(request, template, context)
+
+
+@login_required
+def bettor_groups(request):
+    pass
 
 
 @login_required

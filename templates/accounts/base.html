@@ -31,20 +31,6 @@
                 {% include "accounts/partials/_nav.html" %}
                 <div class="content-wrapper">
                     <div class="container-xxl flex-grow-1 container-p-y">
-                        {% if "bettor" in request.path %}
-                        {% if not request.user.profile.payout_information %}
-                        <div class="alert alert-primary d-flex" role="alert">
-                            <span class="badge badge-center rounded-pill bg-primary border-label-primary p-3 me-2"><i
-                                    class="fa-solid fa-circle-exclamation fs-6"></i></span>
-                            <div class="d-flex flex-column ps-1">
-                                <h6 class="alert-heading d-flex align-items-center mb-1">Update Profile</h6>
-                                <span>Please visit your <a class="link-dark" href="{% url 'bettor:settings' %}">settings
-                                        page</a> and add
-                                    your Bank Account Information.</span>
-                            </div>
-                        </div>
-                        {% endif %}
-                        {% endif %}
                         {% if messages %}
                         {% for message in messages %}
                         <div class="position-relative">
@@ -87,6 +73,7 @@
     <script src="{% static 'js/menu.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
     {% block paystack %}{% endblock %}
+    {% block scripts %}{% endblock %}
 
     <script>
         const toastElList = document.querySelectorAll('.toast')

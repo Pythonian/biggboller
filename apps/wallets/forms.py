@@ -65,3 +65,11 @@ class WithdrawalForm(TransactionForm):
                 _("Withdrawal amount exceeds your wallet balance.")
             )
         return amount
+
+
+class TransactionPINForm(forms.Form):
+    transaction_pin = forms.CharField(
+        max_length=6,
+        widget=forms.PasswordInput(attrs={"autocomplete": "off"}),
+        label="Transaction PIN",
+    )

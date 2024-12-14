@@ -79,6 +79,38 @@
                 </div>
             </div>
         </div>
+        <div class="card">
+            {% if user_groups %}
+            <div class="card-header">
+                <h5 class="card-title m-0 me-2">My Groups</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    {% for group in user_groups %}
+                    <li class="d-flex mb-4 pb-1">
+                        <div class="avatar flex-shrink-0 me-3">
+                            <span class="avatar-initial rounded bg-label-primary"><i
+                                    class="fa-solid fa-{{ forloop.counter }}"></i></span>
+                        </div>
+                        <div class="row w-100 align-items-center">
+                            <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
+                                <h6 class="mb-0 lh-sm">{{ group.name }}</h6>
+                            </div>
+                            <div class="col-sm-4 col-lg-12 col-xxl-4 text-sm-end text-lg-start text-xxl-end">
+                                <div class="badge bg-label-primary">{{ group.get_status_display }}</div>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+            <div class="card-body text-center">
+                <i class="mb-3 fa-solid fa-object-group fa-2x text-primary"></i>
+                <p>You have not been assigned to an available group yet. Please check back later.</p>
+            </div>
+            {% endif %}
+        </div>
     </div>
     <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">
         <div class="row mb-4">
@@ -90,7 +122,7 @@
                                 <h5 class="card-title text-primary">Welcome, {{ request.user.first_name }}!
                                 </h5>
                                 <p class="mb-4">Check your dashboard for some new updates today.</p>
-                                <a href="{% url 'wallet:deposit' %}" class="btn btn-success">
+                                <a href="{% url 'wallet:deposit' %}" class="btn btn-success mb-md-2 mb-xl-0">
                                     <i class="fa-solid fa-wallet me-2"></i> Top-up
                                 </a>
                                 <a href="{% url 'wallet:withdrawal' %}" class="btn btn-primary">
@@ -148,7 +180,7 @@
                                 </div>
                             </div>
                             <div>
-                                <a href="{% url 'bettor:bundles_owned' %}" class="text-primary">Bundles Owned</a>
+                                <a href="{% url 'bettor:bundles_owned' %}" class="text-primary">My Groups</a>
                             </div>
                         </div>
                         <div class="card-info">
@@ -183,176 +215,3 @@
 </div>
 
 {% endblock %}
-<div class="d-flex justify-content-between align-items-center py-3">
-    <h4>Dashboard</h4>
-    <div>
-
-        <a href="{% url 'wallet:deposit' %}" class="btn btn-success">
-            <i class="fa-solid fa-wallet me-2"></i> Wallet Deposit
-        </a>
-        <a href="{% url 'wallet:withdrawal' %}" class="btn btn-primary">
-            <i class="fa-solid fa-money-bill-transfer me-2"></i> Withdrawal
-        </a>
-    </div>
-
-</div>
-
-<div class="row">
-    <div class="col-lg-6 mb-4">
-        <div class="card">
-            <div class="d-flex align-items-end row">
-                <div class="col-sm-7">
-                    <div class="card-body">
-                        <h5 class="card-title text-primary">Welcome, {{ request.user.first_name }}!
-                        </h5>
-                        <p class="mb-4">Check your dashboard for some new updates today.</p>
-                    </div>
-                </div>
-                <div class="col-sm-5 text-center text-primary">
-                    <div class="card-body pb-0 px-0 px-md-4">
-                        <i class="fas fa-user fa-10x"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row mb-4 g-3">
-    <div class="col-sm-6 col-xl-3">
-        <div class="card card-border-shadow-primary">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="content-left">
-                        <h3 class="mb-0">₦ {{ wallet_balance|floatformat:0|intcomma }}</h3>
-                        <small>Wallet Balance</small>
-                    </div>
-                    <span class="badge bg-label-primary rounded-circle p-2">
-                        <i class="fa-solid fa-money-bill-transfer fa-2x"></i>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-3">
-        <div class="card card-border-shadow-success">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="content-left">
-                        <h3 class="mb-0">₦ {{ total_deposits|floatformat:0|intcomma }}</h3>
-                        <small>Total Stakes</small>
-                    </div>
-                    <span class="badge bg-label-success rounded-circle p-2">
-                        <i class="fa-solid fa-gift fa-2x"></i>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- <div class="col-sm-6 col-xl-3">
-        <div class="card card-border-shadow-success">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="content-left">
-                        <h3 class="mb-0">₦ {{ total_payouts|floatformat:0|intcomma }}</h3>
-                        <small>Total Payouts</small>
-                    </div>
-                    <span class="badge bg-label-success rounded-circle p-2">
-                        <i class="fa-solid fa-gift fa-2x"></i>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div> -->
-    <div class="col-sm-6 col-xl-3">
-        <div class="card card-border-shadow-info">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="content-left">
-                        <h3 class="mb-0">{{ total_bundles }}</h3>
-                        <small>My Bundles</small>
-                    </div>
-                    <span class="badge bg-label-info rounded-circle p-2">
-                        <i class="fa-solid fa-layer-group fa-2x"></i>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6 col-xl-3">
-        <div class="card card-border-shadow-warning">
-            <div class="card-body">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="content-left">
-                        <h3 class="mb-0">{{ total_tickets }}</h3>
-                        <small>Total Tickets</small>
-                    </div>
-                    <span class="badge bg-label-warning rounded-circle p-2">
-                        <i class="fa-solid fa-ticket fa-2x"></i>
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- <div class="row mb-4">
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100">
-            <div class="card-header pb-0 mb-3">
-                <div class="card-title mb-0">
-                    <h5 class="m-0 me-2">Top Bundles</h5>
-                    <small class="text-muted">₦21,000,000 Total Stake</small>
-                </div>
-            </div>
-            <div class="card-body">
-                <ul class="p-0 m-0">
-                    {% include "accounts/partials/_top_bundle_item.html" %}
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100">
-            <div class="card-header">
-                <h5 class="card-title m-0 me-2">Withdrawals History</h5>
-            </div>
-            <div class="card-body">
-                <ul class="p-0 m-0">
-                    {% include "accounts/partials/_latest_withdrawal_item.html" %}
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100">
-            <div class="card-header">
-                <h5 class="card-title m-0 me-2">Deposits History</h5>
-            </div>
-            <div class="card-body">
-                <ul class="p-0 m-0">
-                    {% include "accounts/partials/_latest_withdrawal_item.html" %}
-                </ul>
-            </div>
-        </div>
-    </div>
-</div> -->
-
-<div class="row">
-    <div class="col-md-12 col-lg-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title m-0 me-2">Activity Timeline</h5>
-            </div>
-            <div class="card-body">
-                <ul class="timeline">
-                    {% for action in actions %}
-                    {% include "accounts/partials/_timeline_item.html" %}
-                    {% endfor %}
-                    <li class="timeline-end-indicator">
-                        <i class="fas fa-check-circle"></i>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</div>

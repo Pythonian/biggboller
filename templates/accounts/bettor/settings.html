@@ -1,12 +1,12 @@
 {% extends "accounts/base.html" %}
-{% load widget_tweaks %}
+{% load widget_tweaks form_tags %}
 
 {% block title %}Account Settings{% endblock title %}
 
 {% block content %}
 <div class="row">
-    <div class="col-xl-8 col-md-6 col-12">
-        <div class="card mb-4">
+    <div class="col-xl-6 col-12 mx-xl-auto">
+        <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">Update Account</h5>
             </div>
@@ -15,107 +15,44 @@
                     {% csrf_token %}
                     <div class="row gy-3">
                         <div class="col-md-6">
-                            <label for="{{ user_form.username.id_for_label }}" class="form-label">Username</label>
-                            {% if user_form.username.errors %}
-                            {% render_field user_form.username class="form-control is-invalid" placeholder="Enter your username" %}
-                            {% for error in user_form.username.errors %}
-                            <div class="invalid-feedback">
-                                {{ error }}
-                            </div>
-                            {% endfor %}
-                            {% else %}
-                            {% render_field user_form.username class="form-control" placeholder="Enter your username" %}
-                            {% endif %}
+                            {% render_form_field user_form.username %}
                         </div>
                         <div class="col-md-6">
-                            <label for="{{ user_form.email.id_for_label }}" class="form-label">Email</label>
-                            {% if user_form.email.errors %}
-                            {% render_field user_form.email class="form-control is-invalid" placeholder="Enter your email" %}
-                            {% for error in user_form.email.errors %}
-                            <div class="invalid-feedback">
-                                {{ error }}
-                            </div>
-                            {% endfor %}
-                            {% else %}
-                            {% render_field user_form.email class="form-control" placeholder="Enter your email" %}
-                            {% endif %}
+                            {% render_form_field user_form.email %}
                         </div>
                         <div class="col-md-6">
-                            <label for="{{ user_form.first_name.id_for_label }}" class="form-label">First Name</label>
-                            {% if user_form.first_name.errors %}
-                            {% render_field user_form.first_name class="form-control is-invalid" placeholder="Enter your first name" %}
-                            {% for error in user_form.first_name.errors %}
-                            <div class="invalid-feedback">
-                                {{ error }}
-                            </div>
-                            {% endfor %}
-                            {% else %}
-                            {% render_field user_form.first_name class="form-control" placeholder="Enter your first name" %}
-                            {% endif %}
+                            {% render_form_field user_form.first_name %}
                         </div>
                         <div class="col-md-6">
-                            <label for="{{ user_form.last_name.id_for_label }}" class="form-label">Last Name</label>
-                            {% if user_form.last_name.errors %}
-                            {% render_field user_form.last_name class="form-control is-invalid" placeholder="Enter your last name" %}
-                            {% for error in user_form.last_name.errors %}
-                            <div class="invalid-feedback">
-                                {{ error }}
-                            </div>
-                            {% endfor %}
-                            {% else %}
-                            {% render_field user_form.last_name class="form-control" placeholder="Enter your last name" %}
-                            {% endif %}
+                            {% render_form_field user_form.last_name %}
                         </div>
                         <div class="col-md-12">
-                            <label for="{{ profile_form.phone_number.id_for_label }}" class="form-label">Phone
-                                Number</label>
-                            {% if profile_form.phone_number.errors %}
-                            {% render_field profile_form.phone_number class="form-control is-invalid" placeholder="Enter your phone number" %}
-                            {% for error in profile_form.phone_number.errors %}
-                            <div class="invalid-feedback">
-                                {{ error }}
-                            </div>
-                            {% endfor %}
-                            {% else %}
-                            {% render_field profile_form.phone_number class="form-control" placeholder="Enter your phone number" %}
-                            {% endif %}
+                            {% render_form_field profile_form.phone_number %}
                         </div>
                         <div class="col-md-12">
-                            <label for="{{ profile_form.payout_information.id_for_label }}" class="form-label">Bank
-                                Account Information</label>
-                            {% if profile_form.payout_information.errors %}
-                            {% render_field profile_form.payout_information class="form-control is-invalid" placeholder="Enter your bank account information" %}
-                            {% for error in profile_form.payout_information.errors %}
-                            <div class="invalid-feedback">
-                                {{ error }}
-                            </div>
-                            {% endfor %}
-                            {% else %}
-                            {% render_field profile_form.payout_information class="form-control" placeholder="Enter your bank account information" %}
-                            {% endif %}
+                            {% render_form_field profile_form.payout_information %}
                         </div>
                     </div>
-                    <div class="my-3">
+                    <div class="d-grid gap-2 mt-3">
                         <button class="btn btn-primary" type="submit" id="updateProfile">Update Profile</button>
                     </div>
                 </form>
             </div>
         </div>
-    </div>
-    <div class="col-xl-4 col-md-6 col-12">
-        <div class="card">
-            <div class="card-body">
-                <a class="btn btn-primary d-grid w-100 mb-3" href="{% url 'auth:password_change' %}">
-                    <span class="d-flex align-items-center justify-content-center text-nowrap"><i
-                            class="fa-solid fa-key me-2"></i> Change Password</span>
+        <div class="card mt-3">
+            <div class="card-body text-center">
+                <a class="btn btn-primary d-block mb-2" href="{% url 'auth:password_change' %}">
+                    <span class="d-flex align-items-center justify-content-center text-nowrap">
+                        <i class="fa-solid fa-key me-2"></i> Change Password
+                    </span>
                 </a>
-                <a class="btn btn-danger d-grid w-100" href="">
-                    <span class="d-flex align-items-center justify-content-center text-nowrap"><i
-                            class="fa-solid fa-ban me-2"></i> Deactivate Account</span>
+                <a class="btn btn-secondary d-block" href="{% url 'bettor:update_transaction_pin' %}">
+                    <span class="d-flex align-items-center justify-content-center text-nowrap">
+                        <i class="fa-solid fa-lock me-2"></i> Update Transaction PIN
+                    </span>
                 </a>
             </div>
         </div>
     </div>
-
 </div>
 {% endblock content %}

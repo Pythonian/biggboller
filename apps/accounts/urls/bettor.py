@@ -1,6 +1,8 @@
 from django.urls import include, path
 
 from apps.accounts.views import (
+    onboarding_form,
+    update_transaction_pin,
     bettor_dashboard,
     bettor_bundles_all,
     bettor_settings,
@@ -9,7 +11,6 @@ from apps.accounts.views import (
     bettor_tickets_detail,
     bettor_tickets_answered,
     bettor_tickets_pending,
-    # bettor_bundles_purchase,
     bettor_bundles_owned,
     bettor_bundles_detail,
     bettor_purchase_successful,
@@ -26,17 +27,22 @@ from apps.accounts.views import (
 app_name = "bettor"
 
 urlpatterns = [
+    path(
+        "onboarding/",
+        onboarding_form,
+        name="onboarding_form",
+    ),
+    path(
+        "settings/update-pin/",
+        update_transaction_pin,
+        name="update_transaction_pin",
+    ),
     path("dashboard/", bettor_dashboard, name="dashboard"),
     path(
         "bundles/purchase/<uuid:bundle_id>/",
         bettor_bundles_detail,
         name="bundles_detail",
     ),
-    # path(
-    #     "bundles/pur/<uuid:bundle_id>/",
-    #     bettor_bundles_purchase,
-    #     name="bundles_purchase",
-    # ),
     path(
         "bundles/purchase/<uuid:purchase_id>/successful/",
         bettor_purchase_successful,

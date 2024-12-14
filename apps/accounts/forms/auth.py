@@ -122,5 +122,52 @@ class ResendActivationEmailForm(forms.Form):
     )
 
 
-class OnboardingRequestForm(forms.Form):
-    pass
+class OnboardingForm(forms.Form):
+    transaction_pin = forms.CharField(
+        max_length=6,
+        widget=forms.PasswordInput(attrs={"placeholder": "Enter 6-digit PIN"}),
+        label="Transaction PIN",
+    )
+    payout_information = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                "placeholder": "Enter your bank account details",
+                "rows": 4,
+            }
+        ),
+        label="Bank Account Information",
+    )
+
+
+class UpdateTransactionPINForm(forms.Form):
+    old_pin = forms.CharField(
+        max_length=6,
+        widget=forms.PasswordInput(
+            attrs={"placeholder": "Enter old PIN", "class": "form-control"}
+        ),
+        label="Old PIN",
+    )
+    new_pin = forms.CharField(
+        max_length=6,
+        widget=forms.PasswordInput(
+            attrs={"placeholder": "Enter new PIN", "class": "form-control"}
+        ),
+        label="New PIN",
+    )
+    confirm_new_pin = forms.CharField(
+        max_length=6,
+        widget=forms.PasswordInput(
+            attrs={"placeholder": "Confirm new PIN", "class": "form-control"}
+        ),
+        label="Confirm New PIN",
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        new_pin = cleaned_data.get("new_pin")
+        confirm_new_pin = cleaned_data.get("confirm_new_pin")
+
+        if new_pin and confirm_new_pin and new_pin != confirm_new_pin:
+            raise forms.ValidationError("The new PIN and confirmation do not match.")
+
+        return cleaned_data

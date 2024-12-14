@@ -40,7 +40,6 @@ urlpatterns = [
         name="activate",
     ),
     path("register/", register, name="register"),
-    # password reset with email
     path(
         "password_reset/",
         auth_views.PasswordResetView.as_view(
@@ -75,5 +74,4 @@ urlpatterns = [
         RedirectView.as_view(url="auth:login", permanent=True),
         name="account",
     ),
-    # path("", include("django.contrib.auth.urls")),
 ]

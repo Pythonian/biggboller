@@ -33,6 +33,8 @@ from apps.accounts.views.administrator import (
     admin_process_withdrawal,
 )
 from apps.accounts.views.bettor import (
+    onboarding_form,
+    update_transaction_pin,
     bettor_dashboard,
     bettor_bundles_all,
     bettor_settings,
@@ -99,6 +101,8 @@ __all__ = [
     "admin_withdrawals_cancelled",
     "admin_process_withdrawal",
     # Bettor
+    "onboarding_form",
+    "update_transaction_pin",
     "bettor_dashboard",
     "bettor_bundles_all",
     "bettor_settings",

@@ -1,0 +1,114 @@
+{% extends "accounts/base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Update Transaction PIN{% endblock title %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-4 col-md-6 col-12 mx-md-auto">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title m-0 me-2">Update Transaction PIN</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-4">To update your Transaction PIN, please enter your old PIN and set a new one below.</p>
+                <form id="update-pin-form" method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <!-- Old PIN -->
+                        <div class="col-12 text-center">
+                            <label for="old_pin" class="form-label">Old PIN</label>
+                            <div class="pin-inputs d-flex justify-content-center gap-2">
+                                {% for i in "123456" %}
+                                <input type="password" maxlength="1" class="form-control pin-input text-center"
+                                    id="old-pin-{{ forloop.counter }}" inputmode="numeric" pattern="\d*" required>
+                                {% endfor %}
+                                <input type="hidden" id="old_transaction_pin" name="old_pin">
+                            </div>
+                            {% if form.old_pin.errors %}
+                            <div class="text-danger">{{ form.old_pin.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- New PIN -->
+                        <div class="col-12 text-center">
+                            <label for="new_pin" class="form-label">New PIN</label>
+                            <div class="pin-inputs d-flex justify-content-center gap-2">
+                                {% for i in "123456" %}
+                                <input type="password" maxlength="1" class="form-control pin-input text-center"
+                                    id="new-pin-{{ forloop.counter }}" inputmode="numeric" pattern="\d*" required>
+                                {% endfor %}
+                                <input type="hidden" id="new_transaction_pin" name="new_pin">
+                            </div>
+                            {% if form.new_pin.errors %}
+                            <div class="text-danger">{{ form.new_pin.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Confirm New PIN -->
+                        <div class="col-12 text-center">
+                            <label for="confirm_new_pin" class="form-label">Confirm New PIN</label>
+                            <div class="pin-inputs d-flex justify-content-center gap-2">
+                                {% for i in "123456" %}
+                                <input type="password" maxlength="1" class="form-control pin-input text-center"
+                                    id="confirm-new-pin-{{ forloop.counter }}" inputmode="numeric" pattern="\d*"
+                                    required>
+                                {% endfor %}
+                                <input type="hidden" id="confirm_transaction_pin" name="confirm_new_pin">
+                            </div>
+                            {% if form.confirm_new_pin.errors %}
+                            <div class="text-danger">{{ form.confirm_new_pin.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 text-center mt-3">
+                        <button class="btn btn-success" type="submit">Update PIN</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const pinInputGroups = [
+            { inputs: "#update-pin-form .pin-input[id^='old-pin-']", hidden: "#old_transaction_pin" },
+            { inputs: "#update-pin-form .pin-input[id^='new-pin-']", hidden: "#new_transaction_pin" },
+            { inputs: "#update-pin-form .pin-input[id^='confirm-new-pin-']", hidden: "#confirm_transaction_pin" },
+        ];
+
+        pinInputGroups.forEach(({ inputs, hidden }) => {
+            const pinInputs = document.querySelectorAll(inputs);
+            const hiddenField = document.querySelector(hidden);
+
+            pinInputs.forEach((input, index) => {
+                input.addEventListener("input", (e) => {
+                    const value = e.target.value;
+
+                    // Allow only numeric characters
+                    if (!/^\d$/.test(value)) {
+                        e.target.value = ""; // Clear non-numeric input
+                    } else if (index < pinInputs.length - 1) {
+                        pinInputs[index + 1].focus(); // Move focus to the next input
+                    }
+
+                    // Concatenate all digits to the hidden field
+                    hiddenField.value = Array.from(pinInputs)
+                        .map(input => input.value)
+                        .join("");
+                });
+
+                // Allow backspace to move focus to the previous input
+                input.addEventListener("keydown", (e) => {
+                    if (e.key === "Backspace" && !e.target.value && index > 0) {
+                        pinInputs[index - 1].focus();
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock scripts %}

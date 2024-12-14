@@ -34,6 +34,11 @@ class Profile(models.Model):
         blank=True,
         help_text="The date when the user activated their account.",
     )
+    transaction_pin = models.CharField(
+        max_length=128,
+        blank=True,
+        help_text=_("User's 6-digit transaction PIN (hashed)."),
+    )
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
