@@ -473,18 +473,6 @@ def admin_unban_user(request, username):
     return redirect("administrator:users_detail", username=username)
 
 
-################
-# NOTIFICATIONS
-################
-
-
-def admin_users_notifications(request):
-    template = "accounts/administrator/users/notifications.html"
-    context = {}
-
-    return render(request, template, context)
-
-
 ##############
 # TICKETS
 ##############
@@ -614,106 +602,6 @@ def admin_tickets_closed(request):
     }
 
     return render(request, template, context)
-
-
-##############
-# DEPOSITS
-##############
-
-
-# @login_required
-# @user_passes_test(is_admin)
-# @require_POST
-# def admin_deposits_update_payout(request, deposit_id):
-#     deposit = get_object_or_404(Deposit, id=deposit_id)
-#     payout_amount = request.POST.get("payout_amount")
-
-#     try:
-#         deposit.payout_amount = payout_amount
-#         deposit.save()
-#         messages.success(request, "Payout amount updated successfully.")
-#     except Exception as e:
-#         messages.error(
-#             request,
-#             f"Failed to update payout amount: {str(e)}",
-#         )
-
-#     # TODO: Send an email to the Bettor when the Admin updates the Payout amount
-
-#     return redirect(
-#         request.META.get(
-#             "HTTP_REFERER",
-#             "administrator:deposits_all",
-#         )
-#     )
-
-
-# @login_required
-# @user_passes_test(is_admin)
-# def admin_deposits_all(request):
-#     deposits = Deposit.objects.all()
-#     total_deposits = deposits.count()
-#     pending_deposits = deposits.filter(status=Deposit.Status.PENDING).count()
-#     approved_deposits = deposits.filter(status=Deposit.Status.APPROVED).count()
-#     cancelled_deposits = deposits.filter(status=Deposit.Status.CANCELLED).count()
-
-#     deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
-
-#     template = "accounts/administrator/deposits/all.html"
-#     context = {
-#         "deposits": deposits,
-#         "total_deposits": total_deposits,
-#         "pending_deposits": pending_deposits,
-#         "approved_deposits": approved_deposits,
-#         "cancelled_deposits": cancelled_deposits,
-#     }
-
-#     return render(request, template, context)
-
-
-# @login_required
-# @user_passes_test(is_admin)
-# def admin_deposits_pending(request):
-#     deposits = Deposit.objects.filter(status=Deposit.Status.PENDING)
-#     pending_deposits = deposits.count()
-
-#     template = "accounts/administrator/deposits/pending.html"
-#     context = {
-#         "deposits": deposits,
-#         "pending_deposits": pending_deposits,
-#     }
-
-#     return render(request, template, context)
-
-
-# @login_required
-# @user_passes_test(is_admin)
-# def admin_deposits_approved(request):
-#     deposits = Deposit.objects.filter(status=Deposit.Status.APPROVED)
-#     approved_deposits = deposits.count()
-
-#     template = "accounts/administrator/deposits/approved.html"
-#     context = {
-#         "deposits": deposits,
-#         "approved_deposits": approved_deposits,
-#     }
-
-#     return render(request, template, context)
-
-
-# @login_required
-# @user_passes_test(is_admin)
-# def admin_deposits_cancelled(request):
-#     deposits = Deposit.objects.filter(status=Deposit.Status.CANCELLED)
-#     cancelled_deposits = deposits.count()
-
-#     template = "accounts/administrator/deposits/cancelled.html"
-#     context = {
-#         "deposits": deposits,
-#         "cancelled_deposits": cancelled_deposits,
-#     }
-
-#     return render(request, template, context)
 
 
 ###############

@@ -61,16 +61,6 @@ class ActionAdmin(admin.ModelAdmin):
     search_fields = ["verb"]
 
 
-# @admin.register(Deposit)
-# class DepositAdmin(admin.ModelAdmin):
-#     pass
-
-
-# @admin.register(Payout)
-# class PayoutAdmin(admin.ModelAdmin):
-#     pass
-
-
 @admin.register(LoginHistory)
 class LoginHistoryAdmin(admin.ModelAdmin):
     pass

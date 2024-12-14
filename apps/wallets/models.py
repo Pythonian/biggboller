@@ -70,7 +70,6 @@ class Wallet(TimeStampedModel):
             fields_to_update = ["balance", "updated"]
             balance_before = self.balance
 
-            # Safely update balance using F() expression.
             Wallet.objects.filter(pk=self.pk).update(balance=F("balance") + amount)
             # Ensure latest value is fetched.
             self.refresh_from_db(fields=fields_to_update)

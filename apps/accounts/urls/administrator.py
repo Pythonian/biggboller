@@ -7,7 +7,6 @@ from apps.accounts.views import (
     admin_users_all,
     admin_users_banned,
     admin_users_deactivated,
-    admin_users_notifications,
     admin_users_verified,
     admin_users_unverified,
     admin_users_detail,
@@ -19,11 +18,6 @@ from apps.accounts.views import (
     admin_tickets_detail,
     admin_tickets_answered,
     admin_tickets_pending,
-    # admin_deposits_cancelled,
-    # admin_deposits_all,
-    # admin_deposits_approved,
-    # admin_deposits_update_payout,
-    # admin_deposits_pending,
     admin_payouts_all,
     admin_payouts_approved,
     admin_payouts_pending,
@@ -44,39 +38,6 @@ urlpatterns = [
         name="login_history",
     ),
     path("dashboard/", admin_dashboard, name="dashboard"),
-    # Deposits
-    # path(
-    #     "deposits/",
-    #     include(
-    #         [
-    #             path(
-    #                 "cancelled/",
-    #                 admin_deposits_cancelled,
-    #                 name="deposits_cancelled",
-    #             ),
-    #             path(
-    #                 "approved/",
-    #                 admin_deposits_approved,
-    #                 name="deposits_approved",
-    #             ),
-    #             path(
-    #                 "pending/",
-    #                 admin_deposits_pending,
-    #                 name="deposits_pending",
-    #             ),
-    #             path(
-    #                 "update-payout/<uuid:deposit_id>/",
-    #                 admin_deposits_update_payout,
-    #                 name="deposits_update_payout",
-    #             ),
-    #             path(
-    #                 "",
-    #                 admin_deposits_all,
-    #                 name="deposits_all",
-    #             ),
-    #         ]
-    #     ),
-    # ),
     # Withdrawals
     path(
         "withdrawals/",
@@ -197,11 +158,6 @@ urlpatterns = [
                     name="users_verified",
                 ),
                 path(
-                    "notifications/",
-                    admin_users_notifications,
-                    name="users_notifications",
-                ),
-                path(
                     "deactivated/",
                     admin_users_deactivated,
                     name="users_deactivated",
@@ -234,70 +190,4 @@ urlpatterns = [
             ]
         ),
     ),
-    # # Groups
-    # path(
-    #     "groups/",
-    #     include(
-    #         [
-    #             path(
-    #                 "running/",
-    #                 admin_groups_running,
-    #                 name="groups_running",
-    #             ),
-    #             path(
-    #                 "closed/",
-    #                 admin_groups_closed,
-    #                 name="groups_closed",
-    #             ),
-    #             path(
-    #                 "new/",
-    #                 admin_groups_new,
-    #                 name="groups_new",
-    #             ),
-    #             path(
-    #                 "<uuid:group_id>/",
-    #                 admin_groups_detail,
-    #                 name="groups_detail",
-    #             ),
-    #             path(
-    #                 "",
-    #                 admin_groups_all,
-    #                 name="groups_all",
-    #             ),
-    #         ]
-    #     ),
-    # ),
-    # # Bundles
-    # path(
-    #     "bundles/",
-    #     include(
-    #         [
-    #             path(
-    #                 "pending/",
-    #                 admin_bundles_pending,
-    #                 name="bundles_pending",
-    #             ),
-    #             path(
-    #                 "lost/",
-    #                 admin_bundles_lost,
-    #                 name="bundles_lost",
-    #             ),
-    #             path(
-    #                 "won/",
-    #                 admin_bundles_won,
-    #                 name="bundles_won",
-    #             ),
-    #             path(
-    #                 "<uuid:bundle_id>/",
-    #                 admin_bundles_detail,
-    #                 name="bundles_detail",
-    #             ),
-    #             path(
-    #                 "",
-    #                 admin_bundles_all,
-    #                 name="bundles_all",
-    #             ),
-    #         ]
-    #     ),
-    # ),
 ]
