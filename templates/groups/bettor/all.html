@@ -1,0 +1,47 @@
+{% extends "accounts/base.html" %}
+{% load humanize %}
+
+{% block title %}My Groups{% endblock title %}
+
+{% block content %}
+
+<div class="py-3">
+    <h4>My Groups</h4>
+</div>
+
+<div class="row g-4">
+    {% for group in groups %}
+    <div class="col-xl-4 col-lg-6 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar flex-shrink-0 me-2">
+                            <span class="avatar-initial rounded-circle bg-label-primary">
+                                {{ group.name|make_list|first|title }}
+                            </span>
+                        </div>
+                        <div class="text-body h5 mb-0">
+                            {{ group.name }}
+                        </div>
+                    </div>
+                </div>
+                <p>{{ group.description|linebreaks }}</p>
+                <div class="d-flex align-items-center flex-wrap">
+                    <div class="d-flex align-items-center">
+                        <a href="{% url 'bettor_groups:bundle_detail' group.bundle.bundle_id %}"
+                            class="btn btn-primary">View Bundle</a>
+                    </div>
+                    <div class="ms-auto">
+                        <span
+                            class="badge bg-label-{% if group.status == group.Status.RUNNING %}success{% else %}danger{% endif %} mb-0">
+                            {{ group.get_status_display }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}

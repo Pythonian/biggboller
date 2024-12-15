@@ -9,8 +9,8 @@ from django.utils.crypto import get_random_string
 
 from apps.core.utils import mk_paginator, create_action, send_email_thread
 
-from .models import Group, Bundle, Purchase, Payout
-from .forms import GroupCreateForm, GroupUpdateForm, BundleCreateForm
+from ..models import Group, Bundle, Purchase, Payout
+from ..forms import GroupCreateForm, GroupUpdateForm, BundleCreateForm
 
 logger = logging.getLogger(__name__)
 
@@ -18,10 +18,7 @@ PAGINATION_COUNT = 20
 
 
 def is_admin(user):
-    """
-    Check if the user has admin privileges.
-    Adjust this function based on your authentication setup.
-    """
+    """Check if the user has admin privileges."""
     return user.is_staff or user.is_superuser
 
 

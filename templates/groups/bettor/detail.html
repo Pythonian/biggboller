@@ -1,0 +1,63 @@
+{% extends "accounts/base.html" %}
+{% load humanize %}
+
+{% block title %}{{ bundle.name }} | {{ bundle.group.name }} | Groups{% endblock title %}
+
+{% block content %}
+
+<div class="py-3">
+    <h4>
+        <span class="text-muted fw-light">{{ bundle.group.name }} /</span> {{ bundle.name }}
+    </h4>
+</div>
+
+<div class="row">
+    <div class="col-xl-4 col-sm-6 col-12 mx-md-auto">
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="mb-1">{{ bundle.name }}</h5>
+                        <small class="badge bg-label-primary"
+                            style="font-size: 10px;">{{ bundle.get_status_display }}</small>
+                    </div>
+
+                    <div class="d-flex justify-content-center">
+                        <sup class="h5 pricing-currency mt-3 mb-0 me-1 text-primary">₦</sup>
+                        <h3 class="mb-0 text-primary">{{ bundle.price|floatformat:0|intcomma }}</h3>
+                        <sub class="fs-6 mt-auto mb-3">/bundle</sub>
+                    </div>
+                </div>
+                <ul class="g-2 my-4 list-unstyled">
+                    <li class="mb-2"> <i class="fa-solid fa-star text-primary me-2"></i>
+                        {{ bundle.min_bundles_per_user }} -
+                        {{ bundle.max_bundles_per_user }} Bundles per user
+                    </li>
+                    <li class="mb-2"><i class="fa-solid fa-users text-primary me-2"></i>
+                        x{{ bundle.participants_count }}
+                        Participant{{ bundle.participants_count|pluralize }}
+                    </li>
+                    <li class="mb-2"><i class="fa-solid fa-trophy text-primary me-2"></i>
+                        {{ bundle.winning_percentage|floatformat:0 }}% Winnings Rate
+                    </li>
+                    <li><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i>
+                        {{ bundle.updated|date:"F j, Y" }}
+                    </li>
+                </ul>
+                <div class="d-grid w-100 mt-4 pt-2">
+                    {% if not is_purchased %}
+                    <a href="{% url 'bettor:bundles_detail' bundle.bundle_id %}" class="btn btn-primary">Buy Bundle</a>
+                    {% else %}
+                    <a href="{% url 'bettor:purchase_successful' is_purchased.purchase_id %}"
+                        class="btn btn-success">View
+                        Receipt</a>
+                    {% endif %}
+                    <a href="{% url 'bettor_groups:groups_all' %}" class="btn btn-secondary mt-2">Back to My
+                        Groups</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

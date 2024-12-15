@@ -15,9 +15,10 @@ from apps.accounts.views import (
     bettor_bundles_detail,
     bettor_purchase_successful,
     bettor_deposits_all,
-    bettor_deposits_approved,
-    bettor_deposits_pending,
-    bettor_deposits_cancelled,
+    # bettor_deposits_approved,
+    # bettor_deposits_pending,
+    # bettor_deposits_cancelled,
+    bettor_withdrawals_all,
     bettor_payouts_all,
     bettor_payouts_approved,
     bettor_payouts_pending,
@@ -89,21 +90,21 @@ urlpatterns = [
         "deposits/",
         include(
             [
-                path(
-                    "approved/",
-                    bettor_deposits_approved,
-                    name="deposits_approved",
-                ),
-                path(
-                    "pending/",
-                    bettor_deposits_pending,
-                    name="deposits_pending",
-                ),
-                path(
-                    "cancelled/",
-                    bettor_deposits_cancelled,
-                    name="deposits_cancelled",
-                ),
+                # path(
+                #     "approved/",
+                #     bettor_deposits_approved,
+                #     name="deposits_approved",
+                # ),
+                # path(
+                #     "pending/",
+                #     bettor_deposits_pending,
+                #     name="deposits_pending",
+                # ),
+                # path(
+                #     "cancelled/",
+                #     bettor_deposits_cancelled,
+                #     name="deposits_cancelled",
+                # ),
                 path(
                     "",
                     bettor_deposits_all,
@@ -136,6 +137,18 @@ urlpatterns = [
                     "",
                     bettor_payouts_all,
                     name="payouts_all",
+                ),
+            ]
+        ),
+    ),
+    path(
+        "withdrawals/",
+        include(
+            [
+                path(
+                    "",
+                    bettor_withdrawals_all,
+                    name="withdrawals_all",
                 ),
             ]
         ),

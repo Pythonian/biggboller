@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from .views import (
+from ..views import (
     admin_groups_all,
     admin_groups_detail,
     admin_groups_running,

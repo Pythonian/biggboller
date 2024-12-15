@@ -28,8 +28,15 @@ urlpatterns = [
     path(
         "administrator/manage/",
         include(
-            "apps.groups.urls",
+            "apps.groups.urls.administrator",
             namespace="groups",
+        ),
+    ),
+    path(
+        "bettor/manage/",
+        include(
+            "apps.groups.urls.bettor",
+            namespace="bettor_groups",
         ),
     ),
     path(

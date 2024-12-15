@@ -1,16 +1,16 @@
 {% extends "accounts/base.html" %}
 {% load humanize %}
 
-{% block title %}All Deposits{% endblock title %}
+{% block title %}All Withdrawals{% endblock title %}
 
 {% block content %}
 
-{% include 'accounts/administrator/partials/_header_item.html' with head_title="All Deposits" %}
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="All Withdrawals" %}
 
 <div class="row">
     <div class="col-12">
         <div class="card">
-            {% include 'accounts/bettor/partials/_card_header.html' with card_header="Deposit Transactions" %}
+            {% include 'accounts/bettor/partials/_card_header.html' with card_header="Withdrawal Transactions" %}
             <div class="table-responsive">
                 <table class="table table-lg">
                     <thead>
@@ -18,26 +18,26 @@
                             <th>Reference</th>
                             <th>Amount</th>
                             <th>Status</th>
-                            <th>Channel</th>
-                            <th>Paid At</th>
+                            <th>Description</th>
+                            <th>Processed At</th>
                             <th>Date</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for deposit in deposits %}
+                        {% for withdrawal in withdrawals %}
                         <tr>
-                            <td>{{ deposit.reference }}</td>
-                            <td>₦{{ deposit.amount|floatformat:0|intcomma }}</td>
-                            <td>{{ deposit.get_status_display }}</td>
-                            <td>{{ deposit.channel|default:"N/A" }}</td>
+                            <td>{{ withdrawal.reference }}</td>
+                            <td>₦{{ withdrawal.amount|floatformat:0|intcomma }}</td>
+                            <td>{{ withdrawal.get_status_display }}</td>
+                            <td>{{ withdrawal.description }}</td>
                             <td>
-                                {% if deposit.paid_at %}
-                                {{ deposit.paid_at|date:"F j, Y, g:i a" }}
+                                {% if withdrawal.processed_at %}
+                                {{ withdrawal.processed_at|date:"F j, Y, g:i a" }}
                                 {% else %}
-                                Not Paid
+                                Not Processed
                                 {% endif %}
                             </td>
-                            <td>{{ deposit.created|date:"F j, Y" }}</td>
+                            <td>{{ withdrawal.created|date:"F j, Y" }}</td>
                         </tr>
                         {% empty %}
                         <tr>
@@ -47,7 +47,7 @@
                     </tbody>
                 </table>
             </div>
-            {% include "accounts/administrator/partials/_pagination.html" with page_obj=deposits %}
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=withdrawals %}
         </div>
     </div>
 </div>

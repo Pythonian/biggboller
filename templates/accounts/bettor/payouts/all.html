@@ -1,6 +1,7 @@
 {% extends "accounts/base.html" %}
+{% load humanize %}
 
-{% block title %}All Payouts{% endblock title %}
+{% block title %}Bundle Payouts Transaction{% endblock title %}
 
 {% block content %}
 
@@ -10,31 +11,37 @@
     <!-- Total Payouts -->
     {% include 'accounts/administrator/partials/_stat_card.html' with border_color="primary" label_color="primary" icon_class="fa-solid fa-naira-sign" title="Total Payouts" count=total_payouts %}
 
-    <!-- Pending Payouts -->
-    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="info" label_color="info" icon_class="fa-solid fa-hourglass-half" count=pending_payouts title="Pending Payouts" %}
-
     <!-- Approved Payouts -->
     {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" count=approved_payouts title="Approved Payouts" %}
-
-    <!-- Cancelled Payouts -->
-    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="danger" label_color="danger" icon_class="fa-solid fa-times" count=cancelled_payouts title="Cancelled Payouts" %}
 </div>
 
 <div class="row">
     <div class="col-12">
         <div class="card">
-            {% include 'accounts/bettor/partials/_card_header.html' with card_header="All Payouts List" %}
+            {% include 'accounts/bettor/partials/_card_header.html' with card_header="Bundle Payouts Transaction" %}
             <div class="table-responsive">
                 <table class="table table-lg">
                     <thead>
-                        {% include 'accounts/bettor/payouts/partials/_table_head.html' %}
+                        <tr>
+                            <th>Bundle</th>
+                            <th>Stake</th>
+                            <th>Payout</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {% for payout in payouts %}
-                        {% include "accounts/bettor/payouts/partials/_payout_item.html" %}
+                        <tr>
+                            <td>{{ payout.bundle.name }}</td>
+                            <td>₦{{ payout.purchase_amount|floatformat:0|intcomma }}</td>
+                            <td>₦{{ payout.amount|floatformat:0|intcomma }}</td>
+                            <td>{{ payout.get_status_display }}</td>
+                            <td>{{ payout.created|date:"F j, Y, g:i a" }}</td>
+                        </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="7" class="text-center">No record yet.</td>
+                            <td colspan="5" class="text-center">No record yet.</td>
                         </tr>
                         {% endfor %}
                     </tbody>
