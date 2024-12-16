@@ -1,20 +1,10 @@
-"""Django settings for config project."""
-
 from pathlib import Path
-from decouple import Csv, config
-import dj_database_url
+from django.contrib.messages import constants as messages
+from decouple import config
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = config("SECRET_KEY")
-
-DEBUG = config("DEBUG", cast=bool, default=True)
-
-ALLOWED_HOSTS = config(
-    "ALLOWED_HOSTS",
-    cast=Csv(),
-    default=["localhost", "*.ngrok-free.app"],
-)
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -24,13 +14,17 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    "django.contrib.sitemaps",
     "django.contrib.humanize",
+    "django.contrib.flatpages",
+    # Local Apps
     "apps.accounts.apps.AccountsConfig",
     "apps.core.apps.CoreConfig",
     "apps.wallets.apps.WalletsConfig",
     "apps.groups.apps.GroupsConfig",
+    # Third-party Apps
+    "storages",
     "widget_tweaks",
-    "paystack.frameworks.django",
 ]
 
 MIDDLEWARE = [
@@ -42,11 +36,10 @@ MIDDLEWARE = [
     "apps.accounts.middleware.BettorOnboardingMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.contrib.flatpages.middleware.FlatpageFallbackMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
-
-SITE_ID = 1
 
 TEMPLATES = [
     {
@@ -60,24 +53,11 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
-            "libraries": {
-                "paystack": "paystack.frameworks.django.templatetags.paystack",
-            },
         },
     },
 ]
 
 WSGI_APPLICATION = "config.wsgi.application"
-
-if DEBUG:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
-else:
-    DATABASES = {"default": dj_database_url.parse(config("DATABASE_URL"))}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -102,17 +82,17 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = "static/"
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-STATIC_ROOT = BASE_DIR / "assets"
+SITE_ID = 1
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-MEDIA_URL = "media/"
+MESSAGE_TAGS = {
+    messages.ERROR: "danger",
+}
 
-MEDIA_ROOT = BASE_DIR / "media"
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
 
 LOGIN_REDIRECT_URL = "core:dashboard"
 LOGOUT_REDIRECT_URL = "core:home"
@@ -124,15 +104,15 @@ ADMINS = (("Admin", "admin@example.com"),)
 PAYSTACK_PUBLIC_KEY = config("PAYSTACK_PUBLIC_KEY")
 PAYSTACK_SECRET_KEY = config("PAYSTACK_SECRET_KEY")
 
-# Email server configuration
-EMAIL_BACKEND = config("EMAIL_BACKEND")
-DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+CELERY_BROKER_URL = config("CELERY_BROKER_URL")
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+
 MAILJET_API_KEY = config("MJ_APIKEY_PUBLIC")
 MAILJET_SECRET_KEY = config("MJ_APIKEY_PRIVATE")
 MAILJET_SENDER_NAME = config("MAILJET_SENDER_NAME")
-
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 
 LOGGING = {
     "version": 1,
@@ -153,7 +133,6 @@ LOGGING = {
         },
     },
 }
-
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",

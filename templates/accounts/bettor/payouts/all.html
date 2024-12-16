@@ -1,24 +1,16 @@
 {% extends "accounts/base.html" %}
 {% load humanize %}
 
-{% block title %}Bundle Payouts Transaction{% endblock title %}
+{% block title %}Bundle Payout Transactions{% endblock title %}
 
 {% block content %}
 
 {% include 'accounts/administrator/partials/_header_item.html' with head_title="All Payouts" %}
 
-<div class="row mb-4">
-    <!-- Total Payouts -->
-    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="primary" label_color="primary" icon_class="fa-solid fa-naira-sign" title="Total Payouts" count=total_payouts %}
-
-    <!-- Approved Payouts -->
-    {% include 'accounts/administrator/partials/_stat_card.html' with border_color="success" label_color="success" icon_class="fa-solid fa-check" count=approved_payouts title="Approved Payouts" %}
-</div>
-
 <div class="row">
     <div class="col-12">
         <div class="card">
-            {% include 'accounts/bettor/partials/_card_header.html' with card_header="Bundle Payouts Transaction" %}
+            {% include 'accounts/bettor/partials/_card_header.html' with card_header="Bundle Payout Transactions" %}
             <div class="table-responsive">
                 <table class="table table-lg">
                     <thead>
