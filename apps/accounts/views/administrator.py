@@ -724,7 +724,9 @@ def admin_process_withdrawal(request, withdrawal_id):
     note = request.POST.get("note", "")
 
     withdrawal = get_object_or_404(
-        Withdrawal, id=withdrawal_id, status=Withdrawal.Status.PENDING
+        Withdrawal,
+        withdrawal_id=withdrawal_id,
+        status=Withdrawal.Status.PENDING,
     )
 
     try:
