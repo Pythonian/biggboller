@@ -17,8 +17,6 @@ from apps.accounts.models import (
     Ticket,
     Profile,
     Action,
-    # Deposit,
-    # Payout,
     LoginHistory,
 )
 from apps.accounts.forms import TicketReplyForm

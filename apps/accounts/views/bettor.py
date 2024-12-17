@@ -427,6 +427,7 @@ def bettor_purchase_successful(request, purchase_id):
 ##############
 
 
+@login_required
 def bettor_tickets_all(request):
     tickets = Ticket.objects.filter(user=request.user)
     total_tickets = tickets.count()
@@ -478,6 +479,7 @@ def bettor_tickets_all(request):
     return render(request, template, context)
 
 
+@login_required
 def bettor_tickets_detail(request, ticket_id):
     ticket = get_object_or_404(Ticket, ticket_id=ticket_id)
     replies = ticket.replies.all().order_by("created")
@@ -542,6 +544,7 @@ def bettor_tickets_detail(request, ticket_id):
     return render(request, template, context)
 
 
+@login_required
 def bettor_tickets_pending(request):
     tickets = Ticket.objects.pending().filter(user=request.user)
     pending_tickets = tickets.filter(status=Ticket.Status.PENDING).count()
@@ -557,6 +560,7 @@ def bettor_tickets_pending(request):
     return render(request, template, context)
 
 
+@login_required
 def bettor_tickets_answered(request):
     tickets = Ticket.objects.answered().filter(user=request.user)
     answered_tickets = tickets.filter(status=Ticket.Status.ANSWERED).count()
@@ -570,6 +574,7 @@ def bettor_tickets_answered(request):
     return render(request, template, context)
 
 
+@login_required
 def bettor_tickets_closed(request):
     tickets = Ticket.objects.closed().filter(user=request.user)
     closed_tickets = tickets.filter(status=Ticket.Status.CLOSED).count()
@@ -612,63 +617,6 @@ def bettor_deposits_all(request):
     return render(request, template, context)
 
 
-# @login_required
-# def bettor_deposits_pending(request):
-#     deposits = Deposit.objects.filter(
-#         status=Deposit.Status.PENDING,
-#         user=request.user,
-#     )
-#     pending_deposits = deposits.count()
-
-#     deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
-
-#     template = "accounts/bettor/deposits/pending.html"
-#     context = {
-#         "deposits": deposits,
-#         "pending_deposits": pending_deposits,
-#     }
-
-#     return render(request, template, context)
-
-
-# @login_required
-# def bettor_deposits_approved(request):
-#     deposits = Deposit.objects.filter(
-#         status=Deposit.Status.APPROVED,
-#         user=request.user,
-#     )
-#     approved_deposits = deposits.count()
-
-#     deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
-
-#     template = "accounts/bettor/deposits/approved.html"
-#     context = {
-#         "deposits": deposits,
-#         "approved_deposits": approved_deposits,
-#     }
-
-#     return render(request, template, context)
-
-
-# @login_required
-# def bettor_deposits_cancelled(request):
-#     deposits = Deposit.objects.filter(
-#         status=Deposit.Status.CANCELLED,
-#         user=request.user,
-#     )
-#     cancelled_deposits = deposits.count()
-
-#     deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
-
-#     template = "accounts/bettor/deposits/cancelled.html"
-#     context = {
-#         "deposits": deposits,
-#         "cancelled_deposits": cancelled_deposits,
-#     }
-
-#     return render(request, template, context)
-
-
 ##############
 # WITHDRAWALS
 ##############
@@ -694,9 +642,6 @@ def bettor_withdrawals_all(request):
     }
 
     return render(request, template, context)
-
-
-from django.db.models import Sum
 
 
 @login_required
