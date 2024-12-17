@@ -5,7 +5,12 @@
 
 {% block content %}
 
-{% include 'accounts/administrator/partials/_header_item.html' with head_title="All Withdrawals" %}
+<div class="d-flex justify-content-between align-items-center py-3 mb-1">
+    <h4>All Withdrawals</h4>
+    <a href="{% url 'wallet:withdrawal' %}" class="btn btn-outline-primary">
+        <i class="fa-solid fa-plus me-2"></i> New Withdrawal
+    </a>
+</div>
 
 <div class="row">
     <div class="col-12">
