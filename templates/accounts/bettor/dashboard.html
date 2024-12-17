@@ -94,7 +94,10 @@
                         </div>
                         <div class="row w-100 align-items-center">
                             <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">
-                                <h6 class="mb-0 lh-sm">{{ group.name }}</h6>
+                                <h6 class="mb-0 lh-sm">
+                                    <a
+                                        href="{% url 'bettor_groups:bundle_detail' group.bundle.bundle_id %}">{{ group.name }}</a>
+                                </h6>
                             </div>
                             <div class="col-sm-4 col-lg-12 col-xxl-4 text-sm-end text-lg-start text-xxl-end">
                                 <div class="badge bg-label-primary">{{ group.get_status_display }}</div>
