@@ -1,0 +1,15 @@
+{% extends "base_error.html" %}
+
+{% block title %}500 Server Error{% endblock title %}
+
+{% block icon %}fa-bug{% endblock icon %}
+
+{% block code_icon %}
+<i class="fa-solid fa-5"></i><i class="fa-solid fa-0 px-1"></i><i class="fa-solid fa-0"></i>
+{% endblock code_icon %}
+
+{% block code_title %}Server Error{% endblock code_title %}
+
+{% block content %}
+Oops! Something went wrong on the server. Please try again later!
+{% endblock content %}
