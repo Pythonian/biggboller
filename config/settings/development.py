@@ -12,9 +12,4 @@ DATABASES = {
     }
 }
 
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "assets"
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

@@ -86,6 +86,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SITE_ID = 1
 
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "assets"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MESSAGE_TAGS = {
