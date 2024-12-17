@@ -97,17 +97,17 @@
             <td class="content">
                 <h3>Activate Your Account</h3>
                 <p>Hi {{ user.first_name }},</p>
-                <p>Thank you for registering with {{ site_name }}. To complete your registration, please confirm your
+                <p>Thank you for registering with Bigg-Boller. To complete your registration, please confirm your
                     email address by clicking the button below:</p>
                 <p style="text-align: center;">
-                    <a href="{{ protocol }}://{{ domain }}{% url 'auth:activate' uidb64=uid token=token %}"
+                    <a href="https://www.bigg-boller.com{% url 'auth:activate' uidb64=uid token=token %}"
                         class="button">Verify Email</a>
                 </p>
                 <p>If the button above does not work, please copy and paste the link below into your browser:</p>
                 <p style="color: #0DA487; font-weight: bold;">
-                    {{ protocol }}://{{ domain }}{% url 'auth:activate' uidb64=uid token=token %}
+                    https://www.bigg-boller.com{% url 'auth:activate' uidb64=uid token=token %}
                 </p>
-                <p>Best regards,<br>The {{ site_name }} Team</p>
+                <p>Best regards,<br>The Bigg-Boller Team</p>
             </td>
         </tr>
         <tr>
