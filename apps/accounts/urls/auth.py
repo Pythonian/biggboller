@@ -8,14 +8,15 @@ from apps.accounts.views.auth import (
     register,
     CustomLoginView,
     CustomPasswordChangeView,
-    CustomLogoutView,
+    # CustomLogoutView,
 )
 from django.views.generic.base import RedirectView
 
 app_name = "auth"
 
 urlpatterns = [
-    path("logout/", CustomLogoutView.as_view(), name="logout"),
+    # path("logout/", CustomLogoutView.as_view(), name="logout"),
+    path("logout/", auth_views.LogoutView.as_view(), name="logout"),
     path(
         "login/",
         CustomLoginView.as_view(

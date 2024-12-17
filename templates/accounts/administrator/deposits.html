@@ -1,0 +1,54 @@
+{% extends "accounts/base.html" %}
+{% load humanize %}
+
+{% block title %}Deposit Transaction History{% endblock title %}
+
+{% block content %}
+
+<div class="py-3">
+    <h4>Deposit Transaction History</h4>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Deposit Transaction Report" %}
+
+            <div class="table-responsive">
+                <table class="table table-lg">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Reference</th>
+                            <th>Amount</th>
+                            <th>Channel</th>
+                            <th>IP Address</th>
+                            <th>Paid At</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for deposit in deposits %}
+                        <tr>
+                            <td>{{ deposit.user.username }}</td>
+                            <td>{{ deposit.reference }}</td>
+                            <td>₦{{ deposit.amount|floatformat:2|intcomma }}</td>
+                            <td>{{ deposit.channel }}</td>
+                            <td>{{ deposit.ip_address }}</td>
+                            <td>{{ deposit.paid_at }}</td>
+                            <td>{{ deposit.gateway_response }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No record yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% include "accounts/administrator/partials/_pagination.html" with page_obj=deposits %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

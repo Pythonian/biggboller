@@ -2,7 +2,7 @@ import requests
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login
-from django.contrib.auth.views import LogoutView, PasswordChangeView
+from django.contrib.auth.views import PasswordChangeView  # , LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import redirect, render
@@ -88,6 +88,15 @@ class CustomLoginView(LoginView):
                 browser=browser_info,
                 os=os_info,
                 device=device_info,
+            )
+
+            current_time = timezone.now()
+            formatted_time = current_time.strftime("%B %d, %Y %I:%M%p")
+            create_action(
+                user,
+                "New Login Detected",
+                f"logged into their account at {formatted_time}.",
+                user.profile,
             )
 
             # Set context for the email template
@@ -406,8 +415,8 @@ class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
         return super().form_valid(form)
 
 
-class CustomLogoutView(LoginRequiredMixin, LogoutView):
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            messages.success(request, "You have successfully logged out.")
-        return super().dispatch(request, *args, **kwargs)
+# class CustomLogoutView(LoginRequiredMixin, LogoutView):
+#     def dispatch(self, request, *args, **kwargs):
+#         if request.user.is_authenticated:
+#             messages.success(request, "You have successfully logged out.")
+#         return super().dispatch(request, *args, **kwargs)

@@ -3,6 +3,7 @@ from django.urls import include, path
 from apps.accounts.views import (
     admin_dashboard,
     admin_users_login_history,
+    admin_wallet_deposit_history,
     admin_users_active,
     admin_users_all,
     admin_users_banned,
@@ -36,6 +37,11 @@ urlpatterns = [
         "login-history/",
         admin_users_login_history,
         name="login_history",
+    ),
+    path(
+        "transaction-history/",
+        admin_wallet_deposit_history,
+        name="transaction_history",
     ),
     path("dashboard/", admin_dashboard, name="dashboard"),
     # Withdrawals

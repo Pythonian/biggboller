@@ -149,40 +149,6 @@
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Finance</span>
         </li>
-        <li class="menu-item {% if 'deposits' in request.path %}active open{% endif %}">
-            <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class='menu-icon fa-solid fa-money-bill-transfer'></i>
-                <div class="text-truncate">Manage Deposits</div>
-            </a>
-            {% comment %}
-            <ul class="menu-sub">
-                <li
-                    class="menu-item {% url 'administrator:deposits_all' as deposits_all_url %}{% if request.get_full_path == deposits_all_url %}active{% endif %}">
-                    <a href="{% url 'administrator:deposits_all' %}" class="menu-link">
-                        <div class="text-truncate">All Deposits</div>
-                    </a>
-                </li>
-                <li
-                    class="menu-item {% url 'administrator:deposits_pending' as deposits_pending_url %}{% if request.get_full_path == deposits_pending_url %}active{% endif %}">
-                    <a href="{% url 'administrator:deposits_pending' %}" class="menu-link">
-                        <div class="text-truncate">Pending Deposits</div>
-                    </a>
-                </li>
-                <li
-                    class="menu-item {% url 'administrator:deposits_approved' as deposits_approved_url %}{% if request.get_full_path == deposits_approved_url %}active{% endif %}">
-                    <a href="{% url 'administrator:deposits_approved' %}" class="menu-link">
-                        <div class="text-truncate">Approved Deposits</div>
-                    </a>
-                </li>
-                <li
-                    class="menu-item {% url 'administrator:deposits_cancelled' as deposits_cancelled_url %}{% if request.get_full_path == deposits_cancelled_url %}active{% endif %}">
-                    <a href="{% url 'administrator:deposits_cancelled' %}" class="menu-link">
-                        <div class="text-truncate">Cancelled Deposits</div>
-                    </a>
-                </li>
-            </ul>
-            {% endcomment %}
-        </li>
         <li class="menu-item {% if 'withdrawals' in request.path %}active open{% endif %}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class='menu-icon fa-solid fa-wallet'></i>
@@ -220,10 +186,11 @@
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Reports</span>
         </li>
-        <li class="menu-item">
-            <a href="javascript:void(0);" class="menu-link">
-                <i class="menu-icon fa-solid fa-timeline"></i>
-                <div class="text-truncate">Activity Log</div>
+        <li
+            class="menu-item {% url 'administrator:transaction_history' as transaction_history_url %}{% if request.get_full_path == transaction_history_url %}active{% endif %}">
+            <a href="{% url 'administrator:transaction_history' %}" class="menu-link">
+                <i class="menu-icon fa-solid fa-money-bill-transfer"></i>
+                <div class="text-truncate">Transaction History</div>
             </a>
         </li>
         <li

@@ -135,7 +135,7 @@ def wallet_invoice(request):
     create_action(
         request.user,
         "Wallet Top-up",
-        f"has made a wallet deposit of #{deposit.amount}.",
+        f"has made a wallet deposit of ₦{deposit.amount}.",
         target=request.user.wallet,
     )
 

@@ -149,6 +149,7 @@ def admin_groups_closed(request):
 def admin_groups_detail(request, group_id):
     group = get_object_or_404(Group, group_id=group_id)
     members = group.bettors.all()
+    members = mk_paginator(request, members, PAGINATION_COUNT)
 
     if request.method == "POST":
         form = GroupUpdateForm(request.POST, instance=group)

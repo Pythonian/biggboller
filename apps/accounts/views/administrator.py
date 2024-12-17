@@ -22,7 +22,7 @@ from apps.accounts.models import (
 from apps.accounts.forms import TicketReplyForm
 from apps.accounts.utils import create_action, send_email_thread
 from apps.core.utils import mk_paginator
-from apps.wallets.models import Withdrawal
+from apps.wallets.models import Withdrawal, Deposit
 from apps.groups.models import Group, Bundle, Purchase, Payout
 
 logger = logging.getLogger(__name__)
@@ -129,6 +129,20 @@ def admin_users_login_history(request):
     template = "accounts/administrator/login_history.html"
     context = {
         "login_records": login_records,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def admin_wallet_deposit_history(request):
+    deposits = Deposit.objects.all()
+    deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
+
+    template = "accounts/administrator/deposits.html"
+    context = {
+        "deposits": deposits,
     }
 
     return render(request, template, context)
