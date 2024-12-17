@@ -8,6 +8,7 @@ from django.db import transaction
 from django.utils.crypto import get_random_string
 
 from apps.core.utils import mk_paginator, create_action, send_email_thread
+from apps.wallets.models import AuditLog
 
 from ..models import Group, Bundle, Purchase, Payout
 from ..forms import GroupCreateForm, GroupUpdateForm, BundleCreateForm
@@ -281,7 +282,7 @@ def admin_bundles_detail(request, bundle_id):
                         reference = get_random_string(length=12).upper()
                         wallet.update_balance(
                             potential_win_amount,
-                            transaction_type="Bundle Payout",
+                            transaction_type=AuditLog.TransactionType.BUNDLE_WINNING,
                             transaction_id=reference,
                         )
 

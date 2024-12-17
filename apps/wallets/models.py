@@ -253,7 +253,7 @@ class Deposit(TimeStampedModel):
         # Update wallet balance
         self.wallet.update_balance(
             amount=self.amount,
-            transaction_type="Deposit Completed",
+            transaction_type=AuditLog.TransactionType.WALLET_DEPOSIT,
             transaction_id=self.reference,
         )
 

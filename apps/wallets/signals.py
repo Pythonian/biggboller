@@ -18,7 +18,7 @@ def create_user_wallet(sender, instance, created, **kwargs):
         # Log the wallet creation event in AuditLog
         AuditLog.objects.create(
             wallet=wallet,
-            transaction_type="Wallet Creation",
+            transaction_type=AuditLog.TransactionType.WALLET_CREATION,
             amount=0.00,
             balance_before=0.00,
             balance_after=0.00,
