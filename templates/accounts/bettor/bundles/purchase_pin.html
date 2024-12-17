@@ -1,0 +1,81 @@
+{% extends "accounts/base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Enter Transaction PIN{% endblock title %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-4 col-md-6 col-12 mx-md-auto">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title m-0 me-2">Enter Transaction PIN</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-4">Confirm your bundle purchase by entering your transaction PIN.</p>
+                <form id="transaction-pin-form" method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-12 text-center">
+                            <div class="pin-inputs d-flex justify-content-center gap-2">
+                                {% for i in "123456" %}
+                                <input type="text" maxlength="1" class="form-control pin-input text-center"
+                                    id="pin-{{ forloop.counter }}" inputmode="numeric" pattern="\d*" required>
+                                {% endfor %}
+                                <input type="hidden" id="transaction_pin" name="transaction_pin">
+                            </div>
+                            <small class="text-muted d-block mt-2">Enter 6 digits</small>
+                        </div>
+                    </div>
+                    <!-- Display Form Errors -->
+                    {% if form.transaction_pin.errors %}
+                    <div class="alert alert-danger text-center mt-3">
+                        {{ form.transaction_pin.errors.0 }}
+                    </div>
+                    {% endif %}
+                    <div class="d-grid gap-2 text-center mt-3">
+                        <button class="btn btn-success" type="submit">Verify and Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const pinInputs = document.querySelectorAll(".pin-input");
+        const transactionPinField = document.getElementById("transaction_pin");
+
+        // Ensure only numeric input
+        pinInputs.forEach((input, index) => {
+            input.addEventListener("input", (e) => {
+                const value = e.target.value;
+
+                // Allow only numeric characters
+                if (!/^\d$/.test(value)) {
+                    e.target.value = ""; // Clear non-numeric input
+                } else {
+                    // Move focus to the next input
+                    if (index < pinInputs.length - 1) {
+                        pinInputs[index + 1].focus();
+                    }
+                }
+
+                // Concatenate all digits to the hidden field
+                transactionPinField.value = Array.from(pinInputs)
+                    .map(input => input.value)
+                    .join("");
+            });
+
+            // Allow backspace to move focus to the previous input
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Backspace" && !e.target.value && index > 0) {
+                    pinInputs[index - 1].focus();
+                }
+            });
+        });
+    });
+</script>
+{% endblock scripts %}

@@ -13,6 +13,7 @@ from apps.accounts.views import (
     bettor_tickets_pending,
     bettor_bundles_owned,
     bettor_bundles_detail,
+    bettor_bundle_purchase_pin,
     bettor_purchase_successful,
     bettor_deposits_all,
     # bettor_deposits_approved,
@@ -43,6 +44,11 @@ urlpatterns = [
         "bundles/purchase/<uuid:bundle_id>/",
         bettor_bundles_detail,
         name="bundles_detail",
+    ),
+    path(
+        "bundles/purchase-pin/",
+        bettor_bundle_purchase_pin,
+        name="bundle_purchase_pin",
     ),
     path(
         "bundles/purchase/<uuid:purchase_id>/successful/",

@@ -25,6 +25,7 @@ from apps.groups.models import Bundle, Group, Purchase, Payout
 from apps.accounts.utils import create_action, send_email_thread
 from apps.core.utils import mk_paginator
 from apps.wallets.models import Wallet, Withdrawal, Deposit
+from apps.wallets.forms import TransactionPINForm
 import logging
 
 logger = logging.getLogger(__name__)
@@ -319,78 +320,20 @@ def bettor_bundles_detail(request, bundle_id):
                 )
                 return redirect("bettor:wallet_deposit")
 
-            try:
-                with transaction.atomic():
-                    # Deduct amount from wallet
-                    wallet.balance -= total_amount
-                    wallet.save()
-
-                    # Calculate the potential win (payout amount)
-                    payout_amount_interest = total_amount * (
-                        bundle.winning_percentage / 100
-                    )
-                    payout_amount = total_amount + payout_amount_interest
-
-                    # Create a new purchase
-                    purchase = Purchase.objects.create(
-                        user=request.user,
-                        bundle=bundle,
-                        quantity=quantity,
-                        amount=total_amount,
-                        payout_amount=payout_amount,
-                        status=Purchase.Status.APPROVED,
-                        reference=get_random_string(length=12).upper(),
-                    )
-
-                    # Add user as a participant
-                    bundle.participants.add(request.user)
-
-                    # Send confirmation email
-                    email_context = {
-                        "user": request.user,
-                        "bundle": bundle,
-                        "quantity": quantity,
-                        "total_amount": total_amount,
-                    }
-                    subject = f"Bundle Purchase Confirmation - {bundle.name}"
-                    html_content = render_to_string(
-                        "accounts/bettor/bundles/email/acknowledgment.html",
-                        email_context,
-                    )
-                    text_content = render_to_string(
-                        "accounts/bettor/bundles/email/acknowledgment.txt",
-                        email_context,
-                    )
-                    send_email_thread(
-                        subject=subject,
-                        text_content=text_content,
-                        html_content=html_content,
-                        recipient_email=request.user.email,
-                        recipient_name=request.user.get_full_name(),
-                    )
-
-                    create_action(
-                        request.user,
-                        "Bundle Purchase",
-                        f"purchased the bundle {bundle.name} for ₦{total_amount}.",
-                        target=request.user.profile,
-                    )
-
-                return redirect(
-                    "bettor:purchase_successful",
-                    purchase_id=purchase.purchase_id,
-                )
-
-            except Exception as e:
-                logger.error(f"Error during transaction: {str(e)}", exc_info=True)
-                messages.error(
-                    request,
-                    "An error occurred while processing your transaction. Try again.",
-                )
+            # Store bundle purchase details in session temporarily
+            request.session["bundle_purchase_data"] = {
+                "bundle_id": str(bundle.bundle_id),
+                "quantity": quantity,
+                "total_amount": str(total_amount),
+                "bundle_name": bundle.name,
+                "winning_percentage": str(bundle.winning_percentage),
+            }
+            return redirect("bettor:bundle_purchase_pin")
 
         else:
             messages.error(
-                request, "An error occurred while submitting the form. Try again."
+                request,
+                "An error occurred while submitting the form. Try again.",
             )
     else:
         form = BundlePurchaseForm(bundle=bundle)
@@ -402,6 +345,123 @@ def bettor_bundles_detail(request, bundle_id):
         "wallet_balance": wallet.balance,
         "purchased_bundle": purchased_bundle,
         "has_sufficient_funds": has_sufficient_funds,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+def bettor_bundle_purchase_pin(request):
+    """Handles transaction PIN verification for bundle purchases."""
+    profile = request.user.profile
+
+    # Ensure bundle purchase data exists in session
+    purchase_data = request.session.get("bundle_purchase_data")
+    if not purchase_data:
+        messages.error(request, "Invalid purchase request.")
+        return redirect("bettor:dashboard")
+
+    bundle = get_object_or_404(Bundle, bundle_id=purchase_data["bundle_id"])
+    wallet = get_object_or_404(Wallet, user=request.user)
+
+    if request.method == "POST":
+        form = TransactionPINForm(request.POST)
+        if form.is_valid():
+            entered_pin = form.cleaned_data["transaction_pin"]
+
+            # Verify transaction PIN
+            if not check_password(entered_pin, profile.transaction_pin):
+                form.add_error("transaction_pin", "Incorrect Transaction PIN.")
+            else:
+                try:
+                    with transaction.atomic():
+                        # Retrieve purchase details
+                        quantity = int(purchase_data["quantity"])
+                        total_amount = Decimal(purchase_data["total_amount"])
+                        winning_percentage = Decimal(
+                            purchase_data["winning_percentage"]
+                        )
+
+                        # Deduct amount from wallet
+                        if wallet.balance < total_amount:
+                            messages.error(request, "Insufficient wallet balance.")
+                            return redirect("bettor:wallet_deposit")
+
+                        wallet.balance -= total_amount
+                        wallet.save()
+
+                        # Calculate the potential win (payout amount)
+                        payout_amount_interest = total_amount * (
+                            winning_percentage / 100
+                        )
+                        payout_amount = total_amount + payout_amount_interest
+
+                        # Create the purchase
+                        purchase = Purchase.objects.create(
+                            user=request.user,
+                            bundle=bundle,
+                            quantity=quantity,
+                            amount=total_amount,
+                            payout_amount=payout_amount,
+                            status=Purchase.Status.APPROVED,
+                            reference=get_random_string(length=12).upper(),
+                        )
+
+                        # Add user as a participant
+                        bundle.participants.add(request.user)
+
+                        # Clear session data
+                        del request.session["bundle_purchase_data"]
+
+                        # Send confirmation email
+                        email_context = {
+                            "user": request.user,
+                            "bundle": bundle,
+                            "quantity": quantity,
+                            "total_amount": total_amount,
+                        }
+                        subject = f"Bundle Purchase Confirmation - {bundle.name}"
+                        html_content = render_to_string(
+                            "accounts/bettor/bundles/email/acknowledgment.html",
+                            email_context,
+                        )
+                        text_content = render_to_string(
+                            "accounts/bettor/bundles/email/acknowledgment.txt",
+                            email_context,
+                        )
+                        send_email_thread(
+                            subject=subject,
+                            text_content=text_content,
+                            html_content=html_content,
+                            recipient_email=request.user.email,
+                            recipient_name=request.user.get_full_name(),
+                        )
+
+                        # Log action
+                        create_action(
+                            request.user,
+                            "Bundle Purchase",
+                            f"purchased the bundle {bundle.name} for ₦{total_amount}.",
+                            target=request.user.profile,
+                        )
+
+                        return redirect(
+                            "bettor:purchase_successful",
+                            purchase_id=purchase.purchase_id,
+                        )
+                except Exception as e:
+                    logger.error(f"Error during transaction: {str(e)}", exc_info=True)
+                    messages.error(
+                        request,
+                        "An error occurred while processing your purchase. Try again.",
+                    )
+    else:
+        form = TransactionPINForm()
+
+    template = "accounts/bettor/bundles/purchase_pin.html"
+    context = {
+        "form": form,
+        "purchase_data": purchase_data,
     }
 
     return render(request, template, context)
