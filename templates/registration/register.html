@@ -1,7 +1,7 @@
 {% extends "base.html" %}
-{% load widget_tweaks %}
+{% load form_tags i18n %}
 
-{% block title %}Register{% endblock %}
+{% block title %}{% trans "Register" %}{% endblock %}
 
 {% block content %}
 <section class="section-py">
@@ -10,135 +10,40 @@
             <div class="col-lg-4 mx-auto">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="mb-2 text-center">Welcome to Bigg-Boller! 👋</h4>
-                        <p class="mb-4">Please register for a new account and start the adventure</p>
-
-                        {% if form.errors %}
-                        <p class="text-danger">An error occured while submitting form, please check below.</p>
-                        {% endif %}
-                        {% for error in form.non_field_errors %}
-                        <p class="text-danger">{{ error }}</p>
-                        {% endfor %}
-
-                        <form class="mb-3" action="{% url 'auth:register' %}" method="post" novalidate>
+                        <h4 class="mb-2 text-center">{% trans "Welcome to" %} Bigg-Boller!</h4>
+                        <p class="mb-4">{% trans "Please register for a new account and start the adventure" %}</p>
+                        <form class="mb-3" action="{% url 'auth:register' %}" method="post">
                             {% csrf_token %}
-
-                            <!-- Username Field -->
                             <div class="mb-3">
-                                <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
-                                {% if form.username.errors %}
-                                {% render_field form.username class="form-control is-invalid" placeholder="Enter your username" %}
-                                {% for error in form.username.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                                {% else %}
-                                {% render_field form.username class="form-control" placeholder="Enter your username" %}
-                                {% endif %}
+                                {% render_form_field form.username %}
                             </div>
-
-                            <!-- First Name Field -->
                             <div class="mb-3">
-                                <label for="{{ form.first_name.id_for_label }}" class="form-label">First Name</label>
-                                {% if form.first_name.errors %}
-                                {% render_field form.first_name class="form-control is-invalid" placeholder="Enter your first name" %}
-                                {% for error in form.first_name.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                                {% else %}
-                                {% render_field form.first_name class="form-control" placeholder="Enter your first name" %}
-                                {% endif %}
+                                {% render_form_field form.first_name %}
                             </div>
-
-                            <!-- Last Name Field -->
                             <div class="mb-3">
-                                <label for="{{ form.last_name.id_for_label }}" class="form-label">Last Name</label>
-                                {% if form.last_name.errors %}
-                                {% render_field form.last_name class="form-control is-invalid" placeholder="Enter your last name" %}
-                                {% for error in form.last_name.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                                {% else %}
-                                {% render_field form.last_name class="form-control" placeholder="Enter your last name" %}
-                                {% endif %}
+                                {% render_form_field form.last_name %}
                             </div>
-
-                            <!-- Email Field -->
                             <div class="mb-3">
-                                <label for="{{ form.email.id_for_label }}" class="form-label">Email</label>
-                                {% if form.email.errors %}
-                                {% render_field form.email class="form-control is-invalid" placeholder="Enter your email" %}
-                                {% for error in form.email.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                                {% else %}
-                                {% render_field form.email class="form-control" placeholder="Enter your email" %}
-                                {% endif %}
+                                {% render_form_field form.email %}
                             </div>
-
                             <div class="mb-3">
-                                <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone
-                                    number</label>
-                                {% if form.phone_number.errors %}
-                                {% render_field form.phone_number class="form-control is-invalid" placeholder="Enter your phone number" %}
-                                {% for error in form.phone_number.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                                {% else %}
-                                {% render_field form.phone_number class="form-control" placeholder="Enter your phone number" %}
-                                {% endif %}
+                                {% render_form_field form.phone_number %}
                             </div>
-
-                            <!-- Password Field -->
                             <div class="mb-3">
-                                <label for="{{ form.password.id_for_label }}" class="form-label">Password</label>
-                                {% if form.password.errors %}
-                                {% render_field form.password class="form-control is-invalid" placeholder="Enter your password" %}
-                                {% for error in form.password.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                                {% else %}
-                                {% render_field form.password class="form-control" placeholder="Enter your password" %}
-                                {% endif %}
+                                {% render_form_field form.password %}
                             </div>
-
-                            <!-- Repeat Password Field -->
                             <div class="mb-3">
-                                <label for="{{ form.password2.id_for_label }}" class="form-label">Repeat
-                                    Password</label>
-                                {% if form.password2.errors %}
-                                {% render_field form.password2 class="form-control is-invalid" placeholder="Repeat your password" %}
-                                {% for error in form.password2.errors %}
-                                <div class="invalid-feedback">
-                                    {{ error }}
-                                </div>
-                                {% endfor %}
-                                {% else %}
-                                {% render_field form.password2 class="form-control" placeholder="Repeat your password" %}
-                                {% endif %}
+                                {% render_form_field form.password2 %}
                             </div>
-
-                            <!-- Submit Button -->
                             <div class="mb-3">
-                                <button class="btn btn-primary d-grid w-100" type="submit">Register</button>
+                                <button class="btn btn-success d-grid w-100"
+                                    type="submit">{% trans "Register" %}</button>
                             </div>
                         </form>
-
                         <p class="text-center">
-                            <span>Already have an account?</span>
+                            <span>{% trans "Already have an account?" %}</span>
                             <a href="{% url 'auth:login' %}">
-                                <span>Proceed to Login</span>
+                                <span>{% trans "Proceed to Login" %}</span>
                             </a>
                         </p>
                     </div>
@@ -148,3 +53,12 @@
     </div>
 </section>
 {% endblock %}
+
+{% block scripts %}
+<script>
+    document.querySelector("input[name='phone_number']").addEventListener("input", (e) => {
+        const inputField = e.target;
+        inputField.value = inputField.value.replace(/[^0-9]/g, '');
+    });
+</script>
+{% endblock scripts %}

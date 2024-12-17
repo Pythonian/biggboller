@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.validators import RegexValidator
+from django.forms.widgets import TextInput
 
 User = get_user_model()
 
@@ -66,6 +67,20 @@ class UserRegistrationForm(forms.ModelForm):
         max_length=11,
         required=True,
         help_text="Enter a valid phone number.",
+        validators=[
+            RegexValidator(
+                regex=r"^\d+$",
+                message="Phone number must contain only digits.",
+                code="invalid_phone_number",
+            )
+        ],
+        widget=TextInput(
+            attrs={
+                "type": "tel",
+                "pattern": "[0-9]*",
+                "inputmode": "numeric",
+            }
+        ),
     )
     password = forms.CharField(
         label="Password",

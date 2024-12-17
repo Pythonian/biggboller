@@ -201,10 +201,6 @@ def register(request):
             )
             return redirect("auth:account_activation_sent")
         else:
-            messages.error(
-                request,
-                "An error occurred while trying to create your account.",
-            )
             return render(
                 request,
                 "registration/register.html",
