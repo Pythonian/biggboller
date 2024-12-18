@@ -144,11 +144,11 @@
     {% if top_bundles %}
     <!-- Bundle Performance -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100">
+        <div class="card">
             <div class="card-header">
                 <h5 class="card-title m-0 me-2">Top Purchased Bundles</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body pb-0">
                 <ul class="p-0 m-0">
                     {% for bundle in top_bundles %}
                     <li class="d-flex mb-4 pb-1">
@@ -177,11 +177,11 @@
     {% if latest_purchases %}
     <!-- Purchases -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100">
+        <div class="card">
             <div class="card-header">
                 <h5 class="card-title m-0 me-2">Most Recent Stakes</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body pb-0">
                 <ul class="p-0 m-0">
                     {% for purchase in latest_purchases %}
                     <li class="d-flex mb-4 pb-1">
@@ -212,11 +212,11 @@
     {% if latest_payouts %}
     <!-- Payouts -->
     <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100">
+        <div class="card">
             <div class="card-header">
                 <h5 class="card-title m-0 me-2">Latest Payouts</h5>
             </div>
-            <div class="card-body">
+            <div class="card-body pb-0">
                 <ul class="p-0 m-0">
                     {% for payout in latest_payouts %}
                     <li class="d-flex mb-4 pb-1">
@@ -232,7 +232,7 @@
                                 <h6 class="mb-0">₦{{ payout.amount|floatformat:0|intcomma }}</h6>
                             </div>
                             <div class="user-progress d-flex align-items-center gap-1">
-                                <h6 class="mb-0">{{ payout.paid_on|date:"M j, Y" }}</h6>
+                                <h6 class="mb-0">{{ payout.updated|date:"M j, Y" }}</h6>
                             </div>
                         </div>
                     </li>

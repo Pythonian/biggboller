@@ -69,17 +69,17 @@ def admin_dashboard(request):
     latest_purchases = (
         Purchase.objects.filter(status=Purchase.Status.APPROVED)
         .select_related("user__profile")
-        .values("user__last_name", "user__first_name", "amount")
+        .values("user__last_name", "user__first_name", "amount", "reference")
         .order_by("-created")[:5]
     )
 
     # Get the latest 5 payouts
-    # latest_payouts = (
-    #     Payout.objects.filter(status=Payout.Status.APPROVED)
-    #     .select_related("user__profile")
-    #     .values("user__last_name", "user__first_name", "amount", "paid_on")
-    #     .order_by("-paid_on")[:5]
-    # )
+    latest_payouts = (
+        Payout.objects.filter(status=Payout.Status.APPROVED)
+        .select_related("user__profile")
+        .values("user__last_name", "user__first_name", "amount", "updated")
+        .order_by("-updated")[:5]
+    )
 
     # Calculate the total stakes
     total_purchases = Purchase.objects.filter(
@@ -105,7 +105,7 @@ def admin_dashboard(request):
         "top_bundles": top_bundles,
         "latest_purchases": latest_purchases,
         "total_purchases": total_purchases,
-        # "latest_payouts": latest_payouts,
+        "latest_payouts": latest_payouts,
         "total_payouts": total_payouts,
     }
 
