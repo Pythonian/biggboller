@@ -296,6 +296,14 @@ def bettor_bundles_detail(request, bundle_id):
     bundle = get_object_or_404(Bundle, bundle_id=bundle_id)
     wallet = get_object_or_404(Wallet, user=request.user)
 
+    # Restrict purchase for bundles marked as WON or LOST
+    if bundle.status in {Bundle.Status.WON, Bundle.Status.LOST}:
+        messages.error(
+            request,
+            f"The bundle '{bundle.name}' is no longer available for purchase.",
+        )
+        return redirect("bettor:dashboard")
+
     # Check if the user has already purchased this bundle
     purchased_bundle = Purchase.objects.filter(
         user=request.user,
@@ -363,6 +371,14 @@ def bettor_bundle_purchase_pin(request):
 
     bundle = get_object_or_404(Bundle, bundle_id=purchase_data["bundle_id"])
     wallet = get_object_or_404(Wallet, user=request.user)
+
+    # Restrict purchase for bundles marked as WON or LOST
+    if bundle.status in {Bundle.Status.WON, Bundle.Status.LOST}:
+        messages.error(
+            request,
+            f"The bundle '{bundle.name}' is no longer available for purchase.",
+        )
+        return redirect("bettor:dashboard")
 
     if request.method == "POST":
         form = TransactionPINForm(request.POST)

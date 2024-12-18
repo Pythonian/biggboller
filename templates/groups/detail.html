@@ -148,3 +148,33 @@
 
 {% include "groups/modals/update_group.html" %}
 {% endblock content %}
+
+{% block paystack %}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const limit = 140;
+        const descriptionInput = document.getElementById("id_description");
+        const remainingCharactersElement = document.getElementById("remainingCharacters");
+
+        const updateRemainingCharacters = () => {
+            const start = descriptionInput.value.length;
+            const remaining = limit - start;
+
+            let color = "gray";
+            if (start > limit) {
+                return false;
+            } else if (start >= 130) {
+                color = "red";
+            }
+
+            remainingCharactersElement.textContent = `Characters remaining: ${remaining}`;
+            remainingCharactersElement.style.color = color;
+        };
+
+        if (descriptionInput) {
+            descriptionInput.addEventListener("keyup", updateRemainingCharacters);
+        }
+    });
+
+</script>
+{% endblock paystack %}

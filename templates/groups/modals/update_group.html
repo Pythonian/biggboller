@@ -1,4 +1,4 @@
-{% load widget_tweaks %}
+{% load form_tags %}
 <div class="modal fade" id="updateGroup" tabindex="-1">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -13,7 +13,8 @@
                 <div class="modal-body">
                     <div class="row g-2">
                         <div class="mb-2 col-12">
-                            {% render_field form.description %}
+                            {% render_form_field form.description %}
+                            <span class="small" id="remainingCharacters"></span>
                         </div>
                         {% if group.status != 'C' %}
                         <div class="mb-2 col-12">

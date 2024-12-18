@@ -199,7 +199,6 @@ class Purchase(TimeStampedModel):
 
     class Status(models.TextChoices):
         PENDING = "P", _("Pending")
-        # TODO: Change to SUCCESSFUL
         APPROVED = "A", _("Approved")
         CANCELLED = "C", _("Cancelled")
 

@@ -38,10 +38,14 @@ def bettor_bundle_detail(request, bundle_id):
         status=Purchase.Status.APPROVED,
     ).first()
 
+    # Determine if the bundle can be purchased
+    is_purchasable = bundle.status == Bundle.Status.PENDING and not is_purchased
+
     template = "groups/bettor/detail.html"
     context = {
         "bundle": bundle,
         "is_purchased": is_purchased,
+        "is_purchasable": is_purchasable,
     }
 
     return render(request, template, context)
