@@ -1,0 +1,13 @@
+{% load humanize %}
+<tr>
+    <td>{{ payout.user.get_full_name }}</td>
+    <td>{{ payout.bundle.name }}</td>
+    <td>₦{{ payout.amount|floatformat:2|intcomma }}</td>
+    <td>
+        <span
+            class="badge rounded bg-label-{% if payout.status == payout.Status.APPROVED %}success{% else %}danger{% endif %}">
+            {{ payout.get_status_display }}
+        </span>
+    </td>
+    <td>{{ payout.updated|date:"jS M, Y" }}</td>
+</tr>

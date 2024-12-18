@@ -181,6 +181,32 @@
                 </li>
             </ul>
         </li>
+        <li class="menu-item {% if 'payouts' in request.path %}active open{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class='menu-icon fa-solid fa-hand-holding-dollar'></i>
+                <div class="text-truncate">Manage Payouts</div>
+            </a>
+            <ul class="menu-sub">
+                <li
+                    class="menu-item {% url 'administrator:payouts_all' as payouts_all_url %}{% if request.get_full_path == payouts_all_url %}active{% endif %}">
+                    <a href="{% url 'administrator:payouts_all' %}" class="menu-link">
+                        <div class="text-truncate">All Payouts</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:payouts_approved' as payouts_approved_url %}{% if request.get_full_path == payouts_approved_url %}active{% endif %}">
+                    <a href="{% url 'administrator:payouts_approved' %}" class="menu-link">
+                        <div class="text-truncate">Approved Payouts</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'administrator:payouts_cancelled' as payouts_cancelled_url %}{% if request.get_full_path == payouts_cancelled_url %}active{% endif %}">
+                    <a href="{% url 'administrator:payouts_cancelled' %}" class="menu-link">
+                        <div class="text-truncate">Cancelled Payouts</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
 
         <!-- Reports -->
         <li class="menu-header small text-uppercase">

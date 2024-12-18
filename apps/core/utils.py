@@ -13,7 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 def send_email_via_mailjet(
-    subject, text_content, html_content, recipient_email, recipient_name=None
+    subject,
+    text_content,
+    html_content,
+    recipient_email,
+    recipient_name=None,
 ):
     try:
         mailjet = Client(
@@ -59,7 +63,11 @@ def send_email_via_mailjet(
 
 
 def send_email_thread(
-    subject, text_content, html_content, recipient_email, recipient_name=None
+    subject,
+    text_content,
+    html_content,
+    recipient_email,
+    recipient_name=None,
 ):
     email_thread = threading.Thread(
         target=send_email_via_mailjet,

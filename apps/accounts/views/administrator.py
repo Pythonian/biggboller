@@ -8,7 +8,6 @@ from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.html import strip_tags
 from django.db import models, transaction
-from django.utils import timezone
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_POST
 from django.utils.timezone import now
@@ -20,8 +19,7 @@ from apps.accounts.models import (
     LoginHistory,
 )
 from apps.accounts.forms import TicketReplyForm
-from apps.accounts.utils import create_action, send_email_thread
-from apps.core.utils import mk_paginator
+from apps.core.utils import mk_paginator, create_action, send_email_thread
 from apps.wallets.models import Withdrawal, Deposit
 from apps.groups.models import Group, Bundle, Purchase, Payout
 
@@ -855,45 +853,8 @@ def admin_payouts_all(request):
 
     # Calculate statistics
     total_payouts = payouts.count()
-    pending_payouts = payouts.filter(status=Payout.Status.PENDING).count()
     approved_payouts = payouts.filter(status=Payout.Status.APPROVED).count()
     cancelled_payouts = payouts.filter(status=Payout.Status.CANCELLED).count()
-
-    # TODO:
-    # 1. Move the form into its own view
-    # 2. Send an email to the Bettor when the Admin approves the Payout, including the Note
-    # 3. A Payout can either be Approved or Cancelled
-    # 4. Once a Payout status has been changed, it can not be reverted.
-    # 5. Ability to update Payout should only be for ALL or PENDING views
-    # 6. Also send email to Bettor when an Admin Cancels a Payout
-
-    # Handle form submission for payout updates
-    if request.method == "POST":
-        payout_id = request.POST.get("payout_id")
-        note = request.POST.get("note")
-
-        if payout_id:
-            try:
-                payout = Payout.objects.get(
-                    id=payout_id,
-                    status=Payout.Status.PENDING,
-                )
-                payout.note = note
-                payout.status = Payout.Status.APPROVED
-                payout.paid_on = timezone.now()
-                payout.save()
-                messages.success(
-                    request,
-                    "Payout approved successfully.",
-                )
-                # create_action(
-                #     payout.user,
-                #     "Payout Wins Completed.",
-                #     f"{payout.user.get_full_name} has been paid their winnings.",
-                #     payout.user,
-                # )
-            except Payout.DoesNotExist:
-                messages.error(request, "Payout not found.")
 
     payouts = mk_paginator(request, payouts, PAGINATION_COUNT)
 
@@ -901,24 +862,8 @@ def admin_payouts_all(request):
     context = {
         "payouts": payouts,
         "total_payouts": total_payouts,
-        "pending_payouts": pending_payouts,
         "approved_payouts": approved_payouts,
         "cancelled_payouts": cancelled_payouts,
-    }
-
-    return render(request, template, context)
-
-
-@login_required
-@user_passes_test(is_admin)
-def admin_payouts_pending(request):
-    payouts = Payout.objects.filter(status=Payout.Status.PENDING)
-    pending_payouts = payouts.count()
-
-    template = "accounts/administrator/payouts/pending.html"
-    context = {
-        "payouts": payouts,
-        "pending_payouts": pending_payouts,
     }
 
     return render(request, template, context)

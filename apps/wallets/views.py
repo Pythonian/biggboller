@@ -7,11 +7,11 @@ from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import check_password
 
-from apps.accounts.utils import create_action
-from apps.wallets.tasks import send_deposit_email, send_withdrawal_email
+from apps.core.utils import create_action
 
 from .forms import DepositForm, WithdrawalForm, TransactionPINForm
 from .models import Deposit, Withdrawal
+from .tasks import send_deposit_email, send_withdrawal_email
 from .utils import verify_paystack_transaction
 
 

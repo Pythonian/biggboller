@@ -21,7 +21,7 @@ from apps.accounts.models import LoginHistory
 
 from apps.accounts.forms import ResendActivationEmailForm, UserRegistrationForm
 from apps.accounts.tokens import account_activation_token
-from apps.accounts.utils import create_action, send_email_thread
+from apps.core.utils import create_action, send_email_thread
 
 import logging
 

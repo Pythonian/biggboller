@@ -22,8 +22,7 @@ from apps.accounts.forms import (
 )
 from apps.accounts.models import Action, Ticket
 from apps.groups.models import Bundle, Group, Purchase, Payout
-from apps.accounts.utils import create_action, send_email_thread
-from apps.core.utils import mk_paginator
+from apps.core.utils import create_action, send_email_thread, mk_paginator
 from apps.wallets.models import Wallet, Withdrawal, Deposit
 from apps.wallets.forms import TransactionPINForm
 import logging

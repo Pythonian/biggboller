@@ -21,7 +21,6 @@ from apps.accounts.views import (
     admin_tickets_pending,
     admin_payouts_all,
     admin_payouts_approved,
-    admin_payouts_pending,
     admin_payouts_cancelled,
     admin_withdrawals_all,
     admin_withdrawals_approved,
@@ -86,11 +85,6 @@ urlpatterns = [
                     "approved/",
                     admin_payouts_approved,
                     name="payouts_approved",
-                ),
-                path(
-                    "pending/",
-                    admin_payouts_pending,
-                    name="payouts_pending",
                 ),
                 path(
                     "cancelled/",
