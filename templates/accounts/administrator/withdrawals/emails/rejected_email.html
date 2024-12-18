@@ -86,7 +86,8 @@
                 <p>Hi {{ user.first_name }},</p>
                 <p>We regret to inform you that your withdrawal request of <strong>₦{{ withdrawal.amount }}</strong> has
                     been cancelled.</p>
-                <p>{{ withdrawal.note }}</p>
+                <p>Administrator Reason: <strong>{{ withdrawal.note|default:"Withdrawal request rejected." }}</strong>
+                </p>
                 <p>If you have any questions or concerns, please contact our support team.</p>
                 <p>Best regards,<br>{{ site_name }} Team</p>
             </td>
