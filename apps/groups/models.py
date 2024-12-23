@@ -112,6 +112,20 @@ class Bundle(TimeStampedModel):
         WON = "W", _("Won")
         LOST = "L", _("Lost")
 
+    MAX_ROUNDS = 4
+    current_round = models.PositiveIntegerField(
+        default=1,
+        verbose_name=_("Current Round"),
+        help_text=_("The current round of the bundle (1-4)."),
+    )
+    round_outcomes = models.JSONField(
+        default=dict,
+        verbose_name=_("Round Outcomes"),
+        help_text=_(
+            "A dictionary storing the outcomes of each round, e.g., {1: 'L', 2: 'W'}."
+        ),
+    )
+
     bundle_id = models.UUIDField(
         default=uuid.uuid4,
         editable=False,

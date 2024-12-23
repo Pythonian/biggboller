@@ -266,19 +266,21 @@ def admin_bundles_detail(request, bundle_id):
     if request.method == "POST":
         new_status = request.POST.get("status")
         if new_status in dict(Bundle.Status.choices):
-            bundle.status = new_status
-            bundle.save()
-
-            # Check if the new status is "Won" and credit the users' wallets
+            # Handle Won scenario
             if new_status == Bundle.Status.WON:
-                # Iterate over participants and calculate their potential win
+                bundle.status = new_status
+                bundle.round_outcomes[bundle.current_round] = Bundle.Status.WON
+                bundle.round_outcomes = dict(bundle.round_outcomes)
+                bundle.save()
+
+                # Process winnings for all participants
                 for purchase in bundle.purchases.filter(
                     status=Purchase.Status.APPROVED
                 ):
                     potential_win_amount = purchase.payout_amount
 
                     try:
-                        # Credit the user's wallet with the potential win amount
+                        # Credit user wallets
                         wallet = purchase.user.wallet
                         reference = get_random_string(length=12).upper()
                         wallet.update_balance(
@@ -287,13 +289,14 @@ def admin_bundles_detail(request, bundle_id):
                             transaction_id=reference,
                         )
 
-                        _ = Payout.objects.create(
+                        # Create Payout object
+                        Payout.objects.create(
                             user=purchase.user,
                             bundle=bundle,
                             amount=potential_win_amount,
                         )
 
-                        # Send confirmation email
+                        # Send email notification
                         email_context = {
                             "user": purchase.user,
                             "bundle": bundle,
@@ -332,59 +335,114 @@ def admin_bundles_detail(request, bundle_id):
                         )
                         continue
 
+            # Handle Lost scenario
             elif new_status == Bundle.Status.LOST:
-                # Handle bundle lost scenario
-                for purchase in bundle.purchases.filter(
-                    status=Purchase.Status.APPROVED
-                ):
-                    try:
-                        # Create a Payout record (Cancelled)
-                        Payout.objects.create(
-                            user=purchase.user,
-                            bundle=bundle,
-                            amount=0,
-                            status=Payout.Status.CANCELLED,
-                        )
+                if bundle.current_round < Bundle.MAX_ROUNDS:
+                    # Move to the next round
+                    bundle.current_round += 1
+                    bundle.status = Bundle.Status.PENDING
+                    bundle.round_outcomes[bundle.current_round - 1] = Bundle.Status.LOST
+                    bundle.save()
 
-                        # Send losing notification email
-                        email_context = {
-                            "user": purchase.user,
-                            "bundle": bundle,
-                        }
-                        subject = "Bundle Result: Lost"
-                        html_content = render_to_string(
-                            "accounts/bettor/bundles/email/lost.html",
-                            email_context,
-                        )
-                        text_content = render_to_string(
-                            "accounts/bettor/bundles/email/lost.txt",
-                            email_context,
-                        )
-                        send_email_thread(
-                            subject=subject,
-                            text_content=text_content,
-                            html_content=html_content,
-                            recipient_email=purchase.user.email,
-                            recipient_name=purchase.user.get_full_name(),
-                        )
+                    # Notify participants of the new round
+                    for participant in bundle.participants.all():
+                        try:
+                            email_context = {
+                                "user": participant,
+                                "bundle": bundle,
+                                "next_round": bundle.current_round,
+                            }
+                            subject = "Update: Bundle Progressing to a New Round"
+                            html_content = render_to_string(
+                                "accounts/bettor/bundles/email/round.html",
+                                email_context,
+                            )
+                            text_content = render_to_string(
+                                "accounts/bettor/bundles/email/round.txt",
+                                email_context,
+                            )
+                            send_email_thread(
+                                subject=subject,
+                                text_content=text_content,
+                                html_content=html_content,
+                                recipient_email=participant.email,
+                                recipient_name=participant.get_full_name(),
+                            )
 
-                        create_action(
-                            request.user,
-                            "Bundle Lost Notification",
-                            f"{purchase.user} has been notified of the lost bundle.",
-                            target=purchase.user.profile,
-                        )
-                    except Exception as e:
-                        logger.error(
-                            f"Error processing lost notification for {purchase.user}: {e}"
-                        )
-                        messages.error(
-                            request,
-                            f"An error occurred while notifying {purchase.user} about the lost bundle.",
-                        )
-                        continue
+                            create_action(
+                                request.user,
+                                "Bundle Status Update",
+                                f"Notified {participant} about the bundle moving to the next round.",
+                                target=participant.profile,
+                            )
+                        except Exception as e:
+                            logger.error(f"Error sending email to {participant}: {e}")
+                            messages.error(
+                                request,
+                                f"An error occurred while notifying {participant}.",
+                            )
 
-            messages.success(request, "Bundle status updated successfully.")
+                    messages.success(
+                        request,
+                        f"Bundle marked as Lost and moved to Round {bundle.current_round}. Participants have been notified.",
+                    )
+                else:
+                    # Final round, mark permanently lost
+                    bundle.status = Bundle.Status.LOST
+                    bundle.round_outcomes[bundle.current_round] = Bundle.Status.LOST
+                    bundle.save()
+
+                    # Notify participants of the final loss
+                    for purchase in bundle.purchases.filter(
+                        status=Purchase.Status.APPROVED
+                    ):
+                        try:
+                            Payout.objects.create(
+                                user=purchase.user,
+                                bundle=bundle,
+                                amount=0,
+                                status=Payout.Status.CANCELLED,
+                            )
+
+                            email_context = {"user": purchase.user, "bundle": bundle}
+                            subject = "Bundle Result: Lost"
+                            html_content = render_to_string(
+                                "accounts/bettor/bundles/email/lost.html",
+                                email_context,
+                            )
+                            text_content = render_to_string(
+                                "accounts/bettor/bundles/email/lost.txt",
+                                email_context,
+                            )
+                            send_email_thread(
+                                subject=subject,
+                                text_content=text_content,
+                                html_content=html_content,
+                                recipient_email=purchase.user.email,
+                                recipient_name=purchase.user.get_full_name(),
+                            )
+
+                            create_action(
+                                request.user,
+                                "Bundle Lost Notification",
+                                f"{purchase.user} has been notified of the lost bundle.",
+                                target=purchase.user.profile,
+                            )
+                        except Exception as e:
+                            logger.error(
+                                f"Error processing lost notification for {purchase.user}: {e}"
+                            )
+                            messages.error(
+                                request,
+                                f"An error occurred while notifying {purchase.user} about the lost bundle.",
+                            )
+                            continue
+
+                    messages.success(
+                        request,
+                        "Bundle marked as Lost in the final round. No further action can be taken.",
+                    )
+
             return redirect(bundle)
         else:
             messages.error(request, "Invalid status selected.")
@@ -392,10 +450,18 @@ def admin_bundles_detail(request, bundle_id):
     # Get all purchases that are approved for this bundle
     approved_purchases = bundle.purchases.filter(status=Purchase.Status.APPROVED)
 
+    # Update latest outcome for the context
+    latest_outcome = (
+        Bundle.Status.WON
+        if Bundle.Status.WON in bundle.round_outcomes.values()
+        else bundle.round_outcomes.get(bundle.current_round, Bundle.Status.PENDING)
+    )
+
     template = "bundles/detail.html"
     context = {
         "bundle": bundle,
         "approved_purchases": approved_purchases,
+        "latest_outcome": latest_outcome,
     }
 
     return render(request, template, context)

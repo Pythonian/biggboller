@@ -1,0 +1,12 @@
+Subject: Bundle Update Notification | Bigg-Boller
+
+Hi {{ user.first_name }},
+
+We regret to inform you that the "{{ bundle.name }}" bundle was unsuccessful in the current round. However, we are excited to announce that the bundle is progressing to Round {{ next_round }}.
+
+This means there is still an opportunity for a win. Thank you for your continued participation and support!
+
+Best regards,  
+The Bigg-Boller Team  
+
+©2024 Bigg-Boller. All Rights Reserved.
