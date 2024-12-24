@@ -1,18 +1,18 @@
 import logging
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.template.loader import render_to_string
-from django.db import transaction
-from django.utils.crypto import get_random_string
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.sites.shortcuts import get_current_site
+from django.db import transaction
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.utils.crypto import get_random_string
 
-from apps.core.utils import mk_paginator, create_action, send_email_thread
+from apps.core.utils import create_action, mk_paginator, send_email_thread
 from apps.wallets.models import AuditLog
 
-from ..models import Group, Bundle, GroupRequest, Purchase, Payout
-from ..forms import GroupCreateForm, GroupUpdateForm, BundleCreateForm
+from ..forms import BundleCreateForm, GroupCreateForm, GroupUpdateForm
+from ..models import Bundle, Group, GroupRequest, Payout, Purchase
 
 logger = logging.getLogger(__name__)
 

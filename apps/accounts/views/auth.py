@@ -1,29 +1,27 @@
+import logging
 import requests
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login
-from django.contrib.auth.views import PasswordChangeView  # , LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, PasswordChangeView  # , LogoutView
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from django.utils.encoding import force_bytes, force_str
 from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.contrib.auth.views import LoginView
-from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 from user_agents import parse
 
-from apps.accounts.models import LoginHistory
-
 from apps.accounts.forms import ResendActivationEmailForm, UserRegistrationForm
+from apps.accounts.models import LoginHistory
 from apps.accounts.tokens import account_activation_token
 from apps.core.utils import create_action, send_email_thread
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -88,15 +86,6 @@ class CustomLoginView(LoginView):
                 browser=browser_info,
                 os=os_info,
                 device=device_info,
-            )
-
-            current_time = timezone.now()
-            formatted_time = current_time.strftime("%B %d, %Y %I:%M%p")
-            create_action(
-                user,
-                "New Login Detected",
-                f"logged into their account at {formatted_time}.",
-                user.profile,
             )
 
             # Set context for the email template
