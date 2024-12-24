@@ -111,7 +111,8 @@
             {% else %}
             <div class="card-body text-center">
                 <i class="mb-3 fa-solid fa-object-group fa-2x text-primary"></i>
-                <p>You have not been assigned to an available group yet. Please check back later.</p>
+                <p>You have not been assigned to any group yet.</p>
+                <a href="{% url 'bettor_groups:groups_available' %}" class="btn btn-primary">View Available Groups</a>
             </div>
             {% endif %}
         </div>
@@ -177,7 +178,7 @@
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="card-icon">
                                 <div class="avatar">
-                                    <div class="avatar-initial rounded bg-label-success"><i
+                                    <div class="avatar-initial rounded bg-label-primary"><i
                                             class='fa-solid fa-layer-group'></i>
                                     </div>
                                 </div>

@@ -6,6 +6,8 @@ from ..views import (
     admin_groups_running,
     admin_groups_closed,
     admin_groups_new,
+    approve_group_request,
+    reject_group_request,
     admin_bundles_pending,
     admin_bundles_all,
     admin_bundles_lost,
@@ -21,6 +23,16 @@ urlpatterns = [
         "groups/",
         include(
             [
+                path(
+                    "<int:request_id>/approve/",
+                    approve_group_request,
+                    name="approve_request",
+                ),
+                path(
+                    "<int:request_id>/reject/",
+                    reject_group_request,
+                    name="reject_request",
+                ),
                 path(
                     "running/",
                     admin_groups_running,

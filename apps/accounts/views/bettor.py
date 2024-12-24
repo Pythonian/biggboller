@@ -166,11 +166,6 @@ def bettor_dashboard(request):
 
 
 @login_required
-def bettor_groups(request):
-    pass
-
-
-@login_required
 def bettor_settings(request):
     user = request.user
     profile = user.profile
@@ -666,8 +661,6 @@ def bettor_tickets_closed(request):
 
 
 ##############
-# DEPOSITS
-##############
 
 
 @login_required
@@ -690,11 +683,6 @@ def bettor_deposits_all(request):
     }
 
     return render(request, template, context)
-
-
-##############
-# WITHDRAWALS
-##############
 
 
 @login_required

@@ -9,10 +9,13 @@ from apps.groups.views.administrator import (
     admin_bundles_lost,
     admin_bundles_won,
     admin_bundles_detail,
+    approve_group_request,
+    reject_group_request,
 )
 
 from apps.groups.views.bettor import (
     bettor_groups_all,
+    bettor_groups_available,
     bettor_bundle_detail,
 )
 
@@ -28,7 +31,10 @@ __all__ = [
     "admin_bundles_lost",
     "admin_bundles_won",
     "admin_bundles_detail",
+    "approve_group_request",
+    "reject_group_request",
     # Bettor
     "bettor_groups_all",
+    "bettor_groups_available",
     "bettor_bundle_detail",
 ]

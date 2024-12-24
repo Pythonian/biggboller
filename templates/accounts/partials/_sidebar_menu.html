@@ -46,6 +46,12 @@
                         <div class="text-truncate">Closed Groups</div>
                     </a>
                 </li>
+                <li
+                    class="menu-item {% url 'groups:groups_new' as groups_new_url %}{% if request.get_full_path == groups_new_url %}active{% endif %}">
+                    <a href="{% url 'groups:groups_new' %}" class="menu-link">
+                        <div class="text-truncate">New Group</div>
+                    </a>
+                </li>
             </ul>
         </li>
         <li class="menu-item {% if 'bundles' in request.path %}active open{% endif %}">
@@ -236,12 +242,25 @@
                 <div class="text-truncate">My Dashboard</div>
             </a>
         </li>
-        <li
-            class="menu-item {% url 'bettor_groups:groups_all' as groups_all_url %}{% if request.get_full_path == groups_all_url %}active{% endif %}">
-            <a href="{% url 'bettor_groups:groups_all' %}" class="menu-link">
-                <i class="menu-icon fa-solid fa-object-group"></i>
-                <div class="text-truncate">My Groups</div>
+        <li class="menu-item {% if 'groups' in request.path %}active open{% endif %}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class='menu-icon fa-solid fa-object-group'></i>
+                <div class="text-truncate">Manage Groups</div>
             </a>
+            <ul class="menu-sub">
+                <li
+                    class="menu-item {% url 'bettor_groups:groups_available' as groups_available_url %}{% if request.get_full_path == groups_available_url %}active{% endif %}">
+                    <a href="{% url 'bettor_groups:groups_available' %}" class="menu-link">
+                        <div class="text-truncate">All Groups</div>
+                    </a>
+                </li>
+                <li
+                    class="menu-item {% url 'bettor_groups:groups_all' as groups_all_url %}{% if request.get_full_path == groups_all_url %}active{% endif %}">
+                    <a href="{% url 'bettor_groups:groups_all' %}" class="menu-link">
+                        <div class="text-truncate">My Groups</div>
+                    </a>
+                </li>
+            </ul>
         </li>
         <li class="menu-item {% if 'tickets' in request.path %}active open{% endif %}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">

@@ -1,0 +1,8 @@
+Hi {{ user.first_name }},
+
+Congratulations! Your request to join the group "{{ group }}" has been approved.
+
+You can now participate in the group's activities.
+
+Best regards,
+{{ site_name }} Team

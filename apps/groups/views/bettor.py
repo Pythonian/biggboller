@@ -1,8 +1,11 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.urls import reverse
+from django.db.models import Exists, OuterRef
 
-from apps.core.utils import mk_paginator
-from apps.groups.models import Bundle, Purchase
+from apps.core.utils import mk_paginator, create_action
+from ..models import Bundle, Purchase, GroupRequest, Group
 
 PAGINATION_COUNT = 20
 
@@ -20,6 +23,54 @@ def bettor_groups_all(request):
     groups = mk_paginator(request, groups, PAGINATION_COUNT)
 
     template = "groups/bettor/all.html"
+    context = {
+        "groups": groups,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+def bettor_groups_available(request):
+    # Fetch the groups the user is already a member of
+    user_groups = request.user.bet_groups.all()
+
+    # Fetch groups the user is not yet a member of and are running
+    groups = (
+        Group.objects.filter(status=Group.Status.RUNNING)
+        .exclude(id__in=user_groups)
+        .annotate(
+            request_sent=Exists(
+                GroupRequest.objects.filter(user=request.user, group=OuterRef("pk"))
+            )
+        )
+    )
+
+    # Handle group request submission
+    if request.method == "POST":
+        group_id = request.POST.get("group_id")
+        group = get_object_or_404(Group, id=group_id, status=Group.Status.RUNNING)
+
+        # Check if a request already exists
+        if GroupRequest.objects.filter(user=request.user, group=group).exists():
+            messages.error(request, "You have already requested to join this group.")
+        else:
+            # Create the group request
+            GroupRequest.objects.create(user=request.user, group=group)
+            messages.success(
+                request, f"Your request to join '{group.name}' was sent successfully."
+            )
+            create_action(
+                request.user,
+                "Join Group Request",
+                f"Requested to join the group: {group.name}",
+                target=group,
+            )
+
+        return redirect(reverse("bettor_groups:groups_available"))
+
+    # Render template
+    template = "groups/bettor/available.html"
     context = {
         "groups": groups,
     }

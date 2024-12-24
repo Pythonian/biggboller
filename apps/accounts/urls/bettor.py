@@ -16,9 +16,6 @@ from apps.accounts.views import (
     bettor_bundle_purchase_pin,
     bettor_purchase_successful,
     bettor_deposits_all,
-    # bettor_deposits_approved,
-    # bettor_deposits_pending,
-    # bettor_deposits_cancelled,
     bettor_withdrawals_all,
     bettor_payouts_all,
     bettor_payouts_approved,
@@ -96,21 +93,6 @@ urlpatterns = [
         "deposits/",
         include(
             [
-                # path(
-                #     "approved/",
-                #     bettor_deposits_approved,
-                #     name="deposits_approved",
-                # ),
-                # path(
-                #     "pending/",
-                #     bettor_deposits_pending,
-                #     name="deposits_pending",
-                # ),
-                # path(
-                #     "cancelled/",
-                #     bettor_deposits_cancelled,
-                #     name="deposits_cancelled",
-                # ),
                 path(
                     "",
                     bettor_deposits_all,

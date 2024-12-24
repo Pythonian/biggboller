@@ -6,11 +6,12 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 from django.db import transaction
 from django.utils.crypto import get_random_string
+from django.contrib.sites.shortcuts import get_current_site
 
 from apps.core.utils import mk_paginator, create_action, send_email_thread
 from apps.wallets.models import AuditLog
 
-from ..models import Group, Bundle, Purchase, Payout
+from ..models import Group, Bundle, GroupRequest, Purchase, Payout
 from ..forms import GroupCreateForm, GroupUpdateForm, BundleCreateForm
 
 logger = logging.getLogger(__name__)
@@ -151,6 +152,9 @@ def admin_groups_detail(request, group_id):
     members = group.bettors.all()
     members = mk_paginator(request, members, PAGINATION_COUNT)
 
+    # Fetch pending group requests
+    pending_requests = group.group_requests.filter(status=GroupRequest.Status.PENDING)
+
     if request.method == "POST":
         form = GroupUpdateForm(request.POST, instance=group)
         if form.is_valid():
@@ -174,9 +178,119 @@ def admin_groups_detail(request, group_id):
         "group": group,
         "form": form,
         "members": members,
+        "pending_requests": pending_requests,
     }
 
     return render(request, template, context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def approve_group_request(request, request_id):
+    group_request = get_object_or_404(
+        GroupRequest, id=request_id, status=GroupRequest.Status.PENDING
+    )
+    group_request.status = GroupRequest.Status.APPROVED
+    group_request.group.bettors.add(group_request.user)
+    group_request.save()
+    messages.success(
+        request, f"Request by {group_request.user.get_full_name()} has been approved."
+    )
+
+    # Send approval email
+    current_site = get_current_site(request)
+    protocol = "https" if request.is_secure() else "http"
+
+    subject = render_to_string(
+        "groups/emails/request_approved_subject.txt",
+        {"site_name": current_site.name},
+    ).strip()
+
+    text_message = render_to_string(
+        "groups/emails/request_approved_email.txt",
+        {
+            "user": group_request.user,
+            "group": group_request.group.name,
+            "domain": current_site.domain,
+            "protocol": protocol,
+            "site_name": current_site.name,
+        },
+    ).strip()
+
+    html_message = render_to_string(
+        "groups/emails/request_approved_email.html",
+        {
+            "user": group_request.user,
+            "group": group_request.group.name,
+            "domain": current_site.domain,
+            "protocol": protocol,
+            "site_name": current_site.name,
+        },
+    )
+
+    send_email_thread(
+        subject,
+        text_message,
+        html_message,
+        group_request.user.email,
+        group_request.user.get_full_name(),
+    )
+
+    return redirect("groups:groups_detail", group_id=group_request.group.group_id)
+
+
+@login_required
+@user_passes_test(is_admin)
+def reject_group_request(request, request_id):
+    group_request = get_object_or_404(
+        GroupRequest, id=request_id, status=GroupRequest.Status.PENDING
+    )
+    group_request.status = GroupRequest.Status.REJECTED
+    group_request.save()
+    messages.success(
+        request, f"Request by {group_request.user.get_full_name()} has been rejected."
+    )
+
+    # Send rejection email
+    current_site = get_current_site(request)
+    protocol = "https" if request.is_secure() else "http"
+
+    subject = render_to_string(
+        "groups/emails/request_rejected_subject.txt",
+        {"site_name": current_site.name},
+    ).strip()
+
+    text_message = render_to_string(
+        "groups/emails/request_rejected_email.txt",
+        {
+            "user": group_request.user,
+            "group": group_request.group.name,
+            "domain": current_site.domain,
+            "protocol": protocol,
+            "site_name": current_site.name,
+        },
+    ).strip()
+
+    html_message = render_to_string(
+        "groups/emails/request_rejected_email.html",
+        {
+            "user": group_request.user,
+            "group": group_request.group.name,
+            "domain": current_site.domain,
+            "protocol": protocol,
+            "site_name": current_site.name,
+        },
+    )
+
+    send_email_thread(
+        subject,
+        text_message,
+        html_message,
+        group_request.user.email,
+        group_request.user.get_full_name(),
+    )
+
+    return redirect("groups:groups_detail", group_id=group_request.group.group_id)
 
 
 ##############

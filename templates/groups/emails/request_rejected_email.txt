@@ -1,0 +1,8 @@
+Hi {{ user.first_name }},
+
+Unfortunately, your request to join the group "{{ group }}" has been rejected.
+
+If you have any questions, feel free to reach out to us.
+
+Best regards,
+{{ site_name }} Team

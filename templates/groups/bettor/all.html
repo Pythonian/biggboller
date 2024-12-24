@@ -5,6 +5,8 @@
 
 {% block content %}
 
+{% if groups %}
+
 <div class="py-3">
     <h4>My Groups</h4>
 </div>
@@ -41,11 +43,22 @@
             </div>
         </div>
     </div>
-    {% empty %}
-    <div class="col-lg-6 mx-auto">
-        <p>You have not been assigned a group yet. You will be informed when an admin assigns you to a group.</p>
-    </div>
     {% endfor %}
 </div>
+
+{% else %}
+<div class="text-center py-3 my-3">
+    <span class="text-primary fa-stack fa-4x mb-3">
+        <i class="fa-solid fa-circle fa-stack-2x"></i>
+        <i class="fa-solid fa-face-frown fa-stack-1x fa-inverse"></i>
+    </span>
+    <h3 class="text-dark">You have no groups yet.</h3>
+    <p class="lead">You have not been assigned a group yet. You will be informed when an admin assigns you to a
+        group.</p>
+    <p class="lead">Alternatively, you can view available groups, and send a request to be assigned to any of them.</p>
+    <a class="btn py-2 px-4 btn-primary shadow-sm rounded-5" href="{% url 'bettor_groups:groups_available' %}"><i
+            class="fa-solid fa-eye me-2"></i>View Available Groups</a>
+</div>
+{% endif %}
 
 {% endblock content %}

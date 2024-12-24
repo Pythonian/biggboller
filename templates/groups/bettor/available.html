@@ -1,0 +1,96 @@
+{% extends "accounts/base.html" %}
+{% load humanize %}
+
+{% block title %}Available Groups{% endblock title %}
+
+{% block content %}
+
+{% if groups %}
+
+<div class="py-3">
+    <h4>Available Groups</h4>
+</div>
+
+<div class="row g-4">
+    {% for group in groups %}
+    <div class="col-xl-4 col-lg-6 col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="avatar flex-shrink-0 me-2">
+                            <span class="avatar-initial rounded-circle bg-label-primary">
+                                {{ group.name|make_list|first|title }}
+                            </span>
+                        </div>
+                        <div class="text-body h5 mb-0">
+                            {{ group.name }}
+                        </div>
+                    </div>
+                </div>
+                <p>{{ group.description|linebreaks }}</p>
+                <div class="d-flex align-items-center flex-wrap">
+                    <div class="ms-auto">
+                        {% if group.request_sent %}
+                        <button class="btn btn-secondary" disabled>Request Sent</button>
+                        {% else %}
+                        <button class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#requestGroupModal{{ group.id }}">
+                            Request to Join
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="requestGroupModal{{ group.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="group_id" value="{{ group.id }}">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-primary">
+                            <i class="fa-solid fa-envelope pe-1"></i> Confirm Group Request
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="text-center text-primary">
+                            <i class="fa-solid fa-question-circle fa-5x mb-4 mt-2"></i>
+                        </div>
+                        <div class="text-center">
+                            <p>Are you sure you want to send a request to join the group <span
+                                    class="text-primary">{{ group.name }}</span>?
+                            </p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+                            <i class="fa-solid fa-times-circle me-2"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-success"><i class="fa-solid fa-check-circle me-2"></i>
+                            Proceed</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div class="text-center py-3 my-3">
+    <span class="text-primary fa-stack fa-4x mb-3">
+        <i class="fa-solid fa-circle fa-stack-2x"></i>
+        <i class="fa-solid fa-face-frown fa-stack-1x fa-inverse"></i>
+    </span>
+    <h3 class="text-dark">No Available Groups</h3>
+    <p class="lead">Currently, there are no groups available for you to join. Please check back later.</p>
+</div>
+{% endif %}
+
+{% endblock content %}

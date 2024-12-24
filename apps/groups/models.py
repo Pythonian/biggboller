@@ -87,6 +87,45 @@ class Group(TimeStampedModel):
         )
 
 
+class GroupRequest(TimeStampedModel):
+    """Represents a user's request to join a group."""
+
+    class Status(models.TextChoices):
+        PENDING = "P", _("Pending")
+        APPROVED = "A", _("Approved")
+        REJECTED = "R", _("Rejected")
+
+    user = models.ForeignKey(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="group_requests",
+        verbose_name=_("User"),
+    )
+    group = models.ForeignKey(
+        Group,
+        on_delete=models.CASCADE,
+        related_name="group_requests",
+        verbose_name=_("Group"),
+    )
+    status = models.CharField(
+        max_length=1,
+        choices=Status.choices,
+        default=Status.PENDING,
+        verbose_name=_("Request Status"),
+    )
+
+    class Meta:
+        unique_together = ("user", "group")
+        verbose_name = _("Group Request")
+        verbose_name_plural = _("Group Requests")
+        ordering = ["-created"]
+
+    def __str__(self):
+        return (
+            f"{self.user.username} -> {self.group.name} ({self.get_status_display()})"
+        )
+
+
 class BundleManager(models.Manager):
     def pending(self):
         return self.filter(
