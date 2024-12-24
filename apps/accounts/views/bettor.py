@@ -23,7 +23,7 @@ from apps.accounts.forms import (
 from apps.accounts.models import Action, Ticket
 from apps.groups.models import Bundle, Group, Purchase, Payout
 from apps.core.utils import create_action, send_email_thread, mk_paginator
-from apps.wallets.models import Wallet, Withdrawal, Deposit
+from apps.wallets.models import Wallet, Withdrawal
 from apps.wallets.forms import TransactionPINForm
 import logging
 
@@ -660,53 +660,6 @@ def bettor_tickets_closed(request):
     return render(request, template, context)
 
 
-##############
-
-
-@login_required
-def bettor_deposits_all(request):
-    deposits = Deposit.objects.filter(user=request.user)
-    total_deposits = deposits.count()
-    pending_deposits = deposits.filter(status=Deposit.Status.PENDING).count()
-    approved_deposits = deposits.filter(status=Deposit.Status.COMPLETED).count()
-    cancelled_deposits = deposits.filter(status=Deposit.Status.FAILED).count()
-
-    deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
-
-    template = "accounts/bettor/deposits/all.html"
-    context = {
-        "deposits": deposits,
-        "total_deposits": total_deposits,
-        "pending_deposits": pending_deposits,
-        "approved_deposits": approved_deposits,
-        "cancelled_deposits": cancelled_deposits,
-    }
-
-    return render(request, template, context)
-
-
-@login_required
-def bettor_withdrawals_all(request):
-    withdrawals = Withdrawal.objects.filter(user=request.user)
-
-    # Calculate statistics
-    total_withdrawals = withdrawals.count()
-    pending_withdrawals = withdrawals.filter(status=Purchase.Status.PENDING).count()
-    approved_withdrawals = withdrawals.filter(status=Purchase.Status.APPROVED).count()
-
-    withdrawals = mk_paginator(request, withdrawals, PAGINATION_COUNT)
-
-    template = "accounts/bettor/withdrawals/all.html"
-    context = {
-        "withdrawals": withdrawals,
-        "total_withdrawals": total_withdrawals,
-        "pending_withdrawals": pending_withdrawals,
-        "approved_withdrawals": approved_withdrawals,
-    }
-
-    return render(request, template, context)
-
-
 @login_required
 def bettor_payouts_all(request):
     # Get all payouts for the user
@@ -731,63 +684,6 @@ def bettor_payouts_all(request):
         "payouts": payouts,
         "total_payouts": total_payouts,
         "approved_payouts": approved_payouts,
-    }
-
-    return render(request, template, context)
-
-
-@login_required
-def bettor_payouts_pending(request):
-    payouts = Payout.objects.filter(
-        status=Payout.Status.PENDING,
-        user=request.user,
-    )
-    pending_payouts = payouts.count()
-
-    payouts = mk_paginator(request, payouts, PAGINATION_COUNT)
-
-    template = "accounts/bettor/payouts/pending.html"
-    context = {
-        "payouts": payouts,
-        "pending_payouts": pending_payouts,
-    }
-
-    return render(request, template, context)
-
-
-@login_required
-def bettor_payouts_approved(request):
-    payouts = Payout.objects.filter(
-        status=Payout.Status.APPROVED,
-        user=request.user,
-    )
-    approved_payouts = payouts.count()
-
-    payouts = mk_paginator(request, payouts, PAGINATION_COUNT)
-
-    template = "accounts/bettor/payouts/approved.html"
-    context = {
-        "payouts": payouts,
-        "approved_payouts": approved_payouts,
-    }
-
-    return render(request, template, context)
-
-
-@login_required
-def bettor_payouts_cancelled(request):
-    payouts = Payout.objects.filter(
-        status=Payout.Status.CANCELLED,
-        user=request.user,
-    )
-    cancelled_payouts = payouts.count()
-
-    payouts = mk_paginator(request, payouts, PAGINATION_COUNT)
-
-    template = "accounts/bettor/payouts/cancelled.html"
-    context = {
-        "payouts": payouts,
-        "cancelled_payouts": cancelled_payouts,
     }
 
     return render(request, template, context)

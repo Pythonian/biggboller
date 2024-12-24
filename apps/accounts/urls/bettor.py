@@ -15,12 +15,7 @@ from apps.accounts.views import (
     bettor_bundles_detail,
     bettor_bundle_purchase_pin,
     bettor_purchase_successful,
-    bettor_deposits_all,
-    bettor_withdrawals_all,
     bettor_payouts_all,
-    bettor_payouts_approved,
-    bettor_payouts_pending,
-    bettor_payouts_cancelled,
 )
 
 app_name = "bettor"
@@ -88,55 +83,15 @@ urlpatterns = [
             ]
         ),
     ),
-    # Deposits
-    path(
-        "deposits/",
-        include(
-            [
-                path(
-                    "",
-                    bettor_deposits_all,
-                    name="deposits_all",
-                ),
-            ]
-        ),
-    ),
     # Payouts
     path(
         "payouts/",
         include(
             [
                 path(
-                    "approved/",
-                    bettor_payouts_approved,
-                    name="payouts_approved",
-                ),
-                path(
-                    "pending/",
-                    bettor_payouts_pending,
-                    name="payouts_pending",
-                ),
-                path(
-                    "cancelled/",
-                    bettor_payouts_cancelled,
-                    name="payouts_cancelled",
-                ),
-                path(
                     "",
                     bettor_payouts_all,
                     name="payouts_all",
-                ),
-            ]
-        ),
-    ),
-    path(
-        "withdrawals/",
-        include(
-            [
-                path(
-                    "",
-                    bettor_withdrawals_all,
-                    name="withdrawals_all",
                 ),
             ]
         ),

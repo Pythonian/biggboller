@@ -1,9 +1,0 @@
-{% load humanize %}
-<tr>
-    <td>{{ deposit.bundle.name }}</td>
-    <td>₦{{ deposit.amount|floatformat:0|intcomma }}</td>
-    <td>₦{{ deposit.payout_amount|floatformat:0|intcomma }}</td>
-    <td>{{ deposit.paystack_id }}</td>
-    <td>{{ deposit.get_status_display }}</td>
-    <td>{{ deposit.updated|date:"F j, Y" }}</td>
-</tr>

@@ -1,12 +1,12 @@
 {% extends "accounts/base.html" %}
 {% load humanize %}
 
-{% block title %}All Deposits{% endblock title %}
+{% block title %}Wallet Deposits{% endblock title %}
 
 {% block content %}
 
 <div class="d-flex justify-content-between align-items-center py-3 mb-1">
-    <h4>All Deposits</h4>
+    <h4>Wallet Deposits</h4>
     <a href="{% url 'wallet:deposit' %}" class="btn btn-outline-primary">
         <i class="fa-solid fa-plus me-2"></i> New Deposit
     </a>
@@ -15,7 +15,18 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            {% include 'accounts/bettor/partials/_card_header.html' with card_header="Deposit Transactions" %}
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="mb-0">My Deposit Transactions</h5>
+                <div class="dropdown">
+                    <button class="btn text-muted p-0" type="button" data-bs-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <a class="dropdown-item" href="{{ request.path }}">Refresh</a>
+                    </div>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-lg">
                     <thead>
@@ -24,8 +35,8 @@
                             <th>Amount</th>
                             <th>Status</th>
                             <th>Channel</th>
+                            <th>Authorization Code</th>
                             <th>Paid At</th>
-                            <th>Date</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -33,8 +44,9 @@
                         <tr>
                             <td>{{ deposit.reference }}</td>
                             <td>₦{{ deposit.amount|floatformat:0|intcomma }}</td>
-                            <td>{{ deposit.get_status_display }}</td>
+                            <td>{{ deposit.gateway_response|default:"Pending" }}</td>
                             <td>{{ deposit.channel|default:"N/A" }}</td>
+                            <td>{{ deposit.authorization_code|default:"N/A" }}</td>
                             <td>
                                 {% if deposit.paid_at %}
                                 {{ deposit.paid_at|date:"F j, Y, g:i a" }}
@@ -42,7 +54,6 @@
                                 Not Paid
                                 {% endif %}
                             </td>
-                            <td>{{ deposit.created|date:"F j, Y" }}</td>
                         </tr>
                         {% empty %}
                         <tr>

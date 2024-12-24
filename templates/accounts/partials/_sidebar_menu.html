@@ -299,15 +299,15 @@
             <span class="menu-header-text">Wallet</span>
         </li>
         <li
-            class="menu-item {% url 'bettor:deposits_all' as deposits_all_url %}{% if request.get_full_path == deposits_all_url %}active{% endif %}">
-            <a href="{% url 'bettor:deposits_all' %}" class="menu-link">
+            class="menu-item {% url 'wallet:deposits' as deposits_url %}{% if request.get_full_path == deposits_url %}active{% endif %}">
+            <a href="{% url 'wallet:deposits' %}" class="menu-link">
                 <i class="menu-icon fa-solid fa-wallet"></i>
                 <div class="text-truncate">Deposits</div>
             </a>
         </li>
         <li
-            class="menu-item {% url 'bettor:withdrawals_all' as withdrawals_all_url %}{% if request.get_full_path == withdrawals_all_url %}active{% endif %}">
-            <a href="{% url 'bettor:withdrawals_all' %}" class="menu-link">
+            class="menu-item {% url 'wallet:withdrawals' as withdrawals_url %}{% if request.get_full_path == withdrawals_url %}active{% endif %}">
+            <a href="{% url 'wallet:withdrawals' %}" class="menu-link">
                 <i class="menu-icon fa-solid fa-money-bill-transfer"></i>
                 <div class="text-truncate">Withdrawals</div>
             </a>

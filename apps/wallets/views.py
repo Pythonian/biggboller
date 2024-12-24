@@ -7,12 +7,27 @@ from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.hashers import check_password
 
-from apps.core.utils import create_action
+from apps.core.utils import create_action, mk_paginator
 
 from .forms import DepositForm, WithdrawalForm, TransactionPINForm
 from .models import Deposit, Withdrawal
 from .tasks import send_deposit_email, send_withdrawal_email
 from .utils import verify_paystack_transaction
+
+PAGINATION_COUNT = 20
+
+
+@login_required
+def wallet_deposits(request):
+    deposits = Deposit.objects.filter(user=request.user)
+    deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
+
+    template = "wallets/deposits.html"
+    context = {
+        "deposits": deposits,
+    }
+
+    return render(request, template, context)
 
 
 @login_required
@@ -32,7 +47,7 @@ def wallet_deposit(request):
 
         return redirect("wallet:deposit_pin", reference=deposit.reference)
 
-    template = "accounts/bettor/wallets/deposit.html"
+    template = "wallets/deposit.html"
     context = {
         "form": form,
         "wallet_balance": request.user.wallet.balance,
@@ -70,7 +85,7 @@ def wallet_deposit_pin(request, reference):
     else:
         form = TransactionPINForm()
 
-    template = "accounts/bettor/wallets/deposit_pin.html"
+    template = "wallets/deposit_pin.html"
     context = {
         "form": form,
         "deposit": deposit,
@@ -89,7 +104,7 @@ def wallet_deposit_confirmation(request, reference):
         status=Deposit.Status.PENDING,
     )
 
-    template = "accounts/bettor/wallets/deposit_confirmation.html"
+    template = "wallets/deposit_confirmation.html"
     context = {
         "deposit": deposit,
         "paystack_key": settings.PAYSTACK_PUBLIC_KEY,
@@ -139,9 +154,22 @@ def wallet_invoice(request):
         target=request.user.wallet,
     )
 
-    template = "accounts/bettor/wallets/invoice.html"
+    template = "wallets/invoice.html"
     context = {
         "deposit": deposit,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+def wallet_withdrawals(request):
+    withdrawals = Withdrawal.objects.filter(user=request.user)
+    withdrawals = mk_paginator(request, withdrawals, PAGINATION_COUNT)
+
+    template = "wallets/withdrawals.html"
+    context = {
+        "withdrawals": withdrawals,
     }
 
     return render(request, template, context)
@@ -175,7 +203,7 @@ def wallet_withdrawal(request):
     else:
         form = WithdrawalForm(wallet_balance=user_wallet.balance)
 
-    template = "accounts/bettor/wallets/withdrawal.html"
+    template = "wallets/withdrawal.html"
     context = {
         "form": form,
         "wallet_balance": user_wallet.balance,
@@ -239,7 +267,7 @@ def wallet_withdrawal_pin(request):
     else:
         form = TransactionPINForm()
 
-    template = "accounts/bettor/wallets/withdrawal_pin.html"
+    template = "wallets/withdrawal_pin.html"
     context = {
         "form": form,
         "withdrawal_data": withdrawal_data,
