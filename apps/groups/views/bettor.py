@@ -79,6 +79,24 @@ def bettor_groups_available(request):
 
 
 @login_required
+def bettor_bundles_owned(request):
+    purchases = Purchase.objects.filter(
+        user=request.user,
+        status=Purchase.Status.APPROVED,
+    )
+    total_purchases = purchases.count()
+    purchases = mk_paginator(request, purchases, PAGINATION_COUNT)
+
+    template = "accounts/bettor/bundles/owned.html"
+    context = {
+        "purchases": purchases,
+        "total_purchases": total_purchases,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
 def bettor_bundle_detail(request, bundle_id):
     """View to list the details of a bundle of a specific group a user has joined."""
     bundle = get_object_or_404(Bundle, bundle_id=bundle_id)

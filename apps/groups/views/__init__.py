@@ -17,6 +17,7 @@ from apps.groups.views.bettor import (
     bettor_groups_all,
     bettor_groups_available,
     bettor_bundle_detail,
+    bettor_bundles_owned,
 )
 
 __all__ = [
@@ -37,4 +38,5 @@ __all__ = [
     "bettor_groups_all",
     "bettor_groups_available",
     "bettor_bundle_detail",
+    "bettor_bundles_owned",
 ]

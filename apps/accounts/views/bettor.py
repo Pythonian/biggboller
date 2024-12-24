@@ -234,59 +234,7 @@ def bettor_deactivate(request):
 
 
 @login_required
-def bettor_bundles_owned(request):
-    purchases = Purchase.objects.filter(
-        user=request.user,
-        status=Purchase.Status.APPROVED,
-    )
-    total_purchases = purchases.count()
-    purchases = mk_paginator(request, purchases, PAGINATION_COUNT)
-
-    template = "accounts/bettor/bundles/owned.html"
-    context = {
-        "purchases": purchases,
-        "total_purchases": total_purchases,
-    }
-
-    return render(request, template, context)
-
-
-@login_required
-def bettor_bundles_all(request):
-    # Get the groups the user is assigned to
-    assigned_groups = request.user.bet_groups.all()
-
-    # Get all bundles for the user's assigned groups that are still pending
-    bundles = Bundle.objects.filter(
-        status=Bundle.Status.PENDING,
-        group__in=assigned_groups,
-        group__status=Group.Status.RUNNING,
-    )
-
-    # Get bundles where the user has an approved purchase
-    approved_bundles = Purchase.objects.filter(
-        user=request.user, status=Purchase.Status.APPROVED
-    ).values_list("bundle_id", flat=True)
-
-    # Exclude bundles the user already has an approved purchase for
-    bundles = bundles.exclude(id__in=approved_bundles)
-
-    pending_bundles = bundles.count()
-
-    # Apply pagination
-    bundles = mk_paginator(request, bundles, PAGINATION_COUNT)
-
-    template = "accounts/bettor/bundles/all.html"
-    context = {
-        "bundles": bundles,
-        "pending_bundles": pending_bundles,
-    }
-
-    return render(request, template, context)
-
-
-@login_required
-def bettor_bundles_detail(request, bundle_id):
+def bettor_bundles_purchase(request, bundle_id):
     bundle = get_object_or_404(Bundle, bundle_id=bundle_id)
     wallet = get_object_or_404(Wallet, user=request.user)
 

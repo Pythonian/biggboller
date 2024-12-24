@@ -4,15 +4,13 @@ from apps.accounts.views import (
     onboarding_form,
     update_transaction_pin,
     bettor_dashboard,
-    bettor_bundles_all,
     bettor_settings,
     bettor_tickets_closed,
     bettor_tickets_all,
     bettor_tickets_detail,
     bettor_tickets_answered,
     bettor_tickets_pending,
-    bettor_bundles_owned,
-    bettor_bundles_detail,
+    bettor_bundles_purchase,
     bettor_bundle_purchase_pin,
     bettor_purchase_successful,
     bettor_payouts_all,
@@ -34,7 +32,7 @@ urlpatterns = [
     path("dashboard/", bettor_dashboard, name="dashboard"),
     path(
         "bundles/purchase/<uuid:bundle_id>/",
-        bettor_bundles_detail,
+        bettor_bundles_purchase,
         name="bundles_detail",
     ),
     path(
@@ -47,8 +45,6 @@ urlpatterns = [
         bettor_purchase_successful,
         name="purchase_successful",
     ),
-    path("bundles/owned/", bettor_bundles_owned, name="bundles_owned"),
-    path("bundles/", bettor_bundles_all, name="bundles_all"),
     path("settings/", bettor_settings, name="settings"),
     # Tickets
     path(
