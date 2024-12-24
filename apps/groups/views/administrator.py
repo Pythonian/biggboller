@@ -41,7 +41,7 @@ def admin_groups_all(request):
 
     groups = mk_paginator(request, groups, PAGINATION_COUNT)
 
-    template = "groups/all.html"
+    template = "groups/administrator/all.html"
     context = {
         "groups": groups,
         "total_groups": total_groups,
@@ -104,7 +104,7 @@ def admin_groups_new(request):
         group_form = GroupCreateForm(prefix="group")
         bundle_form = BundleCreateForm(prefix="bundle")
 
-    template = "groups/new.html"
+    template = "groups/administrator/new.html"
     context = {
         "group_form": group_form,
         "bundle_form": bundle_form,
@@ -120,7 +120,7 @@ def admin_groups_running(request):
     running_groups = groups.filter(status=Group.Status.RUNNING).count()
     groups = mk_paginator(request, groups, PAGINATION_COUNT)
 
-    template = "groups/running.html"
+    template = "groups/administrator/running.html"
     context = {
         "groups": groups,
         "running_groups": running_groups,
@@ -136,7 +136,7 @@ def admin_groups_closed(request):
     closed_groups = groups.filter(status=Group.Status.CLOSED).count()
     groups = mk_paginator(request, groups, PAGINATION_COUNT)
 
-    template = "groups/closed.html"
+    template = "groups/administrator/closed.html"
     context = {
         "groups": groups,
         "closed_groups": closed_groups,
@@ -173,7 +173,7 @@ def admin_groups_detail(request, group_id):
     else:
         form = GroupUpdateForm(instance=group)
 
-    template = "groups/detail.html"
+    template = "groups/administrator/detail.html"
     context = {
         "group": group,
         "form": form,

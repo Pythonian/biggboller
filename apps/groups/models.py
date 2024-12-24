@@ -86,6 +86,10 @@ class Group(TimeStampedModel):
             args=[self.group_id],
         )
 
+    @property
+    def pending_group_request(self):
+        return self.group_requests.filter(status=GroupRequest.Status.PENDING).count()
+
 
 class GroupRequest(TimeStampedModel):
     """Represents a user's request to join a group."""

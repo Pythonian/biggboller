@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.contrib.auth.hashers import check_password
 from django.db import transaction
 
-from apps.accounts.forms import BundlePurchaseForm
+from ..forms import BundlePurchaseForm
 from apps.core.utils import mk_paginator, create_action, send_email_thread
 from ..models import Bundle, Purchase, GroupRequest, Group
 from apps.wallets.models import Wallet
@@ -20,11 +20,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 PAGINATION_COUNT = 20
-
-
-##############
-# GROUPS
-##############
 
 
 @login_required

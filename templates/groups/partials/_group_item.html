@@ -2,6 +2,7 @@
 <tr>
     <td>{{ group.name }}</td>
     <td>{{ group.description|truncatechars:70 }}</td>
+    <td>{{ group.pending_group_request }}</td>
     <td>{{ group.updated|date:"F j, Y" }}</td>
     <td><span
             class="badge rounded bg-label-{% if group.status == group.Status.RUNNING %}success{% else %}danger{% endif %}">{{ group.get_status_display }}</span>
