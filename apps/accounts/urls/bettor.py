@@ -10,9 +10,6 @@ from apps.accounts.views import (
     bettor_tickets_detail,
     bettor_tickets_answered,
     bettor_tickets_pending,
-    bettor_bundles_purchase,
-    bettor_bundle_purchase_pin,
-    bettor_purchase_successful,
     bettor_payouts_all,
 )
 
@@ -30,21 +27,6 @@ urlpatterns = [
         name="update_transaction_pin",
     ),
     path("dashboard/", bettor_dashboard, name="dashboard"),
-    path(
-        "bundles/purchase/<uuid:bundle_id>/",
-        bettor_bundles_purchase,
-        name="bundles_detail",
-    ),
-    path(
-        "bundles/purchase-pin/",
-        bettor_bundle_purchase_pin,
-        name="bundle_purchase_pin",
-    ),
-    path(
-        "bundles/purchase/<uuid:purchase_id>/successful/",
-        bettor_purchase_successful,
-        name="purchase_successful",
-    ),
     path("settings/", bettor_settings, name="settings"),
     # Tickets
     path(

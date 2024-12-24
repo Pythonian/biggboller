@@ -309,7 +309,7 @@ class Purchase(TimeStampedModel):
         return f"{self.user} - {self.bundle.name} - {self.amount}"
 
     def get_absolute_url(self):
-        return reverse("bettor:purchase_successful", args=[self.purchase_id])
+        return reverse("bettor_groups:purchase_successful", args=[self.purchase_id])
 
     @property
     def potential_win(self):

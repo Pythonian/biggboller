@@ -50,13 +50,13 @@
                     </li>
                     <li
                         class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base border-bottom pt-3 pb-2">
-                        <p class="p-0 m-0 text-muted fs-6">Reference</p>
-                        <span class="fw-bold">{{ purchase.reference }}</span>
+                        <p class="p-0 m-0 text-muted fs-6">Potential Return</p>
+                        <span class="fw-bold">₦{{ purchase.payout_amount|floatformat:2|intcomma }}</span>
                     </li>
                     <li
                         class="ps-0 pe-0 d-flex align-items-center justify-content-between position-relative lh-base pt-3">
-                        <p class="p-0 m-0 text-muted fs-6">Potential Return</p>
-                        <span class="fw-bold">₦{{ purchase.payout_amount|floatformat:2|intcomma }}</span>
+                        <p class="p-0 m-0 text-muted fs-6">Reference</p>
+                        <span class="fw-bold">{{ purchase.reference }}</span>
                     </li>
                 </ul>
             </div>

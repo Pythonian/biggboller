@@ -36,9 +36,6 @@ from apps.accounts.views.bettor import (
     bettor_tickets_detail,
     bettor_tickets_answered,
     bettor_tickets_pending,
-    bettor_purchase_successful,
-    bettor_bundles_purchase,
-    bettor_bundle_purchase_pin,
     bettor_payouts_all,
 )
 
@@ -89,8 +86,5 @@ __all__ = [
     "bettor_tickets_detail",
     "bettor_tickets_answered",
     "bettor_tickets_pending",
-    "bettor_bundles_purchase",
-    "bettor_bundle_purchase_pin",
-    "bettor_purchase_successful",
     "bettor_payouts_all",
 ]

@@ -73,8 +73,9 @@
                     {% for group in user_groups %}
                     <li class="d-flex mb-4 pb-1">
                         <div class="avatar flex-shrink-0 me-3">
-                            <span class="avatar-initial rounded bg-label-primary"><i
-                                    class="fa-solid fa-{{ forloop.counter }}"></i></span>
+                            <span class="avatar-initial rounded bg-label-primary">
+                                {{ forloop.counter }}
+                            </span>
                         </div>
                         <div class="row w-100 align-items-center">
                             <div class="col-sm-8 col-lg-12 col-xxl-8 mb-1 mb-sm-0 mb-lg-1 mb-xxl-0">

@@ -18,8 +18,10 @@
                 <div class="d-flex justify-content-between align-items-start">
                     <div>
                         <h5 class="mb-1">{{ bundle.name }}</h5>
-                        <small class="badge bg-label-primary"
-                            style="font-size: 10px;">{{ bundle.get_status_display }}</small>
+                        <small class="badge bg-label-secondary" style="font-size: 10px;">Round
+                            {{ bundle.current_round }}</small>
+                        <small class="badge bg-label-primary" style="font-size: 10px;">
+                            {{ bundle.get_status_display }}</small>
                     </div>
 
                     <div class="d-flex justify-content-center">
@@ -46,14 +48,14 @@
                 </ul>
                 <div class="d-grid w-100 mt-4 pt-2">
                     {% if is_purchased %}
-                    <a href="{% url 'bettor:purchase_successful' is_purchased.purchase_id %}" class="btn btn-success">
+                    <a href="{% url 'bettor_groups:purchase_successful' is_purchased.purchase_id %}"
+                        class="btn btn-success">
                         View Receipt
                     </a>
                     {% elif bundle.status == "W" %}
                     <div class="alert alert-info">
                         <p class="mt-2">This bundle has already been marked as Won and is no longer available
-                            for
-                            purchase.</p>
+                            for purchase.</p>
                     </div>
                     {% elif bundle.status == "L" %}
                     <div class="alert alert-danger">
@@ -61,7 +63,14 @@
                             purchase.</p>
                     </div>
                     {% elif is_purchasable %}
-                    <a href="{% url 'bettor:bundles_detail' bundle.bundle_id %}" class="btn btn-primary">Buy Bundle</a>
+                    <a href="{% url 'bettor_groups:bundles_detail' bundle.bundle_id %}" class="btn btn-primary">Buy
+                        Bundle</a>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <p class="mt-2">
+                            You are not eligible to purchase this bundle in the current round.
+                        </p>
+                    </div>
                     {% endif %}
                     <a href="{% url 'bettor_groups:groups_all' %}" class="btn btn-secondary mt-2">Back to My Groups</a>
                 </div>
