@@ -1,0 +1,37 @@
+{% extends "accounts/base.html" %}
+{% load form_tags %}
+
+{% block title %}Create New Ticket{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-xl-7 mx-auto col-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Create New Ticket</h5>
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="row g-2">
+                        <div class="col-12">
+                            {% render_form_field form.subject %}
+                        </div>
+                        <div class="col-12">
+                            {% render_form_field form.description %}
+                        </div>
+                    </div>
+                    <div class="my-3 d-flex justify-content-between">
+                        <button class="btn btn-success" type="submit">
+                            <i class="fa-solid fa-check-circle me-2"></i> Create Ticket
+                        </button>
+                        <a href="{% url 'ticket:bettor_tickets_all' %}" class="btn btn-label-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

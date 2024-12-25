@@ -73,7 +73,7 @@ def admin_tickets_detail(request, ticket_id):
                 # TODO: Send an email to the Bettor whenever an Admin replies
                 # to the Ticket
                 return redirect(
-                    "administrator:tickets_detail", ticket_id=ticket.ticket_id
+                    "ticket:admin_tickets_detail", ticket_id=ticket.ticket_id
                 )
 
         elif "update_status" in request.POST:
@@ -90,7 +90,7 @@ def admin_tickets_detail(request, ticket_id):
             # TODO: Send an email to the Bettor when an Admin updates the
             # status of the Ticket.
             return redirect(
-                "administrator:tickets_detail",
+                "ticket:admin_tickets_detail",
                 ticket_id=ticket.ticket_id,
             )
 
@@ -168,9 +168,22 @@ def bettor_tickets_all(request):
     answered_tickets = tickets.filter(status=Ticket.Status.ANSWERED).count()
     closed_tickets = tickets.filter(status=Ticket.Status.CLOSED).count()
 
-    # TODO: Move Ticket creation to its own view and page. Ticket should be
-    # created from all the views.
+    tickets = mk_paginator(request, tickets, PAGINATION_COUNT)
 
+    template = "tickets/bettor/all.html"
+    context = {
+        "tickets": tickets,
+        "total_tickets": total_tickets,
+        "pending_tickets": pending_tickets,
+        "answered_tickets": answered_tickets,
+        "closed_tickets": closed_tickets,
+    }
+
+    return render(request, template, context)
+
+
+@login_required
+def bettor_tickets_create(request):
     if request.method == "POST":
         form = TicketCreateForm(request.POST)
 
@@ -182,7 +195,7 @@ def bettor_tickets_all(request):
 
             messages.success(
                 request,
-                f'Your Ticket with ID "#{ticket.ticket_id}" have been created successfully.',
+                f'Your Ticket with ID "#{ticket.ticket_id}" has been created successfully.',
             )
             # TODO: Send an Email to the Bettor confirming their successful Ticket creation
             create_action(
@@ -197,15 +210,8 @@ def bettor_tickets_all(request):
     else:
         form = TicketCreateForm()
 
-    tickets = mk_paginator(request, tickets, PAGINATION_COUNT)
-
-    template = "tickets/bettor/all.html"
+    template = "tickets/bettor/create.html"
     context = {
-        "tickets": tickets,
-        "total_tickets": total_tickets,
-        "pending_tickets": pending_tickets,
-        "answered_tickets": answered_tickets,
-        "closed_tickets": closed_tickets,
         "form": form,
     }
 
@@ -237,7 +243,7 @@ def bettor_tickets_detail(request, ticket_id):
                     ticket,
                 )
                 return redirect(
-                    "bettor:tickets_detail",
+                    "ticket:bettor_tickets_detail",
                     ticket_id=ticket.ticket_id,
                 )
 
@@ -261,7 +267,7 @@ def bettor_tickets_detail(request, ticket_id):
             else:
                 messages.error(request, "Invalid status selected.")
             return redirect(
-                "bettor:tickets_detail",
+                "ticket:bettor_tickets_detail",
                 ticket_id=ticket.ticket_id,
             )
 

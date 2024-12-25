@@ -11,6 +11,7 @@ from .views import (
     bettor_tickets_detail,
     bettor_tickets_answered,
     bettor_tickets_pending,
+    bettor_tickets_create,
 )
 
 app_name = "ticket"
@@ -68,6 +69,11 @@ urlpatterns = [
                     "pending/",
                     bettor_tickets_pending,
                     name="bettor_tickets_pending",
+                ),
+                path(
+                    "new/",
+                    bettor_tickets_create,
+                    name="bettor_tickets_create",
                 ),
                 path(
                     "<str:ticket_id>/",

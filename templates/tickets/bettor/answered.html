@@ -6,9 +6,9 @@
 
 <div class="d-flex justify-content-between align-items-center py-3">
     <h4>Answered Tickets</h4>
-    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createTicket">
+    <a href="{% url 'ticket:bettor_tickets_create' %}" class="btn btn-outline-primary">
         <i class="fa-solid fa-plus me-2"></i> Create New
-    </button>
+    </a>
 </div>
 
 <div class="row mb-4">
@@ -39,7 +39,5 @@
         </div>
     </div>
 </div>
-
-{% include "tickets/bettor/modals/create_ticket.html" %}
 
 {% endblock content %}

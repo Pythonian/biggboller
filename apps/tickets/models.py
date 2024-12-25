@@ -71,7 +71,7 @@ class Ticket(models.Model):
         super(Ticket, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse("bettor:tickets_detail", args=[self.ticket_id])
+        return reverse("ticket:bettor_tickets_detail", args=[self.ticket_id])
 
     @staticmethod
     def generate_unique_ticket_id():
