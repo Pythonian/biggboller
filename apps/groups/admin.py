@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Bundle, Group, Purchase, GroupRequest
+from .models import Bundle, Group, Purchase, GroupRequest, Payout
 
 
 @admin.register(Group)
@@ -30,3 +30,8 @@ class PurchaseAdmin(admin.ModelAdmin):
 @admin.register(GroupRequest)
 class GroupRequestAdmin(admin.ModelAdmin):
     list_display = ("user", "group", "status", "created", "updated")
+
+
+@admin.register(Payout)
+class PayoutAdmin(admin.ModelAdmin):
+    pass

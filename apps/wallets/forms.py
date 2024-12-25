@@ -1,10 +1,16 @@
+"""Module for handling transaction forms including deposits and withdrawals."""
+
+from decimal import Decimal
+
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from decimal import Decimal
+
 from .models import Deposit, Withdrawal
 
 
 class TransactionForm(forms.ModelForm):
+    """Base form for handling transactions with common fields and methods."""
+
     def add_widget_attrs(self, field_name, attrs):
         """Add custom attributes to a form field's widget."""
         field = self.fields[field_name]
@@ -30,6 +36,8 @@ class TransactionForm(forms.ModelForm):
 
 
 class DepositForm(TransactionForm):
+    """Form to handle deposit requests."""
+
     class Meta:
         model = Deposit
         fields = ["amount", "description"]
@@ -42,9 +50,7 @@ class DepositForm(TransactionForm):
 
 
 class WithdrawalForm(TransactionForm):
-    """
-    Form to handle withdrawal requests with enhanced validation.
-    """
+    """Form to handle withdrawal requests."""
 
     def __init__(self, *args, **kwargs):
         self.wallet_balance = kwargs.pop("wallet_balance", None)
@@ -68,6 +74,8 @@ class WithdrawalForm(TransactionForm):
 
 
 class TransactionPINForm(forms.Form):
+    """Form to handle transaction PIN input."""
+
     transaction_pin = forms.CharField(
         max_length=6,
         widget=forms.PasswordInput(attrs={"autocomplete": "off"}),

@@ -1,33 +1,45 @@
+"""Views for handling wallet-related operations such as deposits and withdrawals."""
+
+import logging
 from decimal import Decimal
+
 from django.conf import settings
 from django.contrib import messages
-from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import check_password
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.hashers import check_password
 
 from apps.core.utils import create_action, mk_paginator
 
-from .forms import DepositForm, WithdrawalForm, TransactionPINForm
+from .forms import DepositForm, TransactionPINForm, WithdrawalForm
 from .models import Deposit, Withdrawal
 from .tasks import send_deposit_email, send_withdrawal_email
 from .utils import verify_paystack_transaction
+
+logger = logging.getLogger(__name__)
 
 PAGINATION_COUNT = 20
 
 
 @login_required
 def wallet_deposits(request):
-    deposits = Deposit.objects.filter(user=request.user)
-    deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
+    """View to list all deposits made by the user."""
+    try:
+        deposits = Deposit.objects.filter(user=request.user)
+        deposits = mk_paginator(request, deposits, PAGINATION_COUNT)
 
-    template = "wallets/deposits.html"
-    context = {
-        "deposits": deposits,
-    }
+        template = "wallets/deposits.html"
+        context = {
+            "deposits": deposits,
+        }
 
-    return render(request, template, context)
+        return render(request, template, context)
+    except Exception as e:
+        logger.error(f"Error fetching deposits for user {request.user}: {e}")
+        messages.error(request, "An error occurred while fetching your deposits.")
+        return redirect("bettor:dashboard")
 
 
 @login_required
@@ -39,13 +51,17 @@ def wallet_deposit(request):
 
     form = DepositForm(request.POST or None)
     if form.is_valid():
-        deposit = form.save(commit=False)
-        deposit.user = request.user
-        deposit.wallet = request.user.wallet
-        deposit.reference = get_random_string(length=12).upper()
-        deposit.save()
+        try:
+            deposit = form.save(commit=False)
+            deposit.user = request.user
+            deposit.wallet = request.user.wallet
+            deposit.reference = get_random_string(length=12).upper()
+            deposit.save()
 
-        return redirect("wallet:deposit_pin", reference=deposit.reference)
+            return redirect("wallet:deposit_pin", reference=deposit.reference)
+        except Exception as e:
+            logger.error(f"Error creating deposit for user {request.user}: {e}")
+            messages.error(request, "An error occurred while creating your deposit.")
 
     template = "wallets/deposit.html"
     context = {
@@ -140,39 +156,50 @@ def wallet_invoice(request):
         messages.error(request, "Payment verification failed. Please try again.")
         return redirect("wallet:deposit")
 
-    # Update deposit and wallet
-    deposit.update_deposit_status(transaction_data)
-    messages.success(request, "Your deposit was successful!")
+    try:
+        # Update deposit and wallet
+        deposit.update_deposit_status(transaction_data)
+        messages.success(request, "Your deposit was successful!")
 
-    # Sending confirmation email
-    send_deposit_email(request, deposit)
+        # Sending confirmation email
+        send_deposit_email(request, deposit)
 
-    create_action(
-        request.user,
-        "Wallet Top-up",
-        f"has made a wallet deposit of ₦{deposit.amount}.",
-        target=request.user.wallet,
-    )
+        create_action(
+            request.user,
+            "Wallet Top-up",
+            f"has made a wallet deposit of ₦{deposit.amount}.",
+            target=request.user.wallet,
+        )
 
-    template = "wallets/invoice.html"
-    context = {
-        "deposit": deposit,
-    }
+        template = "wallets/invoice.html"
+        context = {
+            "deposit": deposit,
+        }
 
-    return render(request, template, context)
+        return render(request, template, context)
+    except Exception as e:
+        logger.error(f"Error processing deposit for user {request.user}: {e}")
+        messages.error(request, "An error occurred while processing your deposit.")
+        return redirect("wallet:deposit")
 
 
 @login_required
 def wallet_withdrawals(request):
-    withdrawals = Withdrawal.objects.filter(user=request.user)
-    withdrawals = mk_paginator(request, withdrawals, PAGINATION_COUNT)
+    """View to list all withdrawals made by the user."""
+    try:
+        withdrawals = Withdrawal.objects.filter(user=request.user)
+        withdrawals = mk_paginator(request, withdrawals, PAGINATION_COUNT)
 
-    template = "wallets/withdrawals.html"
-    context = {
-        "withdrawals": withdrawals,
-    }
+        template = "wallets/withdrawals.html"
+        context = {
+            "withdrawals": withdrawals,
+        }
 
-    return render(request, template, context)
+        return render(request, template, context)
+    except Exception as e:
+        logger.error(f"Error fetching withdrawals for user {request.user}: {e}")
+        messages.error(request, "An error occurred while fetching your withdrawals.")
+        return redirect("bettor:dashboard")
 
 
 @login_required
@@ -190,16 +217,20 @@ def wallet_withdrawal(request):
             wallet_balance=user_wallet.balance,
         )
         if form.is_valid():
-            amount = form.cleaned_data["amount"]
-            description = form.cleaned_data.get("description", "")
+            try:
+                amount = form.cleaned_data["amount"]
+                description = form.cleaned_data.get("description", "")
 
-            # Store withdrawal details in the session temporarily
-            request.session["withdrawal_data"] = {
-                "amount": str(amount),
-                "description": description,
-            }
+                # Store withdrawal details in the session temporarily
+                request.session["withdrawal_data"] = {
+                    "amount": str(amount),
+                    "description": description,
+                }
 
-            return redirect("wallet:withdrawal_pin")
+                return redirect("wallet:withdrawal_pin")
+            except Exception as e:
+                logger.error(f"Error creating withdrawal for user {request.user}: {e}")
+                messages.error(request, "An error occurred while creating your withdrawal.")
     else:
         form = WithdrawalForm(wallet_balance=user_wallet.balance)
 
@@ -232,38 +263,42 @@ def wallet_withdrawal_pin(request):
             if not check_password(entered_pin, profile.transaction_pin):
                 form.add_error("transaction_pin", "Incorrect Transaction PIN.")
             else:
-                # Create withdrawal record
-                user_wallet = request.user.wallet
-                reference = get_random_string(length=12).upper()
-                withdrawal = Withdrawal.objects.create(
-                    user=request.user,
-                    wallet=user_wallet,
-                    amount=Decimal(withdrawal_data["amount"]),
-                    description=withdrawal_data.get("description", ""),
-                    reference=reference,
-                )
+                try:
+                    # Create withdrawal record
+                    user_wallet = request.user.wallet
+                    reference = get_random_string(length=12).upper()
+                    withdrawal = Withdrawal.objects.create(
+                        user=request.user,
+                        wallet=user_wallet,
+                        amount=Decimal(withdrawal_data["amount"]),
+                        description=withdrawal_data.get("description", ""),
+                        reference=reference,
+                    )
 
-                # Clear session data
-                del request.session["withdrawal_data"]
+                    # Clear session data
+                    del request.session["withdrawal_data"]
 
-                # Send email notification
-                send_withdrawal_email(request, withdrawal)
+                    # Send email notification
+                    send_withdrawal_email(request, withdrawal)
 
-                messages.success(
-                    request,
-                    _(
-                        "Your withdrawal request has been submitted and is pending admin review."
-                    ),
-                )
+                    messages.success(
+                        request,
+                        _(
+                            "Your withdrawal request has been submitted and is pending admin review."
+                        ),
+                    )
 
-                create_action(
-                    request.user,
-                    "Wallet Withdrawal",
-                    f"requested a withdrawal of ₦{withdrawal.amount}.",
-                    target=user_wallet,
-                )
+                    create_action(
+                        request.user,
+                        "Wallet Withdrawal",
+                        f"requested a withdrawal of ₦{withdrawal.amount}.",
+                        target=user_wallet,
+                    )
 
-                return redirect("bettor:dashboard")
+                    return redirect("bettor:dashboard")
+                except Exception as e:
+                    logger.error(f"Error processing withdrawal for user {request.user}: {e}")
+                    messages.error(request, "An error occurred while processing your withdrawal.")
     else:
         form = TransactionPINForm()
 

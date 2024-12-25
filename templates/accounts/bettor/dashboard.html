@@ -167,7 +167,7 @@
                                 <h4 class="text-primary mb-1">₦ {{ wallet_balance|floatformat:2|intcomma }}</h4>
                             </div>
                             <p class=" mb-0">{{ total_pending_withdrawals }} <span class="text-muted">Pending
-                                    Withdrawals</span></p>
+                                    Withdrawal{{ total_pending_withdrawals|pluralize }}</span></p>
                         </div>
                     </div>
                 </div>

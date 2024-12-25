@@ -227,12 +227,12 @@
                         </div>
                         <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                             <div class="me-2">
-                                <small class="text-muted d-block mb-1">{{ payout.user__first_name }}
-                                    {{ payout.user__last_name }}</small>
-                                <h6 class="mb-0">₦{{ payout.amount|floatformat:2|intcomma }}</h6>
+                                <h6 class="mb-0">{{ payout.user__first_name }}
+                                    {{ payout.user__last_name }}</h6>
+                                <small class="text-muted">₦{{ payout.amount|floatformat:2|intcomma }}</small>
                             </div>
-                            <div class="user-progress d-flex align-items-center gap-1">
-                                <h6 class="mb-0">{{ payout.updated|date:"M j, Y" }}</h6>
+                            <div class="user-progress">
+                                <small class="fw-medium">{{ payout.updated|date:"M j, Y" }}</small>
                             </div>
                         </div>
                     </li>

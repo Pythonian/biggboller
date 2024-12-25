@@ -1,17 +1,20 @@
 from decimal import Decimal
 import uuid
+
 from django.conf import settings
+from django.core.validators import (
+    MaxLengthValidator,
+    MinLengthValidator,
+    MinValueValidator,
+)
 from django.db import models, transaction
 from django.db.models import F
 from django.utils.translation import gettext_lazy as _
-from django.core.validators import (
-    MinValueValidator,
-    MinLengthValidator,
-    MaxLengthValidator,
-)
 
 
 class TimeStampedModel(models.Model):
+    """Abstract base class for models with created and updated timestamps."""
+
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -45,6 +48,9 @@ class Wallet(TimeStampedModel):
         ordering = ["-created"]
         verbose_name = _("Wallet")
         verbose_name_plural = _("Wallets")
+        indexes = [
+            models.Index(fields=["user"]),
+        ]
 
     def __str__(self) -> str:
         return f"Wallet: {self.user.get_full_name()}"
@@ -142,6 +148,10 @@ class AuditLog(TimeStampedModel):
         ordering = ["-created"]
         verbose_name = _("Audit Log")
         verbose_name_plural = _("Audit Logs")
+        indexes = [
+            models.Index(fields=["wallet"]),
+            models.Index(fields=["transaction_type"]),
+        ]
 
     def __str__(self):
         return f"Audit Log: {self.get_transaction_type_display()} - Amount: {self.amount} ({self.created})"
@@ -232,6 +242,11 @@ class Deposit(TimeStampedModel):
 
     class Meta:
         ordering = ["-paid_at", "-created"]
+        indexes = [
+            models.Index(fields=["user"]),
+            models.Index(fields=["reference"]),
+            models.Index(fields=["status"]),
+        ]
 
     def __str__(self):
         return (
@@ -328,6 +343,11 @@ class Withdrawal(TimeStampedModel):
         ordering = ["-processed_at", "-created"]
         verbose_name = _("Withdrawal")
         verbose_name_plural = _("Withdrawals")
+        indexes = [
+            models.Index(fields=["user"]),
+            models.Index(fields=["reference"]),
+            models.Index(fields=["status"]),
+        ]
 
     def __str__(self):
         return f"Withdrawal {self.reference} - ₦{self.amount} ({self.get_status_display()})"
