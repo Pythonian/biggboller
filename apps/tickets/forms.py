@@ -1,5 +1,5 @@
 from django import forms
-from apps.accounts.models import Ticket, Reply
+from .models import Ticket, Reply
 
 
 class TicketCreateForm(forms.ModelForm):

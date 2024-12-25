@@ -4,12 +4,7 @@
 
 {% block content %}
 
-<div class="d-flex justify-content-between align-items-center py-3">
-    <h4>Closed Tickets</h4>
-    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#createTicket">
-        <i class="fa-solid fa-plus me-2"></i> Create New
-    </button>
-</div>
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="Closed Tickets" %}
 
 <div class="row mb-4">
     {% include 'accounts/administrator/partials/_stats_card.html' with count=closed_tickets label="Closed Tickets" icon_class="fa-solid fa-ban" color_class="danger" %}
@@ -22,11 +17,11 @@
             <div class="table-responsive">
                 <table class="table table-lg">
                     <thead>
-                        {% include 'accounts/bettor/tickets/partials/_table_head.html' %}
+                        {% include 'tickets/administrator/partials/_table_head.html' %}
                     </thead>
                     <tbody>
                         {% for ticket in tickets %}
-                        {% include "accounts/bettor/tickets/partials/_ticket_item.html" %}
+                        {% include "tickets/administrator/partials/_ticket_item.html" %}
                         {% empty %}
                         <tr>
                             <td colspan="7" class="text-center">No record yet.</td>
@@ -39,7 +34,5 @@
         </div>
     </div>
 </div>
-
-{% include "accounts/bettor/tickets/modals/create_ticket.html" %}
 
 {% endblock content %}

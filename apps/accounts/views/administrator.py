@@ -13,12 +13,11 @@ from django.views.decorators.http import require_POST
 from django.utils.timezone import now
 
 from apps.accounts.models import (
-    Ticket,
     Profile,
     Action,
     LoginHistory,
 )
-from apps.accounts.forms import TicketReplyForm
+from apps.tickets.models import Ticket
 from apps.core.utils import mk_paginator, create_action, send_email_thread
 from apps.wallets.models import Withdrawal, Deposit
 from apps.groups.models import Group, Bundle, Purchase, Payout
@@ -481,137 +480,6 @@ def admin_unban_user(request, username):
         "User has been unbanned and notified by email.",
     )
     return redirect("administrator:users_detail", username=username)
-
-
-##############
-# TICKETS
-##############
-
-
-@login_required
-@user_passes_test(is_admin)
-def admin_tickets_all(request):
-    tickets = Ticket.objects.all()
-    total_tickets = tickets.count()
-    pending_tickets = tickets.filter(status=Ticket.Status.PENDING).count()
-    answered_tickets = tickets.filter(status=Ticket.Status.ANSWERED).count()
-    closed_tickets = tickets.filter(status=Ticket.Status.CLOSED).count()
-
-    tickets = mk_paginator(request, tickets, PAGINATION_COUNT)
-
-    template = "accounts/administrator/tickets/all.html"
-    context = {
-        "tickets": tickets,
-        "total_tickets": total_tickets,
-        "pending_tickets": pending_tickets,
-        "answered_tickets": answered_tickets,
-        "closed_tickets": closed_tickets,
-    }
-
-    return render(request, template, context)
-
-
-@login_required
-@user_passes_test(is_admin)
-def admin_tickets_detail(request, ticket_id):
-    ticket = get_object_or_404(Ticket, ticket_id=ticket_id)
-    replies = ticket.replies.all().order_by("created")
-
-    if request.method == "POST":
-        if "reply" in request.POST:
-            reply_form = TicketReplyForm(request.POST)
-            if reply_form.is_valid():
-                reply = reply_form.save(commit=False)
-                reply.ticket = ticket
-                reply.user = request.user
-                reply.save()
-                messages.success(
-                    request,
-                    "Your reply to this ticket has been posted.",
-                )
-                # TODO: Send an email to the Bettor whenever an Admin replies
-                # to the Ticket
-                return redirect(
-                    "administrator:tickets_detail", ticket_id=ticket.ticket_id
-                )
-
-        elif "update_status" in request.POST:
-            new_status = request.POST.get("status")
-            if new_status in dict(Ticket.Status.choices):
-                ticket.status = new_status
-                ticket.save()
-                messages.success(
-                    request,
-                    "Ticket status updated successfully.",
-                )
-            else:
-                messages.error(request, "Invalid status selected.")
-            # TODO: Send an email to the Bettor when an Admin updates the
-            # status of the Ticket.
-            return redirect(
-                "administrator:tickets_detail",
-                ticket_id=ticket.ticket_id,
-            )
-
-    else:
-        reply_form = TicketReplyForm()
-
-    template = "accounts/administrator/tickets/detail.html"
-    context = {
-        "ticket": ticket,
-        "replies": replies,
-        "reply_form": reply_form,
-    }
-    return render(request, template, context)
-
-
-@login_required
-@user_passes_test(is_admin)
-def admin_tickets_pending(request):
-    tickets = Ticket.objects.pending()
-    pending_tickets = tickets.filter(status=Ticket.Status.PENDING).count()
-
-    tickets = mk_paginator(request, tickets, PAGINATION_COUNT)
-
-    template = "accounts/administrator/tickets/pending.html"
-    context = {
-        "tickets": tickets,
-        "pending_tickets": pending_tickets,
-    }
-
-    return render(request, template, context)
-
-
-@login_required
-@user_passes_test(is_admin)
-def admin_tickets_answered(request):
-    tickets = Ticket.objects.answered()
-    answered_tickets = tickets.filter(status=Ticket.Status.ANSWERED).count()
-
-    template = "accounts/administrator/tickets/answered.html"
-    context = {
-        "tickets": tickets,
-        "answered_tickets": answered_tickets,
-    }
-
-    return render(request, template, context)
-
-
-@login_required
-@user_passes_test(is_admin)
-def admin_tickets_closed(request):
-    tickets = Ticket.objects.closed()
-    closed_tickets = tickets.filter(status=Ticket.Status.CLOSED).count()
-
-    tickets = mk_paginator(request, tickets, PAGINATION_COUNT)
-
-    template = "accounts/administrator/tickets/closed.html"
-    context = {
-        "tickets": tickets,
-        "closed_tickets": closed_tickets,
-    }
-
-    return render(request, template, context)
 
 
 ###############

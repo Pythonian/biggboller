@@ -14,11 +14,6 @@ from apps.accounts.views import (
     admin_users_assign_group,
     admin_unban_user,
     admin_suspend_user,
-    admin_tickets_closed,
-    admin_tickets_all,
-    admin_tickets_detail,
-    admin_tickets_answered,
-    admin_tickets_pending,
     admin_payouts_all,
     admin_payouts_approved,
     admin_payouts_cancelled,
@@ -95,39 +90,6 @@ urlpatterns = [
                     "",
                     admin_payouts_all,
                     name="payouts_all",
-                ),
-            ]
-        ),
-    ),
-    # Tickets
-    path(
-        "tickets/",
-        include(
-            [
-                path(
-                    "closed/",
-                    admin_tickets_closed,
-                    name="tickets_closed",
-                ),
-                path(
-                    "answered/",
-                    admin_tickets_answered,
-                    name="tickets_answered",
-                ),
-                path(
-                    "pending/",
-                    admin_tickets_pending,
-                    name="tickets_pending",
-                ),
-                path(
-                    "<str:ticket_id>/",
-                    admin_tickets_detail,
-                    name="tickets_detail",
-                ),
-                path(
-                    "",
-                    admin_tickets_all,
-                    name="tickets_all",
                 ),
             ]
         ),

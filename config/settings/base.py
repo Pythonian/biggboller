@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "apps.core.apps.CoreConfig",
     "apps.wallets.apps.WalletsConfig",
     "apps.groups.apps.GroupsConfig",
+    "apps.tickets.apps.TicketsConfig",
     # Third-party Apps
     "storages",
     "widget_tweaks",

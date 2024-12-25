@@ -12,13 +12,6 @@ urlpatterns = [
     ),
     path("admin/", admin.site.urls),
     path(
-        "paystack/",
-        include(
-            ("paystack.frameworks.django.urls", "paystack"),
-            namespace="paystack",
-        ),
-    ),
-    path(
         "administrator/",
         include(
             "apps.accounts.urls.administrator",
@@ -60,6 +53,7 @@ urlpatterns = [
             namespace="bettor",
         ),
     ),
+    path("", include("apps.tickets.urls", namespace="ticket")),
     path("", include("apps.core.urls", namespace="core")),
 ]
 

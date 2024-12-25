@@ -17,11 +17,11 @@
             <div class="table-responsive">
                 <table class="table table-lg">
                     <thead>
-                        {% include 'accounts/administrator/tickets/partials/_table_head.html' %}
+                        {% include 'tickets/administrator/partials/_table_head.html' %}
                     </thead>
                     <tbody>
                         {% for ticket in tickets %}
-                        {% include "accounts/administrator/tickets/partials/_ticket_item.html" %}
+                        {% include "tickets/administrator/partials/_ticket_item.html" %}
                         {% empty %}
                         <tr>
                             <td colspan="7" class="text-center">No record yet.</td>

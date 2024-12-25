@@ -1,27 +1,27 @@
 {% extends "accounts/base.html" %}
 
-{% block title %}Closed Tickets{% endblock title %}
+{% block title %}Pending Tickets{% endblock title %}
 
 {% block content %}
 
-{% include 'accounts/administrator/partials/_header_item.html' with head_title="Closed Tickets" %}
+{% include 'accounts/administrator/partials/_header_item.html' with head_title="Pending Tickets" %}
 
 <div class="row mb-4">
-    {% include 'accounts/administrator/partials/_stats_card.html' with count=closed_tickets label="Closed Tickets" icon_class="fa-solid fa-ban" color_class="danger" %}
+    {% include 'accounts/administrator/partials/_stats_card.html' with count=pending_tickets label="Pending Tickets" icon_class="fa-solid fa-hourglass-half" color_class="info" %}
 </div>
 
 <div class="row">
     <div class="col-12">
         <div class="card">
-            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Closed Tickets List" %}
+            {% include 'accounts/administrator/partials/_card_header.html' with card_header="Pending Tickets List" %}
             <div class="table-responsive">
                 <table class="table table-lg">
                     <thead>
-                        {% include 'accounts/administrator/tickets/partials/_table_head.html' %}
+                        {% include 'tickets/administrator/partials/_table_head.html' %}
                     </thead>
                     <tbody>
                         {% for ticket in tickets %}
-                        {% include "accounts/administrator/tickets/partials/_ticket_item.html" %}
+                        {% include "tickets/administrator/partials/_ticket_item.html" %}
                         {% empty %}
                         <tr>
                             <td colspan="7" class="text-center">No record yet.</td>

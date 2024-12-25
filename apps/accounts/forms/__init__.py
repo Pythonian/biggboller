@@ -1,4 +1,3 @@
-from apps.accounts.forms.tickets import TicketCreateForm, TicketReplyForm
 from apps.accounts.forms.auth import (
     UserRegistrationForm,
     ResendActivationEmailForm,
@@ -10,8 +9,6 @@ from apps.accounts.forms.auth import (
 )
 
 __all__ = [
-    "TicketCreateForm",
-    "TicketReplyForm",
     "UserRegistrationForm",
     "ResendActivationEmailForm",
     "UserUpdateForm",

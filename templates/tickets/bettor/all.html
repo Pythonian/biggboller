@@ -28,11 +28,11 @@
             <div class="table-responsive">
                 <table class="table table-lg">
                     <thead>
-                        {% include 'accounts/bettor/tickets/partials/_table_head.html' %}
+                        {% include 'tickets/bettor/partials/_table_head.html' %}
                     </thead>
                     <tbody>
                         {% for ticket in tickets %}
-                        {% include "accounts/bettor/tickets/partials/_ticket_item.html" %}
+                        {% include "tickets/bettor/partials/_ticket_item.html" %}
                         {% empty %}
                         <tr>
                             <td colspan="7" class="text-center">No record yet.</td>
@@ -46,6 +46,6 @@
     </div>
 </div>
 
-{% include "accounts/bettor/tickets/modals/create_ticket.html" %}
+{% include "tickets/bettor/modals/create_ticket.html" %}
 
 {% endblock content %}
