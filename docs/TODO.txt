@@ -1,0 +1,14 @@
+- Celery/Redis Email Sending; Update Email templates format
+- A Better empty states design for templates
+- Development Tools: Pytest, Pre-commit, Makefile, Pyproject, Tox, GithubActions code updates
+- Implement the ElasticSearch feature for every Module
+- Homepage design update with screenshots/more contents
+- Decorator Redirects when an admin inadvertently visits a bettor view and vice versa
+- Rate limiting
+- Change Transaction PIN functionality
+- Disable Submit button on Withdrawal Request Approval
+
+# Edge Cases
+
+- When a Group has been marked as Closed, and the Bundle is still pending, what happens?
+- Crosscheck when a User has been "banned", what access they can still have

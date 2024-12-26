@@ -6,28 +6,63 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('groups', '0004_bundle_current_round_bundle_round_outcomes'),
+        ("groups", "0004_bundle_current_round_bundle_round_outcomes"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='GroupRequest',
+            name="GroupRequest",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('status', models.CharField(choices=[('P', 'Pending'), ('A', 'Approved'), ('R', 'Rejected')], default='P', max_length=1, verbose_name='Request Status')),
-                ('group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='group_requests', to='groups.group', verbose_name='Group')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='group_requests', to=settings.AUTH_USER_MODEL, verbose_name='User')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("P", "Pending"),
+                            ("A", "Approved"),
+                            ("R", "Rejected"),
+                        ],
+                        default="P",
+                        max_length=1,
+                        verbose_name="Request Status",
+                    ),
+                ),
+                (
+                    "group",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="group_requests",
+                        to="groups.group",
+                        verbose_name="Group",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="group_requests",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="User",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Group Request',
-                'verbose_name_plural': 'Group Requests',
-                'ordering': ['-created'],
-                'unique_together': {('user', 'group')},
+                "verbose_name": "Group Request",
+                "verbose_name_plural": "Group Requests",
+                "ordering": ["-created"],
+                "unique_together": {("user", "group")},
             },
         ),
     ]

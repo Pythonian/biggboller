@@ -4,25 +4,31 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='FrequentlyAskedQuestion',
+            name="FrequentlyAskedQuestion",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('question', models.CharField(max_length=255, verbose_name='question')),
-                ('answer', models.TextField(verbose_name='answer')),
-                ('is_published', models.BooleanField(default=True)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("question", models.CharField(max_length=255, verbose_name="question")),
+                ("answer", models.TextField(verbose_name="answer")),
+                ("is_published", models.BooleanField(default=True)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
             ],
             options={
-                'ordering': ['-created'],
+                "ordering": ["-created"],
             },
         ),
     ]

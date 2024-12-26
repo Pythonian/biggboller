@@ -6,5 +6,5 @@ Your total purchase amount is ₦{{ total_amount }}.
 
 We appreciate your participation and wish you the best of luck!
 
-Thank you,  
+Thank you,
 The Bigg-Boller Team

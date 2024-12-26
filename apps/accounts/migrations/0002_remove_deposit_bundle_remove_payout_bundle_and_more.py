@@ -4,42 +4,41 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounts', '0001_initial'),
+        ("accounts", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='deposit',
-            name='bundle',
+            model_name="deposit",
+            name="bundle",
         ),
         migrations.RemoveField(
-            model_name='payout',
-            name='bundle',
+            model_name="payout",
+            name="bundle",
         ),
         migrations.RemoveField(
-            model_name='deposit',
-            name='user',
+            model_name="deposit",
+            name="user",
         ),
         migrations.RemoveField(
-            model_name='group',
-            name='bettors',
+            model_name="group",
+            name="bettors",
         ),
         migrations.RemoveField(
-            model_name='payout',
-            name='user',
+            model_name="payout",
+            name="user",
         ),
         migrations.DeleteModel(
-            name='Bundle',
+            name="Bundle",
         ),
         migrations.DeleteModel(
-            name='Deposit',
+            name="Deposit",
         ),
         migrations.DeleteModel(
-            name='Group',
+            name="Group",
         ),
         migrations.DeleteModel(
-            name='Payout',
+            name="Payout",
         ),
     ]

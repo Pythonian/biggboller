@@ -192,4 +192,3 @@ document.getElementById("layout-menu") && (isHorizontalLayout = document.getElem
             });
         }, 10);
     });
-

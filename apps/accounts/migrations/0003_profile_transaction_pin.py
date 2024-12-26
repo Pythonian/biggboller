@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounts', '0002_remove_deposit_bundle_remove_payout_bundle_and_more'),
+        ("accounts", "0002_remove_deposit_bundle_remove_payout_bundle_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='transaction_pin',
-            field=models.CharField(blank=True, help_text="User's 6-digit transaction PIN (hashed).", max_length=128),
+            model_name="profile",
+            name="transaction_pin",
+            field=models.CharField(
+                blank=True,
+                help_text="User's 6-digit transaction PIN (hashed).",
+                max_length=128,
+            ),
         ),
     ]

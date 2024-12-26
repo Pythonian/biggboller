@@ -9,189 +9,584 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
+        ("contenttypes", "0002_remove_content_type_name"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Bundle',
+            name="Bundle",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('bundle_id', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('name', models.CharField(help_text='Enter a unique name for the group bundle.', max_length=255, unique=True, verbose_name='Bundle Name')),
-                ('price', models.DecimalField(decimal_places=2, help_text='Enter the price for one bundle.', max_digits=10, verbose_name='Bundle Price')),
-                ('winning_percentage', models.DecimalField(decimal_places=2, help_text='Enter the percentage of the bundle price that will be returned as winnings. E.g., 20 for 20%.', max_digits=5, validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(100)], verbose_name='Winning Percentage')),
-                ('min_bundles_per_user', models.PositiveIntegerField(help_text='Minimum number of bundles a user can purchase.', validators=[django.core.validators.MinValueValidator(1)], verbose_name='Minimum Bundles per User')),
-                ('max_bundles_per_user', models.PositiveIntegerField(help_text='Maximum number of bundles a user can purchase.', validators=[django.core.validators.MinValueValidator(1)], verbose_name='Maximum Bundles per User')),
-                ('status', models.CharField(choices=[('P', 'Pending'), ('W', 'Won'), ('L', 'Lost')], default='P', help_text='Current status of the bundle.', max_length=1, verbose_name='Status')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Timestamp when the bundle was created.', verbose_name='Created At')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Timestamp when the bundle was last updated.', verbose_name='Updated At')),
-                ('participants', models.ManyToManyField(blank=True, help_text='Users who have purchased this bundle.', related_name='bundles', to=settings.AUTH_USER_MODEL, verbose_name='Participants')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "bundle_id",
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Enter a unique name for the group bundle.",
+                        max_length=255,
+                        unique=True,
+                        verbose_name="Bundle Name",
+                    ),
+                ),
+                (
+                    "price",
+                    models.DecimalField(
+                        decimal_places=2,
+                        help_text="Enter the price for one bundle.",
+                        max_digits=10,
+                        verbose_name="Bundle Price",
+                    ),
+                ),
+                (
+                    "winning_percentage",
+                    models.DecimalField(
+                        decimal_places=2,
+                        help_text="Enter the percentage of the bundle price that will be returned as winnings. E.g., 20 for 20%.",
+                        max_digits=5,
+                        validators=[
+                            django.core.validators.MinValueValidator(1),
+                            django.core.validators.MaxValueValidator(100),
+                        ],
+                        verbose_name="Winning Percentage",
+                    ),
+                ),
+                (
+                    "min_bundles_per_user",
+                    models.PositiveIntegerField(
+                        help_text="Minimum number of bundles a user can purchase.",
+                        validators=[django.core.validators.MinValueValidator(1)],
+                        verbose_name="Minimum Bundles per User",
+                    ),
+                ),
+                (
+                    "max_bundles_per_user",
+                    models.PositiveIntegerField(
+                        help_text="Maximum number of bundles a user can purchase.",
+                        validators=[django.core.validators.MinValueValidator(1)],
+                        verbose_name="Maximum Bundles per User",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("P", "Pending"), ("W", "Won"), ("L", "Lost")],
+                        default="P",
+                        help_text="Current status of the bundle.",
+                        max_length=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Timestamp when the bundle was created.",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Timestamp when the bundle was last updated.",
+                        verbose_name="Updated At",
+                    ),
+                ),
+                (
+                    "participants",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="Users who have purchased this bundle.",
+                        related_name="bundles",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Participants",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Bundle',
-                'verbose_name_plural': 'Bundles',
-                'ordering': ['-created_at'],
+                "verbose_name": "Bundle",
+                "verbose_name_plural": "Bundles",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.CreateModel(
-            name='Deposit',
+            name="Deposit",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('quantity', models.PositiveIntegerField(verbose_name='Quantity')),
-                ('amount', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Amount')),
-                ('payout_amount', models.DecimalField(blank=True, decimal_places=2, max_digits=10, null=True, verbose_name='Payout Amount')),
-                ('status', models.CharField(choices=[('P', 'Pending'), ('A', 'Approved'), ('C', 'Cancelled')], default='P', max_length=1, verbose_name='Status')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('bundle', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='deposits', to='accounts.bundle', verbose_name='Bundle')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='deposits', to=settings.AUTH_USER_MODEL, verbose_name='User')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("quantity", models.PositiveIntegerField(verbose_name="Quantity")),
+                (
+                    "amount",
+                    models.DecimalField(
+                        decimal_places=2, max_digits=10, verbose_name="Amount"
+                    ),
+                ),
+                (
+                    "payout_amount",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=2,
+                        max_digits=10,
+                        null=True,
+                        verbose_name="Payout Amount",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("P", "Pending"),
+                            ("A", "Approved"),
+                            ("C", "Cancelled"),
+                        ],
+                        default="P",
+                        max_length=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                (
+                    "bundle",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="deposits",
+                        to="accounts.bundle",
+                        verbose_name="Bundle",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="deposits",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="User",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Deposit',
-                'verbose_name_plural': 'Deposits',
-                'ordering': ['-created'],
+                "verbose_name": "Deposit",
+                "verbose_name_plural": "Deposits",
+                "ordering": ["-created"],
             },
         ),
         migrations.CreateModel(
-            name='Group',
+            name="Group",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('group_id', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('name', models.CharField(help_text='Enter a unique name for the betting group.', max_length=255, unique=True, verbose_name='Group Name')),
-                ('description', models.TextField(help_text='Provide a detailed description of the betting group.', max_length=140, verbose_name='Description')),
-                ('status', models.CharField(choices=[('R', 'Running'), ('C', 'Closed')], db_index=True, default='R', help_text='Select a status for the betting group.', max_length=1, verbose_name='Status')),
-                ('created_at', models.DateTimeField(auto_now_add=True, help_text='Timestamp when the group was created.', verbose_name='Created At')),
-                ('updated_at', models.DateTimeField(auto_now=True, help_text='Timestamp when the group was last updated.', verbose_name='Updated At')),
-                ('bettors', models.ManyToManyField(blank=True, help_text='Users who are part of this group.', related_name='bet_groups', to=settings.AUTH_USER_MODEL, verbose_name='Bettors')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "group_id",
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        help_text="Enter a unique name for the betting group.",
+                        max_length=255,
+                        unique=True,
+                        verbose_name="Group Name",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        help_text="Provide a detailed description of the betting group.",
+                        max_length=140,
+                        verbose_name="Description",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("R", "Running"), ("C", "Closed")],
+                        db_index=True,
+                        default="R",
+                        help_text="Select a status for the betting group.",
+                        max_length=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "created_at",
+                    models.DateTimeField(
+                        auto_now_add=True,
+                        help_text="Timestamp when the group was created.",
+                        verbose_name="Created At",
+                    ),
+                ),
+                (
+                    "updated_at",
+                    models.DateTimeField(
+                        auto_now=True,
+                        help_text="Timestamp when the group was last updated.",
+                        verbose_name="Updated At",
+                    ),
+                ),
+                (
+                    "bettors",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="Users who are part of this group.",
+                        related_name="bet_groups",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="Bettors",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Group',
-                'verbose_name_plural': 'Groups',
-                'ordering': ['-created_at'],
+                "verbose_name": "Group",
+                "verbose_name_plural": "Groups",
+                "ordering": ["-created_at"],
             },
         ),
         migrations.AddField(
-            model_name='bundle',
-            name='group',
-            field=models.OneToOneField(help_text='Select the group this bundle is associated with.', on_delete=django.db.models.deletion.CASCADE, related_name='bundle', to='accounts.group', verbose_name='Group'),
+            model_name="bundle",
+            name="group",
+            field=models.OneToOneField(
+                help_text="Select the group this bundle is associated with.",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="bundle",
+                to="accounts.group",
+                verbose_name="Group",
+            ),
         ),
         migrations.CreateModel(
-            name='LoginHistory',
+            name="LoginHistory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('login_time', models.DateTimeField(auto_now_add=True)),
-                ('ip_address', models.GenericIPAddressField(blank=True, null=True)),
-                ('browser', models.CharField(blank=True, max_length=50, null=True)),
-                ('location', models.CharField(blank=True, max_length=100, null=True)),
-                ('os', models.CharField(blank=True, max_length=50, null=True)),
-                ('device', models.CharField(blank=True, max_length=50, null=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("login_time", models.DateTimeField(auto_now_add=True)),
+                ("ip_address", models.GenericIPAddressField(blank=True, null=True)),
+                ("browser", models.CharField(blank=True, max_length=50, null=True)),
+                ("location", models.CharField(blank=True, max_length=100, null=True)),
+                ("os", models.CharField(blank=True, max_length=50, null=True)),
+                ("device", models.CharField(blank=True, max_length=50, null=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-login_time'],
+                "ordering": ["-login_time"],
             },
         ),
         migrations.CreateModel(
-            name='Payout',
+            name="Payout",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('amount', models.DecimalField(decimal_places=2, help_text='The amount the bettor will be paid.', max_digits=10, verbose_name='Amount')),
-                ('note', models.TextField(help_text='A note by the admin.', verbose_name='Payout Note')),
-                ('status', models.CharField(choices=[('P', 'Pending'), ('A', 'Approved'), ('C', 'Cancelled')], default='P', max_length=1, verbose_name='Status')),
-                ('paid_on', models.DateTimeField(blank=True, null=True)),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('bundle', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payouts', to='accounts.bundle', verbose_name='Bundle')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='payouts', to=settings.AUTH_USER_MODEL, verbose_name='User')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    "amount",
+                    models.DecimalField(
+                        decimal_places=2,
+                        help_text="The amount the bettor will be paid.",
+                        max_digits=10,
+                        verbose_name="Amount",
+                    ),
+                ),
+                (
+                    "note",
+                    models.TextField(
+                        help_text="A note by the admin.", verbose_name="Payout Note"
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("P", "Pending"),
+                            ("A", "Approved"),
+                            ("C", "Cancelled"),
+                        ],
+                        default="P",
+                        max_length=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                ("paid_on", models.DateTimeField(blank=True, null=True)),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                (
+                    "bundle",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="payouts",
+                        to="accounts.bundle",
+                        verbose_name="Bundle",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="payouts",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="User",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Payout',
-                'verbose_name_plural': 'Payouts',
-                'ordering': ['-created'],
+                "verbose_name": "Payout",
+                "verbose_name_plural": "Payouts",
+                "ordering": ["-created"],
             },
         ),
         migrations.CreateModel(
-            name='Profile',
+            name="Profile",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email_confirmed', models.BooleanField(default=False, help_text="Determine if the User's email has been confirmed.", verbose_name='email confirmed?')),
-                ('verified_account', models.BooleanField(default=False, verbose_name='verified account?')),
-                ('phone_number', models.CharField(max_length=11, verbose_name='phone number')),
-                ('payout_information', models.TextField(blank=True, help_text='Bank account information for Withdrawals', verbose_name='Bank Account Information')),
-                ('is_banned', models.BooleanField(default=False)),
-                ('account_activated_at', models.DateTimeField(blank=True, help_text='The date when the user activated their account.', null=True, verbose_name='Account Activation Date')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='user')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "email_confirmed",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Determine if the User's email has been confirmed.",
+                        verbose_name="email confirmed?",
+                    ),
+                ),
+                (
+                    "verified_account",
+                    models.BooleanField(
+                        default=False, verbose_name="verified account?"
+                    ),
+                ),
+                (
+                    "phone_number",
+                    models.CharField(max_length=11, verbose_name="phone number"),
+                ),
+                (
+                    "payout_information",
+                    models.TextField(
+                        blank=True,
+                        help_text="Bank account information for Withdrawals",
+                        verbose_name="Bank Account Information",
+                    ),
+                ),
+                ("is_banned", models.BooleanField(default=False)),
+                (
+                    "account_activated_at",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="The date when the user activated their account.",
+                        null=True,
+                        verbose_name="Account Activation Date",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="user",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Profile',
-                'verbose_name_plural': 'Profiles',
-                'ordering': ['-created'],
+                "verbose_name": "Profile",
+                "verbose_name_plural": "Profiles",
+                "ordering": ["-created"],
             },
         ),
         migrations.CreateModel(
-            name='Ticket',
+            name="Ticket",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('ticket_id', models.CharField(db_index=True, editable=False, help_text='Unique 6-character alphanumeric Ticket ID', max_length=6, unique=True, verbose_name='ticket id')),
-                ('subject', models.CharField(max_length=255, verbose_name='subject')),
-                ('description', models.TextField()),
-                ('status', models.CharField(choices=[('P', 'Pending'), ('A', 'Answered'), ('C', 'Closed')], default='P', max_length=1, verbose_name='Status')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tickets', to=settings.AUTH_USER_MODEL, verbose_name='User')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "ticket_id",
+                    models.CharField(
+                        db_index=True,
+                        editable=False,
+                        help_text="Unique 6-character alphanumeric Ticket ID",
+                        max_length=6,
+                        unique=True,
+                        verbose_name="ticket id",
+                    ),
+                ),
+                ("subject", models.CharField(max_length=255, verbose_name="subject")),
+                ("description", models.TextField()),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("P", "Pending"), ("A", "Answered"), ("C", "Closed")],
+                        default="P",
+                        max_length=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tickets",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="User",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Ticket',
-                'verbose_name_plural': 'Tickets',
-                'ordering': ['-created'],
+                "verbose_name": "Ticket",
+                "verbose_name_plural": "Tickets",
+                "ordering": ["-created"],
             },
         ),
         migrations.CreateModel(
-            name='Reply',
+            name="Reply",
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('message', models.TextField()),
-                ('created', models.DateTimeField(default=django.utils.timezone.now)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='ticket_replies', to=settings.AUTH_USER_MODEL)),
-                ('ticket', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='replies', to='accounts.ticket')),
+                (
+                    "id",
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                ("message", models.TextField()),
+                ("created", models.DateTimeField(default=django.utils.timezone.now)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="ticket_replies",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "ticket",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="replies",
+                        to="accounts.ticket",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Reply',
-                'verbose_name_plural': 'Replies',
-                'ordering': ['-created'],
+                "verbose_name": "Reply",
+                "verbose_name_plural": "Replies",
+                "ordering": ["-created"],
             },
         ),
         migrations.CreateModel(
-            name='Action',
+            name="Action",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=255, verbose_name='title')),
-                ('verb', models.CharField(max_length=255, verbose_name='verb')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('target_id', models.PositiveBigIntegerField(blank=True, null=True)),
-                ('target_ct', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='target_obj', to='contenttypes.contenttype')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='actions', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=255, verbose_name="title")),
+                ("verb", models.CharField(max_length=255, verbose_name="verb")),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("target_id", models.PositiveBigIntegerField(blank=True, null=True)),
+                (
+                    "target_ct",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="target_obj",
+                        to="contenttypes.contenttype",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="actions",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-created'],
-                'indexes': [models.Index(fields=['-created'], name='accounts_ac_created_ecacea_idx'), models.Index(fields=['target_ct', 'target_id'], name='accounts_ac_target__d7e79e_idx')],
+                "ordering": ["-created"],
+                "indexes": [
+                    models.Index(
+                        fields=["-created"], name="accounts_ac_created_ecacea_idx"
+                    ),
+                    models.Index(
+                        fields=["target_ct", "target_id"],
+                        name="accounts_ac_target__d7e79e_idx",
+                    ),
+                ],
             },
         ),
         migrations.AddIndex(
-            model_name='group',
-            index=models.Index(fields=['status'], name='accounts_gr_status_d51285_idx'),
+            model_name="group",
+            index=models.Index(fields=["status"], name="accounts_gr_status_d51285_idx"),
         ),
         migrations.AddIndex(
-            model_name='group',
-            index=models.Index(fields=['name'], name='accounts_gr_name_fde4c5_idx'),
+            model_name="group",
+            index=models.Index(fields=["name"], name="accounts_gr_name_fde4c5_idx"),
         ),
     ]

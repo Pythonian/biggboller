@@ -6,7 +6,7 @@ We regret to inform you that the "{{ bundle.name }}" bundle was unsuccessful in 
 
 This means there is still an opportunity for a win. Thank you for your continued participation and support!
 
-Best regards,  
-The Bigg-Boller Team  
+Best regards,
+The Bigg-Boller Team
 
 ©2024 Bigg-Boller. All Rights Reserved.

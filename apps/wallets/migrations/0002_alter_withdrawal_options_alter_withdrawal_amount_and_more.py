@@ -8,60 +8,118 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('wallets', '0001_initial'),
+        ("wallets", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='withdrawal',
-            options={'ordering': ['-processed_at', '-created'], 'verbose_name': 'Withdrawal', 'verbose_name_plural': 'Withdrawals'},
+            name="withdrawal",
+            options={
+                "ordering": ["-processed_at", "-created"],
+                "verbose_name": "Withdrawal",
+                "verbose_name_plural": "Withdrawals",
+            },
         ),
         migrations.AlterField(
-            model_name='withdrawal',
-            name='amount',
-            field=models.DecimalField(decimal_places=2, help_text='Requested withdrawal amount.', max_digits=10, verbose_name='Withdrawal Amount (₦)'),
+            model_name="withdrawal",
+            name="amount",
+            field=models.DecimalField(
+                decimal_places=2,
+                help_text="Requested withdrawal amount.",
+                max_digits=10,
+                verbose_name="Withdrawal Amount (₦)",
+            ),
         ),
         migrations.AlterField(
-            model_name='withdrawal',
-            name='description',
-            field=models.CharField(help_text='Description of the withdrawal request.', max_length=50, validators=[django.core.validators.MinLengthValidator(5), django.core.validators.MaxLengthValidator(50)], verbose_name='Description'),
+            model_name="withdrawal",
+            name="description",
+            field=models.CharField(
+                help_text="Description of the withdrawal request.",
+                max_length=50,
+                validators=[
+                    django.core.validators.MinLengthValidator(5),
+                    django.core.validators.MaxLengthValidator(50),
+                ],
+                verbose_name="Description",
+            ),
         ),
         migrations.AlterField(
-            model_name='withdrawal',
-            name='note',
-            field=models.TextField(blank=True, help_text="Administrator's feedback or reason for status change.", verbose_name='Feedback Note'),
+            model_name="withdrawal",
+            name="note",
+            field=models.TextField(
+                blank=True,
+                help_text="Administrator's feedback or reason for status change.",
+                verbose_name="Feedback Note",
+            ),
         ),
         migrations.AlterField(
-            model_name='withdrawal',
-            name='processed_at',
-            field=models.DateTimeField(blank=True, help_text='Date and time the withdrawal was processed.', null=True, verbose_name='Processed At'),
+            model_name="withdrawal",
+            name="processed_at",
+            field=models.DateTimeField(
+                blank=True,
+                help_text="Date and time the withdrawal was processed.",
+                null=True,
+                verbose_name="Processed At",
+            ),
         ),
         migrations.AlterField(
-            model_name='withdrawal',
-            name='reference',
-            field=models.CharField(help_text='Unique reference number for this withdrawal.', max_length=20, unique=True, verbose_name='Reference'),
+            model_name="withdrawal",
+            name="reference",
+            field=models.CharField(
+                help_text="Unique reference number for this withdrawal.",
+                max_length=20,
+                unique=True,
+                verbose_name="Reference",
+            ),
         ),
         migrations.AlterField(
-            model_name='withdrawal',
-            name='status',
-            field=models.CharField(choices=[('P', 'Pending'), ('A', 'Approved'), ('D', 'Declined'), ('C', 'Cancelled')], default='P', help_text='Current status of the withdrawal request.', max_length=1, verbose_name='Status'),
+            model_name="withdrawal",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("P", "Pending"),
+                    ("A", "Approved"),
+                    ("D", "Declined"),
+                    ("C", "Cancelled"),
+                ],
+                default="P",
+                help_text="Current status of the withdrawal request.",
+                max_length=1,
+                verbose_name="Status",
+            ),
         ),
         migrations.AlterField(
-            model_name='withdrawal',
-            name='user',
-            field=models.ForeignKey(help_text='User initiating the withdrawal.', on_delete=django.db.models.deletion.CASCADE, related_name='withdrawals', to=settings.AUTH_USER_MODEL, verbose_name='User'),
+            model_name="withdrawal",
+            name="user",
+            field=models.ForeignKey(
+                help_text="User initiating the withdrawal.",
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="withdrawals",
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="User",
+            ),
         ),
         migrations.AlterField(
-            model_name='withdrawal',
-            name='wallet',
-            field=models.ForeignKey(help_text='Wallet associated with this withdrawal.', on_delete=django.db.models.deletion.PROTECT, related_name='withdrawals', to='wallets.wallet', verbose_name='Wallet'),
+            model_name="withdrawal",
+            name="wallet",
+            field=models.ForeignKey(
+                help_text="Wallet associated with this withdrawal.",
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="withdrawals",
+                to="wallets.wallet",
+                verbose_name="Wallet",
+            ),
         ),
         migrations.AlterField(
-            model_name='withdrawal',
-            name='withdrawal_id',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, help_text='Unique identifier for the withdrawal.', unique=True),
+            model_name="withdrawal",
+            name="withdrawal_id",
+            field=models.UUIDField(
+                default=uuid.uuid4,
+                editable=False,
+                help_text="Unique identifier for the withdrawal.",
+                unique=True,
+            ),
         ),
     ]

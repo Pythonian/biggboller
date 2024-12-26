@@ -230,7 +230,9 @@ def wallet_withdrawal(request):
                 return redirect("wallet:withdrawal_pin")
             except Exception as e:
                 logger.error(f"Error creating withdrawal for user {request.user}: {e}")
-                messages.error(request, "An error occurred while creating your withdrawal.")
+                messages.error(
+                    request, "An error occurred while creating your withdrawal."
+                )
     else:
         form = WithdrawalForm(wallet_balance=user_wallet.balance)
 
@@ -297,8 +299,12 @@ def wallet_withdrawal_pin(request):
 
                     return redirect("bettor:dashboard")
                 except Exception as e:
-                    logger.error(f"Error processing withdrawal for user {request.user}: {e}")
-                    messages.error(request, "An error occurred while processing your withdrawal.")
+                    logger.error(
+                        f"Error processing withdrawal for user {request.user}: {e}"
+                    )
+                    messages.error(
+                        request, "An error occurred while processing your withdrawal."
+                    )
     else:
         form = TransactionPINForm()
 

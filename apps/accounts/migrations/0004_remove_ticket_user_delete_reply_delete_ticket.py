@@ -4,20 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('accounts', '0003_profile_transaction_pin'),
+        ("accounts", "0003_profile_transaction_pin"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='ticket',
-            name='user',
+            model_name="ticket",
+            name="user",
         ),
         migrations.DeleteModel(
-            name='Reply',
+            name="Reply",
         ),
         migrations.DeleteModel(
-            name='Ticket',
+            name="Ticket",
         ),
     ]

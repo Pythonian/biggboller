@@ -9,7 +9,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -18,84 +17,363 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Wallet',
+            name="Wallet",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('wallet_id', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('balance', models.DecimalField(decimal_places=2, default=Decimal('0.00'), help_text='Current wallet balance.', max_digits=12, verbose_name='Balance')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='wallet', to=settings.AUTH_USER_MODEL, verbose_name='User')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                (
+                    "wallet_id",
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    "balance",
+                    models.DecimalField(
+                        decimal_places=2,
+                        default=Decimal("0.00"),
+                        help_text="Current wallet balance.",
+                        max_digits=12,
+                        verbose_name="Balance",
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="wallet",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="User",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Wallet',
-                'verbose_name_plural': 'Wallets',
-                'ordering': ['-created'],
+                "verbose_name": "Wallet",
+                "verbose_name_plural": "Wallets",
+                "ordering": ["-created"],
             },
         ),
         migrations.CreateModel(
-            name='Deposit',
+            name="Deposit",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('deposit_id', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('reference', models.CharField(max_length=20, unique=True, verbose_name='Reference')),
-                ('amount', models.DecimalField(decimal_places=2, help_text='Amount deposited.', max_digits=10, validators=[django.core.validators.MinValueValidator(Decimal('1000.00'))], verbose_name='Deposit Amount (₦)')),
-                ('description', models.CharField(help_text='Description of the Wallet Deposit', max_length=50, validators=[django.core.validators.MinLengthValidator(5), django.core.validators.MaxLengthValidator(50)], verbose_name='Description')),
-                ('status', models.CharField(choices=[('P', 'Pending'), ('C', 'Completed'), ('F', 'Failed')], default='P', help_text='Status of the deposit transaction.', max_length=1, verbose_name='Status')),
-                ('gateway_response', models.CharField(default='', help_text='Response from the payment gateway.', max_length=255, verbose_name='Gateway Response')),
-                ('channel', models.CharField(default='', help_text="Payment channel used, e.g., 'card'.", max_length=50, verbose_name='Payment Channel')),
-                ('ip_address', models.GenericIPAddressField(blank=True, help_text='IP address of the customer at the time of transaction.', null=True, verbose_name='IP Address')),
-                ('paid_at', models.DateTimeField(blank=True, help_text='Timestamp when payment was completed.', null=True, verbose_name='Paid At')),
-                ('authorization_code', models.CharField(default='', help_text='Authorization code for the payment.', max_length=100, verbose_name='Authorization Code')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='wallet_deposits', to=settings.AUTH_USER_MODEL, verbose_name='User')),
-                ('wallet', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='deposits', to='wallets.wallet', verbose_name='Wallet')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                (
+                    "deposit_id",
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    "reference",
+                    models.CharField(
+                        max_length=20, unique=True, verbose_name="Reference"
+                    ),
+                ),
+                (
+                    "amount",
+                    models.DecimalField(
+                        decimal_places=2,
+                        help_text="Amount deposited.",
+                        max_digits=10,
+                        validators=[
+                            django.core.validators.MinValueValidator(Decimal("1000.00"))
+                        ],
+                        verbose_name="Deposit Amount (₦)",
+                    ),
+                ),
+                (
+                    "description",
+                    models.CharField(
+                        help_text="Description of the Wallet Deposit",
+                        max_length=50,
+                        validators=[
+                            django.core.validators.MinLengthValidator(5),
+                            django.core.validators.MaxLengthValidator(50),
+                        ],
+                        verbose_name="Description",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("P", "Pending"), ("C", "Completed"), ("F", "Failed")],
+                        default="P",
+                        help_text="Status of the deposit transaction.",
+                        max_length=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "gateway_response",
+                    models.CharField(
+                        default="",
+                        help_text="Response from the payment gateway.",
+                        max_length=255,
+                        verbose_name="Gateway Response",
+                    ),
+                ),
+                (
+                    "channel",
+                    models.CharField(
+                        default="",
+                        help_text="Payment channel used, e.g., 'card'.",
+                        max_length=50,
+                        verbose_name="Payment Channel",
+                    ),
+                ),
+                (
+                    "ip_address",
+                    models.GenericIPAddressField(
+                        blank=True,
+                        help_text="IP address of the customer at the time of transaction.",
+                        null=True,
+                        verbose_name="IP Address",
+                    ),
+                ),
+                (
+                    "paid_at",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Timestamp when payment was completed.",
+                        null=True,
+                        verbose_name="Paid At",
+                    ),
+                ),
+                (
+                    "authorization_code",
+                    models.CharField(
+                        default="",
+                        help_text="Authorization code for the payment.",
+                        max_length=100,
+                        verbose_name="Authorization Code",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="wallet_deposits",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="User",
+                    ),
+                ),
+                (
+                    "wallet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="deposits",
+                        to="wallets.wallet",
+                        verbose_name="Wallet",
+                    ),
+                ),
             ],
             options={
-                'ordering': ['-paid_at', '-created'],
+                "ordering": ["-paid_at", "-created"],
             },
         ),
         migrations.CreateModel(
-            name='AuditLog',
+            name="AuditLog",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('audit_id', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('transaction_type', models.CharField(choices=[('WC', 'Wallet Creation'), ('WD', 'Wallet Deposit'), ('WW', 'Wallet Withdrawal'), ('BP', 'Bundle Purchase'), ('BW', 'Bundle Winning')], help_text='Type of transaction.', max_length=2, verbose_name='Transaction Type')),
-                ('transaction_id', models.CharField(help_text='Unique ID of the related transaction.', max_length=20, verbose_name='Transaction ID')),
-                ('amount', models.DecimalField(decimal_places=2, help_text='Amount involved in the transaction.', max_digits=12, verbose_name='Amount')),
-                ('balance_before', models.DecimalField(decimal_places=2, help_text='Wallet balance before the transaction.', max_digits=12, verbose_name='Balance Before')),
-                ('balance_after', models.DecimalField(decimal_places=2, help_text='Wallet balance after the transaction.', max_digits=12, verbose_name='Balance After')),
-                ('wallet', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='audit_logs', to='wallets.wallet', verbose_name='Wallet')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                (
+                    "audit_id",
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    "transaction_type",
+                    models.CharField(
+                        choices=[
+                            ("WC", "Wallet Creation"),
+                            ("WD", "Wallet Deposit"),
+                            ("WW", "Wallet Withdrawal"),
+                            ("BP", "Bundle Purchase"),
+                            ("BW", "Bundle Winning"),
+                        ],
+                        help_text="Type of transaction.",
+                        max_length=2,
+                        verbose_name="Transaction Type",
+                    ),
+                ),
+                (
+                    "transaction_id",
+                    models.CharField(
+                        help_text="Unique ID of the related transaction.",
+                        max_length=20,
+                        verbose_name="Transaction ID",
+                    ),
+                ),
+                (
+                    "amount",
+                    models.DecimalField(
+                        decimal_places=2,
+                        help_text="Amount involved in the transaction.",
+                        max_digits=12,
+                        verbose_name="Amount",
+                    ),
+                ),
+                (
+                    "balance_before",
+                    models.DecimalField(
+                        decimal_places=2,
+                        help_text="Wallet balance before the transaction.",
+                        max_digits=12,
+                        verbose_name="Balance Before",
+                    ),
+                ),
+                (
+                    "balance_after",
+                    models.DecimalField(
+                        decimal_places=2,
+                        help_text="Wallet balance after the transaction.",
+                        max_digits=12,
+                        verbose_name="Balance After",
+                    ),
+                ),
+                (
+                    "wallet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="audit_logs",
+                        to="wallets.wallet",
+                        verbose_name="Wallet",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Audit Log',
-                'verbose_name_plural': 'Audit Logs',
-                'ordering': ['-created'],
+                "verbose_name": "Audit Log",
+                "verbose_name_plural": "Audit Logs",
+                "ordering": ["-created"],
             },
         ),
         migrations.CreateModel(
-            name='Withdrawal',
+            name="Withdrawal",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', models.DateTimeField(auto_now_add=True)),
-                ('updated', models.DateTimeField(auto_now=True)),
-                ('withdrawal_id', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
-                ('amount', models.DecimalField(decimal_places=2, help_text='Requested withdrawal amount.', max_digits=10, verbose_name='Withdrawal Amount')),
-                ('description', models.TextField(help_text='Withdrawal description.', max_length=50, validators=[django.core.validators.MinLengthValidator(5), django.core.validators.MaxLengthValidator(50)], verbose_name='Description')),
-                ('note', models.TextField(default='', help_text='Withdrawal note from Administrator.', max_length=50, verbose_name='Feedback Note')),
-                ('reference', models.CharField(help_text='Withdrawal reference number', max_length=20, unique=True, verbose_name='Reference')),
-                ('status', models.CharField(choices=[('P', 'Pending'), ('A', 'Approved'), ('D', 'Declined'), ('C', 'Cancelled')], default='P', help_text='Status of the withdrawal request.', max_length=1, verbose_name='Status')),
-                ('processed_at', models.DateTimeField(blank=True, help_text='Date when the withdrawal was processed.', null=True, verbose_name='Processed At')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='withdrawals', to=settings.AUTH_USER_MODEL, verbose_name='User')),
-                ('wallet', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='withdrawals', to='wallets.wallet', verbose_name='Wallet')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created", models.DateTimeField(auto_now_add=True)),
+                ("updated", models.DateTimeField(auto_now=True)),
+                (
+                    "withdrawal_id",
+                    models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+                ),
+                (
+                    "amount",
+                    models.DecimalField(
+                        decimal_places=2,
+                        help_text="Requested withdrawal amount.",
+                        max_digits=10,
+                        verbose_name="Withdrawal Amount",
+                    ),
+                ),
+                (
+                    "description",
+                    models.TextField(
+                        help_text="Withdrawal description.",
+                        max_length=50,
+                        validators=[
+                            django.core.validators.MinLengthValidator(5),
+                            django.core.validators.MaxLengthValidator(50),
+                        ],
+                        verbose_name="Description",
+                    ),
+                ),
+                (
+                    "note",
+                    models.TextField(
+                        default="",
+                        help_text="Withdrawal note from Administrator.",
+                        max_length=50,
+                        verbose_name="Feedback Note",
+                    ),
+                ),
+                (
+                    "reference",
+                    models.CharField(
+                        help_text="Withdrawal reference number",
+                        max_length=20,
+                        unique=True,
+                        verbose_name="Reference",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("P", "Pending"),
+                            ("A", "Approved"),
+                            ("D", "Declined"),
+                            ("C", "Cancelled"),
+                        ],
+                        default="P",
+                        help_text="Status of the withdrawal request.",
+                        max_length=1,
+                        verbose_name="Status",
+                    ),
+                ),
+                (
+                    "processed_at",
+                    models.DateTimeField(
+                        blank=True,
+                        help_text="Date when the withdrawal was processed.",
+                        null=True,
+                        verbose_name="Processed At",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="withdrawals",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="User",
+                    ),
+                ),
+                (
+                    "wallet",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="withdrawals",
+                        to="wallets.wallet",
+                        verbose_name="Wallet",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Withdrawal',
-                'verbose_name_plural': 'Withdrawals',
-                'ordering': ['-created'],
+                "verbose_name": "Withdrawal",
+                "verbose_name_plural": "Withdrawals",
+                "ordering": ["-created"],
             },
         ),
     ]

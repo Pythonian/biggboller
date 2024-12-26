@@ -4,5 +4,5 @@ We regret to inform you that the "{{ bundle.name }}" bundle you participated in 
 
 While this bundle was lost, we encourage you to try again in future bundles. Remember, persistence is key!
 
-Thank you,  
+Thank you,
 The Bigg-Boller Team
