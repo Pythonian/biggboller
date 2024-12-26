@@ -1,6 +1,6 @@
 .DEFAULT_GOAL=help
 
-.PHONY: help venv install check clean
+.PHONY: help venv install check test migrate admin run clean
 
 VENV_DIR = venv
 PYTHON = python3
@@ -34,6 +34,27 @@ check: ## Run code quality checks with Pre-commit
 	$(call check_venv)
 	$(PRE_COMMIT) run --all-files
 	@echo "All checks passed"
+
+test: ## Run tests
+	$(call check_venv)
+	@python manage.py test
+
+migrate: ## Run database migrations
+	$(call check_venv)
+	@python manage.py makemigrations
+	@python manage.py migrate
+
+admin: ## Create admin superuser
+	$(call check_venv)
+	@python manage.py createsuperuser
+
+run: ## Run development server
+	$(call check_venv)
+	@python manage.py runserver
+
+flush: ## Reset the database
+	$(call check_venv)
+	@python manage.py flush
 
 clean: ## Clean up all generated files and directories.
 	@echo "Cleaning up the project..."
